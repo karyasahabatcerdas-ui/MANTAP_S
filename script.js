@@ -939,7 +939,7 @@ async function loadJad() {
       //const response = await fetch(`${urlGAS}?action=getJadwal`);
       //const data = await response.json();
 
-      const data = getMaint("Log_Kegiatan").slice(1).reverse(); //pengganti fungsi gas dilokal
+      const data = getMaint("Maintenance").slice(1).reverse(); //pengganti fungsi gas dilokal
       historyJadwal = data ;
       
       if (!data || data.length < 2) return;
