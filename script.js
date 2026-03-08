@@ -953,6 +953,7 @@ async function loadJad() {
       if (keyword) rawData = rawData.filter(d => d.join(" ").toUpperCase().includes(keyword));
 
       const now = new Date();
+      //const now = await getServerTime(); 
       
       // HELPER KONVERSI TANGGAL
       const toDate = (val) => {
