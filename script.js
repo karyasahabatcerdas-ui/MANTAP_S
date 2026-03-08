@@ -92,3 +92,66 @@ function populateAllDropdowns() {
 }
 
 
+// Gantilah dengan URL Web App hasil Deploy "Anyone" tadi
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx0mJC62sSCdcDeWpDavQf6m0-sD7C8hTC4pq0pJN1qRFsNKvpgJvFyIeYmziYUGM5r/exec";
+
+/**
+ * FUNGSI UTAMA: Ambil 22 Sheet dari GAS ke RAM (window.APP_STORE)
+ */
+async function syncDataGhoib() {
+  try {
+    console.log("⏳ Menghubungi Server GAS...");
+    
+    // Kita pakai doGet dengan parameter ?action=getInitialData
+    const response = await fetch(`${GAS_URL}?action=getInitialData`);
+    const res = await response.json();
+
+    if (res.status !== "success") throw new Error(res.message);
+
+    // BONGKAR GHOIB (Decode Base64 ke JSON)
+    const decodedString = atob(res.blob); 
+    const cleanData = JSON.parse(decodedString);
+
+    // Simpan ke RAM Browser
+    window.APP_STORE = {
+      app: cleanData.app,
+      assets: cleanData.assets,
+      reference: cleanData.reference,
+      maintenance: cleanData.maintenance,
+      key: res.key
+    };
+
+    console.log("✅ Data RAM Sinkron, Señor!", window.APP_STORE);
+    return true;
+
+  } catch (err) {
+    console.error("❌ Gagal Sinkron:", err);
+    return false;
+  }
+}
+
+/**
+ * FUNGSI TULIS: Kirim data (Update/Append) ke GAS
+ */
+async function kirimKeGAS(action, sheetName, id, dataRow = []) {
+  const payload = {
+    action: action,
+    sheetName: sheetName,
+    id: id,
+    data: dataRow
+  };
+
+  try {
+    const response = await fetch(GAS_URL, {
+      method: "POST",
+      // Penting: Google Apps Script butuh teks mentah untuk doPost
+      body: JSON.stringify(payload) 
+    });
+    
+    const hasil = await response.json();
+    console.log("🚀 Respon GAS:", hasil);
+    return hasil;
+  } catch (err) {
+    console.error("❌ Gagal Kirim ke GAS:", err);
+  }
+}
