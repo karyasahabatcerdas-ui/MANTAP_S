@@ -78,6 +78,49 @@ const getRef   = (name) => window.APP_STORE.reference[name] || [];
 const getMaint = (name) => window.APP_STORE.maintenance[name] || [];
 const getApp = (name) => window.APP_STORE.app[name] || [];
 
+//------mapping untuk dropdown
+const DROPDOWN_MAP = {
+  'filterStatusLog':    'Status_Maint',
+  'filterJadwalLog':    'ID_Jadwal',
+  'sortJadwal':         'Filter_Tgl',
+  'filterType':         'Type_Asset',
+  'filterStateJadwal':  'ID_Jadwal',
+  'assetTypeSelect':    'Type_Asset',
+  'viewAssetTypeSelect':'Type_Asset',
+  'jenis_id_jadwal':    'ID_Jadwal',
+  'm_state':            'Status_Maint',
+  'maint_id_jadwal':    'ID_Jadwal',
+  'as_status':          'Status_Asset',
+  'm_status':           'Status_Maint'
+};
+function populateAllDropdowns() {
+  for (let id in DROPDOWN_MAP) {
+    const el = document.getElementById(id);
+    if (!el) continue; // Lewati kalau ID tidak ada di halaman ini
+
+    const sheetName = DROPDOWN_MAP[id];
+    const data = getRef(sheetName); // Ambil dari RAM
+
+    if (data && data.length > 0) {
+      let options = `<option value="">-- Pilih ${sheetName.replace('_', ' ')} --</option>`;
+      
+      // Lompati Header (Index 0)
+      data.slice(1).forEach(row => {
+        const val = row[0]; // Isian ID (Sistem)
+        const lab = row[1] || row[0]; // Isian Text (Tampilan), kover kalau B kosong
+        
+        if (val !== undefined && val !== "") {
+          options += `<option value="${val}">${lab}</option>`;
+        }
+      });
+      
+      el.innerHTML = options;
+      console.log(`✅ ID: ${id} terisi dari ${sheetName}`);
+    }
+  }
+}
+
+/*
 // --- 5. OTOMATISASI UI ---
 function populateAllDropdowns() {
   const mapRef = {
@@ -100,6 +143,60 @@ function populateAllDropdowns() {
     el.innerHTML = options;
   }
 }
+  */
+
+/**
+ * FUNGSI SIMPAN: Kirim perubahan dari Form ke GAS
+ */
+async function updateAssetData(sheetName, assetId, updatedArray) {
+  try {
+    // 1. Indikator Loading
+    Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+    // 2. Tembak ke doPost GAS (Pakai fungsi kirimKeGAS yang kita buat di awal)
+    const res = await kirimKeGAS("update", sheetName, assetId, updatedArray);
+
+    if (res.status === "success") {
+      // 3. UPDATE RAM LOKAL (PENTING: Biar data di browser langsung berubah tanpa refresh)
+      const rows = window.APP_STORE.assets[sheetName];
+      const index = rows.findIndex(r => r[0].toString() === assetId.toString());
+      if (index !== -1) window.APP_STORE.assets[sheetName][index] = updatedArray;
+
+      Swal.fire("Tersimpan!", "Data di Spreadsheet & GitHub sudah sinkron.", "success");
+      return true;
+    } else {
+      throw new Error(res.msg);
+    }
+  } catch (err) {
+    Swal.fire("Gagal Simpan", err.message, "error");
+    return false;
+  }
+}
+
+
+async function tambahAset(sheetName, newRow) {
+  const res = await kirimKeGAS("append", sheetName, null, newRow);
+  if (res.status === "success") {
+    // Sync RAM: Langsung push ke array sheet tersebut
+    window.APP_STORE.assets[sheetName].push(newRow);
+    console.log("✅ Unit Baru Masuk RAM & Server!");
+  }
+  return res;
+}
+
+
+async function hapusAset(sheetName, assetId) {
+  const res = await kirimKeGAS("delete", sheetName, assetId);
+  if (res.status === "success") {
+    // Sync RAM: Filter keluar ID yang dihapus
+    window.APP_STORE.assets[sheetName] = window.APP_STORE.assets[sheetName].filter(
+      r => r[0].toString() !== assetId.toString()
+    );
+    console.log("🗑️ Unit Terhapus dari RAM & Server!");
+  }
+  return res;
+}
+
 /* ----- script inisialisasi berakhir disini------------------*/
 
 /**
@@ -311,6 +408,95 @@ function closeGlobalSearch() {
 }
 
 
+/**============================================================================
+ * [FUNGSI: FETCH DETAIL ASET UNTUK LOG MAINTENANCE]
+ * Menarik detail aset dari server berdasarkan ID untuk diisi ke Modal Maintenance Log.
+ * Juga menangani logika auto-linking jadwal open jika ada.
+ * ============================================================================
+ */
+
+async function fetchAssetDetailForLog(idasset) {
+  if (!unitID) return;    
+  const uiNama = document.getElementById('log_as_id');    
+  //const iframe = document.getElementById('iframeGAS');
+  const urlGAS = APPSCRIPT_URL;
+  
+  if(uiNama) uiNama.innerHTML = `<span class="text-gradient">Baca Database...</span>`;
+
+  try {
+    // Memanggil server dengan parameter action dan unitID
+    //const response = await fetch(`${urlGAS}?action=getAssetDetailForLog&unitID=${unitID}`);
+    //const res = await response.json();
+    let res = null; // Gunakan 'let' supaya bisa diisi data hasil pencarian
+    const cari = megaSearch("ALL",idasset); // Fungsi pencarian global yang sudah kita buat di fungsiGlobal.js); 
+
+    if (cari.status === "success") {
+        // 1. Ambil paket hasil pertama dari array 'results'
+        const item = cari.results[0]; 
+        
+        // 2. Sekarang kamu bisa akses 'type' dan 'data'-nya
+        const resType = item.type; // Nama Sheet
+        const resData = item.data; // Array 1 Baris Presisi [ID, Barcode, Nama, ...]
+        
+        console.log("✅ Unit Ketemu di Sheet:", resType);
+        console.log("📦 Data Array Presisi:", resData);
+
+        // Kalau mau disimpan ke variabel 'res' yang sudah kamu siapkan:
+        res = item; 
+    }
+
+
+    if (res && res[2] !== "TIDAK DITEMUKAN") { //re.nama
+      
+      // 1. TAMPILKAN KONFIRMASI UNIT
+      await Swal.fire({
+        title: "Unit Ditemukan!",
+        text: `${res.nama} (${res.type})`,
+        icon: "success",
+        confirmButtonText: "Mulai Kerja",
+        width: '80%'
+      });
+
+      // 2. INJEKSI IDENTITAS KE UI
+      document.getElementById('log_as_id').innerText = res.type + "-" + res.asId;
+      document.getElementById('log_ui_asid').innerText = res.asId;
+      document.getElementById('log_ui_type').innerText = res.type;
+      document.getElementById('log_ui_nama').innerText = res.nama;
+      document.getElementById('log_ui_lokasi').innerText = res.lokasi || "N/A";
+      
+      // 3. SET WAKTU MULAI DARI SERVER
+      document.getElementById('log_time_mulai').value = res.serverTime;
+
+      // 4. LOGIKA B.1.1 (AUTO-LINKING JADWAL OPEN)
+      const logKegId = document.getElementById('log_keg_id');
+      const dropdownJadwal = document.getElementById('jenis_id_jadwal');
+
+      if (res.openJadwal && res.openJadwal.length > 0) {
+        const hit = res.openJadwal[0]; 
+        dropdownJadwal.value = hit.idJadwal; 
+        logKegId.value = hit.maintId; 
+        if(typeof speakSenor === "function") speakSenor("Jadwal terencana ditemukan Señor, silakan lanjut.");
+      } else {
+        logKegId.value = ""; 
+        //dropdownJadwal.value = ""; 
+        if(typeof speakSenor === "function") speakSenor("Tidak ada jadwal, silakan input manual.");
+      }
+
+      unlockMaintenanceForm(); 
+
+    } else {
+      await Swal.fire({ 
+        title: "Unit Ghoib!", 
+        text: "ID Unit [" + unitID + "] tidak ada!", 
+        icon: "error", 
+        width: '80%' 
+      });
+    }
+  } catch (err) {
+    console.error("Fetch Error:", err);
+    if(uiNama) uiNama.innerText = "Error Koneksi!";
+  }
+}
 
 
 
@@ -337,9 +523,14 @@ function closeGlobalSearch() {
 
 
 
-
-//**-----------------------[TARUH SELALU FUNGSI INI DI BAWAH]----------------------- */
-window.addEventListener('DOMContentLoaded', (event) => {
+window.addEventListener('DOMContentLoaded', async (event) => {
     console.log("🚀 Semua mesin siap, Sedot Data Ghoib dimulai...");
-    syncDataGhoib();
+    
+    // Tunggu sampai data masuk RAM
+    await syncDataGhoib(); 
+    
+    // Setelah data ada di RAM, baru isi dropdown-nya
+    populateAllDropdowns();
+    
+    console.log("💎 Semua Dropdown & Data RAM Berhasil Sinkron!");
 });

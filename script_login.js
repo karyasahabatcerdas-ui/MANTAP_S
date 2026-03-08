@@ -7,9 +7,12 @@ function login() {
         if (overlay) overlay.style.display = 'none';
 
         // 2. Load Data dari Server (GitHub to GAS)
-        initAllJadwalDropdowns();
-        loadAssetTypes();
-        initAssetDropdowns();
+        //initAllJadwalDropdowns();
+        
+        //loadAssetTypes();
+        //initAssetDropdowns();
+
+        
 
         // 3. Navigasi
         //showPage('history');

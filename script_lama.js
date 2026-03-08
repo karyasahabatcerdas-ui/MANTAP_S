@@ -239,7 +239,7 @@ function closeGlobalSearch() {
  * Juga menangani logika auto-linking jadwal open jika ada.
  * ============================================================================
  */
-
+/* pindah
 async function fetchAssetDetailForLog(unitID) {
   if (!unitID) return;    
   const uiNama = document.getElementById('log_as_id');    
@@ -303,7 +303,7 @@ async function fetchAssetDetailForLog(unitID) {
     console.error("Fetch Error:", err);
     if(uiNama) uiNama.innerText = "Error Koneksi!";
   }
-}
+} */
 
 // Variabel Global
 currentCategory = '';  // deteksi kamera QR atau QR
