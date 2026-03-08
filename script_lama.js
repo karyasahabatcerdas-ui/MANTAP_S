@@ -69,7 +69,7 @@ function speakSenor(pesan) {
  * Memembuka Global search
  * ==============================================================================
  */
-/* diganti fungsi pembaca dari ram langsung dari script.js
+/** diganti fungsi pembaca dari ram langsung dari script.js
 async function openGlobalSearch() {
   const tbody = document.getElementById('globalResultBody');
   const input = document.getElementById('masterSearchInput');
