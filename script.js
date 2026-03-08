@@ -3120,14 +3120,6 @@ function downloadTemplate() {
 
 
 
-
-
-
-
-
-
-
-
 window.addEventListener('DOMContentLoaded', async (event) => {
     console.log("🚀 Semua mesin siap, Sedot Data Ghoib dimulai...");
     
