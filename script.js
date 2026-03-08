@@ -75,6 +75,7 @@ async function kirimKeGAS(action, sheetName, id, dataRow = []) {
 const getAsset = (name) => window.APP_STORE.assets[name] || [];
 const getRef   = (name) => window.APP_STORE.reference[name] || [];
 const getMaint = (name) => window.APP_STORE.maintenance[name] || [];
+const getApp = (name) => window.APP_STORE.app[name] || [];
 
 // --- 5. OTOMATISASI UI ---
 function populateAllDropdowns() {
