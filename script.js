@@ -147,11 +147,12 @@ async function openGlobalSearch() {
   // LOGIKA BARU: Kita tidak pakai FETCH lagi di sini. 
   // Kita akan biarkan fungsi 'input' (onkeyup) yang menyisir RAM nanti.
 }
-
 function liveSearchRAM(keyword) {
   const tbody = document.getElementById('globalResultBody');
-  if (!keyword || keyword.length < 2) { // Cari setelah 2 huruf biar gak berat
-    tbody.innerHTML = "";
+  
+  // Minimal 2 huruf baru cari, biar gak lag
+  if (!keyword || keyword.length < 2) {
+    tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Ketik minimal 2 karakter...</td></tr>";
     return;
   }
 
@@ -161,23 +162,28 @@ function liveSearchRAM(keyword) {
   daftarTipe.forEach(tipe => {
     const rows = getAsset(tipe);
     
-    rows.slice(1).forEach((row, index) => { // slice(1) lompati header
+    // Kita mulai dari index 1 untuk melompati Header (Baris 1)
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
       const teksBaris = row.join("|").toLowerCase();
       
       if (teksBaris.includes(keyword.toLowerCase())) {
-        // ADAPTER: Ubah Array Spreadsheet jadi Objek yang diminta UI kamu
+        // --- ADAPTER RAM KE UI ---
+        // Sesuaikan index [0], [1], [2] dengan kolom di Sheet kamu!
         hasilUntukTabel.push({
-          type: tipe,           // Nama Sheet (Misal: AC_Split)
-          id: row[0],           // Kolom A (ID Asset)
-          nama: row[1],         // Kolom B (Merk/Nama)
-          lokasi: row[2],       // Kolom C (Lokasi)
-          row: index + 2        // Baris asli di Google Sheet (+2 karena header & index 0)
+          type: tipe,           // Nama Sheet
+          id: row[0] || "-",    // Kolom A: ID Asset
+          nama: row[1] || "-",  // Kolom B: Merk/Nama
+          lokasi: row[2] || "-",// Kolom C: Lokasi
+          row: i + 1            // Nomor baris asli di Sheet
         });
       }
-    });
+    }
   });
 
+  // Kirim ke fungsi UI kamu
   fillGlobalTable(hasilUntukTabel);
 }
+
 
 
