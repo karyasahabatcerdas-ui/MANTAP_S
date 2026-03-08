@@ -10,9 +10,7 @@ function login() {
         //initAllJadwalDropdowns();
         
         //loadAssetTypes();
-        //initAssetDropdowns();
-
-        
+        //initAssetDropdowns();      
 
         // 3. Navigasi
         //showPage('history');

@@ -181,5 +181,19 @@ html {
         gap: 5px;
     }
 }
-
+  /* --- TOMBOL REFRESH NEON DI ANTARMUKA LOADHISTORY KEGIATAN MAINTENANCE --- */
+.btn-refresh-neon {
+  background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+  border: none;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+  transition: 0.3s;
+}
+.btn-refresh-neon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.8);
+}
 

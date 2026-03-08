@@ -67,3 +67,45 @@ function getAssetDetailForLogRAM(unitID) {
 
   return result;
 }
+
+
+/**
+ * SEARCH ASSET RAM: Pengganti searchAllAssetsGo (GAS)
+ * @param {string} keyword - ID Asset atau kata kunci (dari data[6])
+ */
+function searchAssetRAM(keyword) {
+  if (!keyword) return [];
+
+  const searchKey = String(keyword).toLowerCase().trim();
+  let results = [];
+  
+  // Ambil semua tipe sheet yang ada di RAM
+  const assetTypes = Object.keys(window.APP_STORE.assets);
+
+  assetTypes.forEach(sheetName => {
+    const rows = window.APP_STORE.assets[sheetName];
+    
+    // Mulai dari index 1 (Lompati Header)
+    for (let i = 1; i < rows.length; i++) {
+      const rowData = rows[i];
+      const cellID = String(rowData[0]).toLowerCase().trim(); // Kolom A (ID)
+      const allText = rowData.join(" ").toLowerCase();       // Gabungan semua kolom
+
+      // LOGIKA: Cocok ID persis ATAU ada kata kunci di baris tersebut
+      if (cellID === searchKey || allText.indexOf(searchKey) > -1) {
+        results.push({
+          type:   sheetName,
+          row:    i + 1,       // Baris asli di Spreadsheet
+          id:     rowData[0],  // Kolom A
+          nama:   rowData[2],  // Kolom C
+          lokasi: rowData[3],  // Kolom D
+          status: rowData[4]   // Kolom E
+        });
+      }
+    }
+  });
+
+  return results;
+}
+
+
