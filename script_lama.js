@@ -98,6 +98,8 @@ async function openGlobalSearch() {
  * Menambahkan data-asid agar sinkron dengan Modal Maintenance.
  * ==============================================================================
  */
+
+/**  PINDAH KE SCRIPT BARU
 function fillGlobalTable(results) {
   const tbody = document.getElementById('globalResultBody');
   if (!results || results.length === 0) {
@@ -120,7 +122,7 @@ function fillGlobalTable(results) {
   });
   tbody.innerHTML = html;
 }
-
+*/
 /**=============================================================================
  * [FUNGSI: LIVE FILTER DALAM MODAL]
  * Menyaring hasil yang sudah tampil di modal agar makin spesifik.

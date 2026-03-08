@@ -151,13 +151,6 @@ async function openGlobalSearch() {
 
 
 
-
-
-
-
-
-
-
 function liveSearchRAM(keyword) {
   const tbody = document.getElementById('globalResultBody');
   if (!keyword || keyword.length < 2) {
@@ -181,8 +174,8 @@ function liveSearchRAM(keyword) {
         hasilUntukTabel.push({
           type: tipe,           // Untuk item.type
           id: row[0] || "-",    // Untuk item.id (Kolom A)
-          nama: row[1] || "-",  // Untuk item.nama (Kolom B)
-          lokasi: row[2] || "-",// Untuk item.lokasi (Kolom C)
+          nama: row[2] || "-",  // Untuk item.nama (Kolom B)
+          lokasi: row[3] || "-",// Untuk item.lokasi (Kolom C)
           row: i + 1            // Untuk item.row (Nomor baris asli)
         });
       }
@@ -191,6 +184,29 @@ function liveSearchRAM(keyword) {
 
   // Lempar ke fungsi UI kamu yang sudah mantap itu
   fillGlobalTable(hasilUntukTabel);
+}
+
+function fillGlobalTable(results) {
+  const tbody = document.getElementById('globalResultBody');
+  if (!results || results.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:20px;'>Data tidak ditemukan...</td></tr>";
+    return;
+  }
+
+  let html = "";
+  results.forEach((item, index) => {
+    html += `
+      <tr style="border-bottom:1px solid #eee;">
+        <td style="padding:5px; text-align:center;">
+          <!-- TAMBAHKAN data-asid="${item.id}" DI SINI -->
+          <input type="radio" name="selAset" value="${item.type}|${item.row}" data-asid="${item.id}" style="cursor:pointer;">
+        </td>
+        <td style="padding:5px;"><b>${item.type}</b></td>
+        <td style="padding:5px;">${item.id}</td>
+        <td style="padding:5px;">${item.nama}<br>${item.lokasi}</td>
+      </tr>`;
+  });
+  tbody.innerHTML = html;
 }
 
 
