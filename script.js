@@ -131,28 +131,10 @@ function cariAssetGlobal(keyword) {
 
 
 
-async function openGlobalSearch() {
-  const tbody = document.getElementById('globalResultBody');
-  const input = document.getElementById('masterSearchInput');
-  
-  // 1. Reset tampilan & Fokus
-  tbody.innerHTML = ""; 
-  input.value = "";
-  document.getElementById('globalSearchModal').style.display = 'flex';
-  input.focus();
-
-  // 2. Tampilkan pesan awal (instan)
-  tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:20px;'>Silakan ketik ID atau Nama Asset di kolom pencarian...</td></tr>";
-
-  // LOGIKA BARU: Kita tidak pakai FETCH lagi di sini. 
-  // Kita akan biarkan fungsi 'input' (onkeyup) yang menyisir RAM nanti.
-}
 function liveSearchRAM(keyword) {
   const tbody = document.getElementById('globalResultBody');
-  
-  // Minimal 2 huruf baru cari, biar gak lag
   if (!keyword || keyword.length < 2) {
-    tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Ketik minimal 2 karakter...</td></tr>";
+    tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Ketik min. 2 huruf...</td></tr>";
     return;
   }
 
@@ -160,30 +142,30 @@ function liveSearchRAM(keyword) {
   const daftarTipe = Object.keys(window.APP_STORE.assets);
 
   daftarTipe.forEach(tipe => {
-    const rows = getAsset(tipe);
+    const rows = window.APP_STORE.assets[tipe] || [];
     
-    // Kita mulai dari index 1 untuk melompati Header (Baris 1)
+    // Mulai dari index 1 (Lompati Header)
     for (let i = 1; i < rows.length; i++) {
       const row = rows[i];
-      const teksBaris = row.join("|").toLowerCase();
+      const teksSatuBaris = row.join("|").toLowerCase();
       
-      if (teksBaris.includes(keyword.toLowerCase())) {
-        // --- ADAPTER RAM KE UI ---
-        // Sesuaikan index [0], [1], [2] dengan kolom di Sheet kamu!
+      if (teksSatuBaris.includes(keyword.toLowerCase())) {
+        // --- ADAPTER: DISESUAIKAN DENGAN fillGlobalTable ---
         hasilUntukTabel.push({
-          type: tipe,           // Nama Sheet
-          id: row[0] || "-",    // Kolom A: ID Asset
-          nama: row[1] || "-",  // Kolom B: Merk/Nama
-          lokasi: row[2] || "-",// Kolom C: Lokasi
-          row: i + 1            // Nomor baris asli di Sheet
+          type: tipe,           // Untuk item.type
+          id: row[0] || "-",    // Untuk item.id (Kolom A)
+          nama: row[1] || "-",  // Untuk item.nama (Kolom B)
+          lokasi: row[2] || "-",// Untuk item.lokasi (Kolom C)
+          row: i + 1            // Untuk item.row (Nomor baris asli)
         });
       }
     }
   });
 
-  // Kirim ke fungsi UI kamu
+  // Lempar ke fungsi UI kamu yang sudah mantap itu
   fillGlobalTable(hasilUntukTabel);
 }
+
 
 
 
