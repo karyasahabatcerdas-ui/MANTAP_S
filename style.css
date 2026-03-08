@@ -1,0 +1,185 @@
+        body, html { 
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            overflow: hidden; background-color: #000; 
+        }
+        iframe { 
+            width: 100%; height: 100%; border: none; display: block;
+        }
+        #warning{
+            display : none ;
+        }
+
+
+    /* Tambahan CSS agar tampilan pas di Sidebar GAS */
+      .select2-container--default .select2-selection--single {
+        height: 38px;
+        line-height: 38px;
+        z-index :8000;
+      }
+        /* Berikan nilai z-index yang sangat tinggi */
+        .swal2-container {
+        z-index: 8000 !important;
+        }
+
+:root {
+    /*=====================================MENGEMBALIKAN WARNA SEMPURNA===================*/
+  /* Dasar Stealth */
+  --bg-overlay: rgba(2, 6, 23, 0.9);
+  --bg-content: #0f172a;
+  --bg-input: #1e293b;
+  --bg-readonly: #020617;
+  
+  /* Aksentuasi Neon */
+  --neon-blue: #38bdf8;
+  --neon-border: #1e293b;
+  --text-main: #f8fafc;
+  --text-dim: #94a3b8;
+  --text-readonly: #64748b;
+
+  /* Tombol Timbul Logic */
+  --btn-blue: #0ea5e9;
+  --btn-blue-shadow: #0369a1;
+  --btn-red: #ef4444;
+  --btn-red-shadow: #b91c1c;
+  --btn-green: #22c55e;
+  --btn-green-shadow: #15803d;
+
+  /* ... (Warna Dasar dari sebelumnya tetap ada) ... */
+  
+  /* Status History Colors */
+  --status-start: #22c55e;
+  --status-pending: #fb923c;
+  --status-finish: #38bdf8;
+  --status-check: #fbbf24;
+  
+  /* Log Industrial Colors */
+  --bg-grid-dark: rgba(30, 41, 59, 0.5);
+  --border-item: #334155;
+
+  
+  /* ... (Dasar Stealth & Neon Blue tetap sama) ... */
+  
+  /* Admin Specific */
+  --avatar-border: #38bdf8;
+  --status-active: #22c55e;
+  --status-nonactive: #ef4444;
+  --bg-admin-input: #0f172a;
+
+  /* ... (Dasar Stealth & Neon Blue tetap sama) ... */
+  
+  /* Tambahan Aksen Orange/Gold Maintenance */
+  --neon-orange: #fb923c;
+  --neon-orange-glow: rgba(251, 146, 60, 0.3);
+  --btn-gold: #d4af37;
+  --btn-gold-shadow: #996515;
+  --btn-cancel: #475569;
+  --btn-cancel-shadow: #1e293b;
+
+
+  /* ... (Dasar Stealth tetap sama) ... */
+  
+  /* Slider Specific */
+  --slider-bg: rgba(0, 0, 0, 0.95);
+  --neon-red: #ef4444;
+  --neon-red-glow: rgba(239, 68, 68, 0.4);
+  --nav-bg: rgba(15, 23, 42, 0.8);
+
+  /* ... (Variable sebelumnya tetap ada) ... */
+  
+  /* Search Specific */
+  --bg-search-input: #020617;
+  --bg-table-header: #1e293b;
+  --row-hover: rgba(56, 189, 248, 0.1);
+  --btn-grey: #334155;
+
+  /* tema dari halaman import */
+  /* Variabel Warna Utama - Sesuaikan dengan tema Smart Import */
+
+  --import-bg-overlay: rgba(0, 0, 0, 0.85);
+  --import-modal-bg: #ffffff;
+  --import-primary: #3498db;
+  --import-success: #27ae60;
+  --import-danger: #e74c3c;
+  --import-text-dark: #2c3e50;
+  --import-text-muted: #7f8c8d;
+  --import-border: #dcdde1;
+  --import-shadow: 0 10px 25px rgba(0,0,0,0.5);
+
+
+
+/**============================w WARNA BARU PERLU PERUBAHAN =================================*/
+  /** warna2 baru  */
+    /* Surface Colors */   /* --- UNTUK RIGHTBAR DAN LEFTBAR --- */
+  --bg-main: #0f172a;           /* Midnight Slate */  /* Latar Belakang Utama */
+  --bg-card: #1e293b;           /* Lighter Slate */  /* Warna leftbar & Card */
+  --bg-input: rgba(15, 23, 42, 0.8);
+  
+  /* Brand Colors */
+  --neon-blue: #38bdf8;         /* Primary Neon */ /* Warna Ikon & Border Fokus */
+  --neon-gold: #fbbf24;         /* Amber/Gold */ /* Warna Badge Admin */
+  --neon-green: #22c55e;        /* Emerald */
+  --neon-red: #ef4444;          /* Danger/Cancel */  /* Untuk Logout */ 
+  --neon-purple: #7c3aed;       /* Import/Special */
+  --neon-purple-sys: #a855f7;       /* KHUSU Untuk badge Sys */
+  --neon-biasa: #6794d4;          /* Warna Netral untuk Input biasa */
+  
+  /* Border & Glass */
+  --border-glass: rgba(56, 189, 248, 0.15);
+  --border-dim: #334155;      /* Garis Pemisah leftbar & Rightbar */
+  --glass-blur: blur(10px);
+  
+  /* Text Colors */
+  --text-bright: #f8fafc;
+  --text-dim: #94a3b8;
+  --text-muted: #64748b; 
+  
+  /* leftbar Colors */
+  --leftbar-bg: #2c3e50;
+  --leftbar-hover: #34495e;
+  --text-color: #ecf0f1;
+  --accent-color: #3498db;
+  --admin-color: #e67e22;
+  --sys-color: #e74c3c;
+  --transition: 0.3s ease;
+  
+  /* --- KHUSUS LEFTBAR (TAMBAHAN) --- */
+  --leftbar-width: 10.0rem; /* rumusnya sekitar = 260px jika font html dibuat 16 untuk semua*/
+  --leftbar-collapsed-width:  3.5rem; /* 70px */  
+
+}
+
+
+html {
+  /*font-size: 16px; /* Atau biarkan default browser */
+  scroll-behavior: smooth;
+}
+
+/* --- RESPONSIVE MOBILE OPTIMIZATION --- */
+@media (max-width: 600px) {
+    /* 1. Lebar Leftbar di HP lebih ramping */
+    .leftbar-container {
+        width: 140px; 
+    }
+
+    /* 2. Saat mengecil di HP, buat sangat minimalis (hanya ikon kecil) */
+    .leftbar-container.collapsed {
+        width: 60px;
+    }
+
+    /* 3. Atur Padding di Rightbar (Main Content) agar tidak sempit */
+    .inner-content {
+        padding: 15px !important;
+    }
+
+    /* 4. Kecilkan ukuran Profile Image agar tidak makan tempat di HP */
+    .profile-img-container {
+        width: 45px;
+        height: 45px;
+    }
+    .tambah-db{
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+
