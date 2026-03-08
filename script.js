@@ -128,9 +128,6 @@ function cariAssetGlobal(keyword) {
 
 /* ----- konversi script ------------------*/
 
-
-
-
 async function openGlobalSearch() {
   const tbody = document.getElementById('globalResultBody');
   const input = document.getElementById('masterSearchInput');
@@ -175,7 +172,7 @@ function liveSearchRAM(keyword) {
           type: tipe,           // Untuk item.type
           id: row[0] || "-",    // Untuk item.id (Kolom A)
           nama: row[2] || "-",  // Untuk item.nama (Kolom B)
-          lokasi: row[3] || "-",// Untuk item.lokasi (Kolom C)
+          lokasi: row[2] || "-",// Untuk item.lokasi (Kolom C)
           row: i + 1            // Untuk item.row (Nomor baris asli)
         });
       }
@@ -210,5 +207,139 @@ function fillGlobalTable(results) {
 }
 
 
+/**============================================================================
+ * [FUNGSI: NAVIGASI SAKTI - MODE MULTI-PAGE]
+ * Mengarahkan hasil Search ke modal yang tepat sesuai halaman aktif.
+ * ============================================================================
+ */
+async function navigateAsset() {
+  const selected = document.querySelector('input[name="selAset"]:checked');
+  if (!selected) return alert("Pilih aset dulu bos!");
+  
+  const [type, row] = selected.value.split('|');
+  const unitID = selected.getAttribute('data-asid');   
+  const urlGAS = APPSCRIPT_URL; //document.getElementById('iframeGAS').src; // URL Web App Anda
+
+  // --- LOGIKA 1: MODAL MAINTENANCE LOG (SEARCH UNIT ID) ---
+  const modalMaintLog = document.getElementById('modalMaintenanceLog');
+  if (modalMaintLog && modalMaintLog.style.display === 'block') {
+    fetchAssetDetailForLog(unitID);    
+    closeGlobalSearch();
+    return; 
+  }
+
+  // --- LOGIKA 2: INPUT JADWAL (GET SINGLE ASSET) ---
+  if (document.getElementById('modalMaint').style.display === 'flex') {
+    try {
+      // Menggunakan GET dengan query parameter
+      //const resp = await fetch(`${urlGAS}?action=getSingleAssetData&sheetName=${type}&row=${row}`);
+      //const data = await resp.json();
+
+      //fungsi penganti fetch
+      // 1. Ambil gudang sesuai tipe (misal: "AC_Split")
+      const gudangAsset = getAsset(type); 
+      // 2. Ambil data baris tersebut (Ingat: Index = Baris - 1)
+      const data = gudangAsset[row - 1];
 
 
+
+      if (!data || data.length === 0) return alert("Data aset gagal diambil!");
+      
+      document.getElementById('m_as_id').value = data[0];   
+      document.getElementById('m_type').value = type;      
+      document.getElementById('m_as_nama').value = data[2];
+      document.getElementById('m_lokasi').value = data [3];
+      
+      closeGlobalSearch();
+    } catch (err) {
+      console.error("Error fetch asset:", err);
+    }
+    return; 
+  }
+
+  // --- LOGIKA 3: NAVIGASI HALAMAN (GET SPECIFIC ASSET DATA) ---
+  closeGlobalSearch();
+  const currentPage = document.querySelector('.page:not(.hidden)').id;
+
+  try {
+    //const resp = await fetch(`${urlGAS}?action=getSpecificAsset&sheetName=${type}`);
+    //const data = await resp.json();
+    //fungsi pengganti fetch
+    data = getAsset(type);
+
+    if (currentPage === 'page_lihat_aset') {
+      document.getElementById('viewAssetTypeSelect').value = type;
+      renderAssetTableIncrementalView(type, data); 
+      executeHighlight(row, 'viewAssetBody', true);
+    } else {
+      document.getElementById('assetTypeSelect').value = type;
+      renderAssetTableIncremental(type, data);
+      executeHighlight(row, 'assetBody', false);
+    }
+  } catch (err) {
+    console.error("Error navigasi asset:", err);
+  }
+}
+
+function executeHighlight(row, bodyId, isView) {
+  setTimeout(() => {
+    const tbody = document.getElementById(bodyId);
+    const targetRow = tbody.rows[parseInt(row) - 2]; 
+    
+    if (targetRow) {
+      // 1. Geser layar sampai baris target ada di tengah (Smooth)
+      targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // 2. Kasih efek kedip kuning (Highlight)
+      targetRow.classList.add('highlight-flash');
+      
+      // 3. OKE GAS! Langsung buka modal detilnya
+      const type = isView ? document.getElementById('viewAssetTypeSelect').value : document.getElementById('assetTypeSelect').value;
+      
+      if (isView) {
+        openAssetDetailView(type, row); // Mode Read-Only
+      } else {
+        openAssetDetail(type, row); // Mode Admin Edit
+      }
+    }
+  }, 600); // Delay 600ms biar tabel sempet ngerender dulu
+}
+
+
+function closeGlobalSearch() {
+  document.getElementById('globalSearchModal').style.display = 'none';
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//**-----------------------[TARUH SELALU FUNGSI INI DI BAWAH]----------------------- */
+window.addEventListener('DOMContentLoaded', (event) => {
+    console.log("🚀 Semua mesin siap, Sedot Data Ghoib dimulai...");
+    syncDataGhoib();
+});

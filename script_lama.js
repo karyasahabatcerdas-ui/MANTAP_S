@@ -137,11 +137,13 @@ function filterGlobalResult() {
     rows[i].style.display = text.includes(input) ? "" : "none";
   }
 }
+
 /**============================================================================
  * [FUNGSI: NAVIGASI SAKTI - MODE MULTI-PAGE]
  * Mengarahkan hasil Search ke modal yang tepat sesuai halaman aktif.
  * ============================================================================
  */
+/** DIPINDAHKAN KE SCRIPT BARU
 async function navigateAsset() {
   const selected = document.querySelector('input[name="selAset"]:checked');
   if (!selected) return alert("Pilih aset dulu bos!");
@@ -229,7 +231,7 @@ function executeHighlight(row, bodyId, isView) {
 function closeGlobalSearch() {
   document.getElementById('globalSearchModal').style.display = 'none';
 }
-
+*/
 
 /**============================================================================
  * [FUNGSI: FETCH DETAIL ASET UNTUK LOG MAINTENANCE]
