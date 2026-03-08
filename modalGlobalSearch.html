@@ -5,8 +5,11 @@
     
     <div class="search-input-wrapper">
       <i class="fa-solid fa-magnifying-glass search-icon-inside"></i>
-      <input type="text" id="masterSearchInput" onkeyup="liveSearchRAM()" 
-             placeholder="Ketik ID, Nama, atau Lokasi Aset..." class="input-search-neon">
+      <input type="text" id="masterSearchInput" 
+       onkeyup="liveSearchRAM(this.value)" 
+       placeholder="Ketik ID, Nama, atau Lokasi Aset..." 
+       class="input-search-neon">
+
     </div>
 
     <div class="table-responsive-aset scroll-dark-mini" style="max-height:350px; margin-bottom: 20px;">
