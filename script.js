@@ -93,7 +93,7 @@ function populateAllDropdowns() {
 
 
 // Gantilah dengan URL Web App hasil Deploy "Anyone" tadi
-const GAS_URL = "https://script.google.com/macros/s/AKfycbx0mJC62sSCdcDeWpDavQf6m0-sD7C8hTC4pq0pJN1qRFsNKvpgJvFyIeYmziYUGM5r/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwwJVU-AHjjg3Lhj_zDIVtDCfTWV114zbQMve87e6b6Rh_FQRzuwyVoiGZzd__slPbb/exec";
 
 /**
  * FUNGSI UTAMA: Ambil 22 Sheet dari GAS ke RAM (window.APP_STORE)
