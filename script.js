@@ -542,7 +542,7 @@ if (!isDataReady) {
 
   try {
 
-    const res = getMaint("Maintenance").slice(1).reverse(); // Balik urutan agar yang 
+    const res = getMaint("Log_Kegiatan").slice(1).reverse(); // Balik urutan agar yang 
     // 3. HANDLING DATA
     if (!res || res.length === 0) {
       allHistoryData = [];
