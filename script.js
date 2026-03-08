@@ -926,7 +926,7 @@ async function loadJad() {
   // Debounce 400ms agar tidak spam request saat user mengetik
   timerPencarian = setTimeout(async function() {
     //const iframe = document.getElementById('iframeGAS');
-    const urlGAS = APPSCRIPT_URL;
+    //const urlGAS = APPSCRIPT_URL;
     
     // 1. Ambil Nilai Filter dari UI GitHub
     const fType = document.getElementById('filterType')?.value || "";   
