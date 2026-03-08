@@ -131,6 +131,33 @@ function cariAssetGlobal(keyword) {
 
 
 
+async function openGlobalSearch() {
+  const tbody = document.getElementById('globalResultBody');
+  const input = document.getElementById('masterSearchInput');
+  
+  // 1. Reset tampilan & Fokus
+  tbody.innerHTML = ""; 
+  input.value = "";
+  document.getElementById('globalSearchModal').style.display = 'flex';
+  input.focus();
+
+  // 2. Tampilkan pesan awal (instan)
+  tbody.innerHTML = "<tr><td colspan='5' style='text-align:center; padding:20px;'>Silakan ketik ID atau Nama Asset di kolom pencarian...</td></tr>";
+
+  // LOGIKA BARU: Kita tidak pakai FETCH lagi di sini. 
+  // Kita akan biarkan fungsi 'input' (onkeyup) yang menyisir RAM nanti.
+}
+
+
+
+
+
+
+
+
+
+
+
 function liveSearchRAM(keyword) {
   const tbody = document.getElementById('globalResultBody');
   if (!keyword || keyword.length < 2) {
