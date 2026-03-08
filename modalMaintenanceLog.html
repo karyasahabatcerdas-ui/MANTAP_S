@@ -1,0 +1,142 @@
+<div id="modalMaintenanceLog" class="modal-maint-overlay">
+  <div class="maint-container">
+
+    <div class="maint-top-nav">
+      <button id="btnCekQR" onclick="openCustomScanner();" class="btn-maint-tool btn-scan">
+        <i class="fas fa-qrcode"></i> SCAN QR
+      </button> 
+      <button id="btnCekMan" onclick="openGlobalSearch(); window.isMaintMode=true;" class="btn-maint-tool btn-manual">
+        <i class="fas fa-list"></i> MANUAL
+      </button>
+      <button onclick="closeMaintenanceMode()" class="btn-close-maint">BATAL</button>
+    </div>
+
+    <div class="maint-header-info">
+      <div class="info-grid-main">
+        <div class="info-box-highlight">
+          <small style="color: var(--neon-gold); font-size: 10px;">UNIT ID</small>
+          <span id="log_as_id" style="font-weight: bold; font-size: 1.1rem; color: #fff;">-</span>
+        </div>
+        <div>
+          <label style="font-size: 11px; color: var(--neon-gold); font-weight: bold;">ID JADWAL</label>
+          <select id="jenis_id_jadwal" class="select-maint-neon">
+            <option value=""> MEMUAT JENIS JADWAL...</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="info-grid-details" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+        <div><label>TYPE:</label> <span id="log_ui_type">-</span></div>
+        <div><label>ID ASSET:</label> <span id="log_ui_asid">-</span></div>
+        <div><label>NAMA:</label> <span id="log_ui_nama">-</span></div>
+        <div><label>LOKASI:</label> <span id="log_ui_lokasi">-</span></div>
+      </div>
+    </div>
+
+    <input type="hidden" id="maintRowIdx"> 
+    <input type="hidden" id="maint_id">  
+    <input type="hidden" id="log_keg_id">
+    <input type="hidden" id="log_time_mulai">
+    <input type="hidden" id="Act_online"> 
+    <!--<canvas id="photoCanvas" style="display:none;"></canvas>-->
+
+    <div class="maint-section">
+      <label class="section-label">CATATAN KERJA (NOTE)</label>
+      <textarea id="log_pekerjaan" placeholder="Tuliskan detail perbaikan..." class="textarea-maint"></textarea>
+    </div>
+
+    <p class="section-label-icon"><i class="fas fa-camera-retro"></i> DOKUMENTASI FOTO</p>
+    <div class="photo-stack-maint">
+        
+        <div class="photo-group">
+            <div class="photo-btn-large" id="btn_PB" onclick="capturePhoto('PB')">
+            <div id="prev_PB"><i class="fas fa-camera"></i> BEFORE (PB)</div>
+            </div>
+            <div id="thumb_area_PB" class="thumb-area-maint"></div>
+        </div>
+
+        <div class="photo-group">
+            <div class="photo-btn-large" id="btn_PO" onclick="capturePhoto('PO')">
+            <div id="prev_PO"><i class="fas fa-tools"></i> ON WORK (PO)</div>
+            </div>
+            <div id="thumb_area_PO" class="thumb-area-maint"></div>
+        </div>
+
+        <div class="photo-group">
+            <div class="photo-btn-large" id="btn_PA" onclick="capturePhoto('PA')">
+            <div id="prev_PA"><i class="fas fa-check-double"></i> AFTER (PA)</div>
+            </div>
+            <div id="thumb_area_PA" class="thumb-area-maint"></div>
+        </div>
+
+        <div class="photo-group">
+            <div class="photo-btn-large" id="btn_PC" onclick="capturePhoto('PC')">
+            <div id="prev_PC"><i class="fas fa-clipboard-list"></i> CHECKSHEET</div>
+            </div>
+            <div id="thumb_area_PC" class="thumb-area-maint"></div>
+        </div>
+
+        <!--<input type="file" id="logPhotoInput" accept="image/*" style="display:none" onchange="handleLogPhotoSelect(this)"> -->
+    </div>
+
+        <div class="maint-footer">
+        <button id="btnLogPending" onclick="saveLog('Pending')" class="btn-maint-action btn-pending">
+            <i class="fas fa-pause"></i> PENDING
+        </button>
+        <button id="btnLogSelesai" onclick="saveLog('Selesai')" class="btn-maint-action btn-finish">
+            <i class="fas fa-check-circle"></i> SELESAI
+        </button>
+        </div>
+        <!-- jendela untuk scanner QR custom (bukan dari iframe) -->
+        <div id="qrModal" class="modal-qr-gahar">
+            <div class="qr-window">
+                <div class="qr-header">
+                    <i class="fa-solid fa-qrcode"></i> SCANNER UNIT ID
+                </div>
+                
+                <div id="reader" class="qr-reader-container"></div>
+                
+                <div class="qr-footer">
+                    <button onclick="closeQrModal()" class="btn-qr-action btn-qr-danger">
+                        <i class="fa-solid fa-circle-xmark"></i> TUTUP
+                    </button>
+                    <button onclick="openGalleryForQR()" class="btn-qr-action btn-qr-primary">
+                        <i class="fa-solid fa-image"></i> GALERI
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Kamera Dokumentasi (Gahar Style) -->
+        <div id="camModal" class="modal-qr-gahar" style="display:none;">
+            <div class="qr-window">
+                <div class="qr-header">
+                    <i class="fa-solid fa-camera"></i> KAMERA: <span id="camLabel">...</span>
+                </div>
+                
+                <!-- Video Stream Preview -->
+                <div class="qr-reader-container">
+                    <video id="videoFeed" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
+                    <canvas id="photoCanvas" style="display:none;"></canvas>
+                </div>
+                
+                <div class="qr-footer">
+                    <button onclick="takeSnapshot()" class="btn-qr-action btn-qr-success">
+                        <i class="fa-solid fa-circle-dot"></i> CAPTURE
+                    </button>
+                    <button onclick="openGalleryFromCam()" class="btn-qr-action btn-qr-primary">
+                        <i class="fa-solid fa-image"></i> GALERI
+                    </button>
+                    <button onclick="closeCamModal()" class="btn-qr-action btn-qr-danger">
+                        <i class="fa-solid fa-circle-xmark"></i> BATAL
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Input File Tersembunyi untuk Semua Kebutuhan (QR & Foto) -->
+        <input type="file" id="logPhotoInput" accept="image/*" style="display:none;" onchange="handleLogPhotoSelect(this)">
+
+  </div>
+</div>

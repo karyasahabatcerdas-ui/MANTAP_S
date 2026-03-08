@@ -1,0 +1,77 @@
+<div id="modalImport" class="modal-overlay" style="display:none;">
+  <div class="modal-content">
+
+    <button class="btn-close-modal" onclick="closeImportModal()">
+      <i class="fas fa-times"></i>
+    </button>
+
+    <h3 class="import-title">
+      <i class="fas fa-file-import"></i> Smart Import Jadwal
+    </h3>
+
+    <div id="animasiValidasi" class="validation-anim" style="display:none;">
+      <div style="display:flex; align-items:center; justify-content:center; gap:15px;">
+        <i class="fas fa-mobile-alt" style="font-size:30px; color:var(--import-primary);"></i>
+        <div class="data-loader"><span>.</span><span>.</span><span>.</span></div>
+        <i class="fas fa-cloud-upload-alt" style="font-size:30px; color:var(--import-primary);"></i>
+      </div>
+      <p style="font-size:12px; color:var(--import-primary); margin-top:10px; font-weight:bold;">Sik Tak Wocone ke Server...</p>
+    </div>
+
+    <div id="errorArea" class="error-area" style="display:none;">
+      <i class="fas fa-exclamation-triangle" style="font-size:40px; color:#e53e3e; margin-bottom:10px;"></i>
+      <p class="error-title">HEADER TIDAK VALID!</p>
+      <p style="font-size:11px; color:#742a2a; margin:10px 0;">Wajib ada: <b>id_jadwal, asset_id, plan</b>.</p>
+      <button onclick="downloadTemplate()" style="background:#c53030; color:white; border:none; padding:8px 15px; border-radius:5px; font-size:11px; cursor:pointer;">
+        <i class="fas fa-file-download"></i> Unduh Template
+      </button>
+    </div>
+
+    <div id="dropZone" class="dropzone-area" onclick="document.getElementById('fileInput').click()">
+      <i class="fas fa-cloud-upload-alt" style="font-size:40px; color:var(--import-primary);"></i>
+      <p style="font-size:13px; color:#2980b9; margin-top:10px; font-weight:bold;">Klik atau Taruh CSV di sini</p>
+      <input type="file" id="fileInput" accept=".csv" style="display:none" onchange="handleFile(this)">
+    </div>
+
+    <div style="text-align:center; margin-top:10px;">
+      <span style="font-size:11px; color:var(--import-text-muted);">Belum punya format? 
+        <a href="javascript:void(0)" onclick="downloadTemplate()" style="color:var(--import-primary); text-decoration:none; font-weight:bold;">
+          <i class="fas fa-file-download"></i> Unduh Template di Sini
+        </a>
+      </span>
+    </div>
+
+    <div id="previewArea" style="display:none; margin-top:15px;">
+      <p class="preview-stats">
+        <i class="fas fa-clipboard-list"></i> Preview: <span id="countPreview" style="color:var(--import-success);">0</span> Data Valid
+      </p>
+      
+      <div class="filter-container">
+        <label class="filter-label">
+          <input type="radio" name="filterStatus" value="ALL" checked onclick="filterPreview('ALL')" style="accent-color:var(--import-primary);"> ALL
+        </label>
+        <label class="filter-label" style="color:var(--import-success);">
+          <input type="radio" name="filterStatus" value="OK" onclick="filterPreview('OK')" style="accent-color:var(--import-success);"> OK
+        </label>
+        <label class="filter-label" style="color:var(--import-danger);">
+          <input type="radio" name="filterStatus" value="NG" onclick="filterPreview('NG')" style="accent-color:var(--import-danger);"> NG
+        </label>
+      </div>
+
+      <div id="tableScrollContainer" class="table-scroll">
+        <table id="mainPreviewTable" class="table-preview">
+          <tbody id="previewBody"></tbody>
+        </table>
+      </div>
+
+      <div id="importProgress" class="progress-container" style="display:none;">
+        <div id="progressBar" class="progress-bar-fill"></div>
+      </div>
+
+      <div class="btn-group-import" id="importActionArea">
+        <button id="btnConfirmImport" class="btn-confirm" onclick="processImport()">PROSES IMPORT</button>
+        <button class="btn-cancel" onclick="closeImportModal()">BATAL</button>
+      </div>
+    </div>
+  </div>
+</div>

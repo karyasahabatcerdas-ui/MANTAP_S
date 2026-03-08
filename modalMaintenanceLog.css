@@ -1,0 +1,356 @@
+/* ============================================================
+   MODAL MAINTENANCE WORKER - INDUSTRIAL NEON THEME
+   ============================================================ */
+
+/* 1. OVERLAY (BACKGROUND FULL SCREEN) */
+.modal-maint-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: var(--bg-main); /* Mengikuti tema gelap aplikasi */
+    z-index: 3000; /* Hirarki di bawah Login/Swal sesuai instruksi */
+    overflow-y: auto;
+    padding: 0;
+    margin: 0;
+}
+
+/* 2. CONTAINER (PEMBUNGKUS KONTEN) */
+.maint-container {
+    width: 100%;
+    max-width: 500px; /* Standar lebar form mobile-friendly */
+    margin: 0 auto;
+    padding: 15px; /* Jarak aman kanan-kiri agar tidak nempel kaca HP */
+    min-height: 100vh;
+    position: relative;
+    /*z-index: 3001; *//* tadinya 3001 relative dari 0 */
+    box-sizing: border-box;
+}
+
+/* 3. NAVIGATION (SCAN & CLOSE BUTTONS) */
+.maint-top-nav {
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 0; /* Kita rapatkan dengan header info */
+    position: sticky; /* JADIKAN STICKY */
+    top: -15px;      /* Menempel ke atas (sesuaikan dengan padding container) */
+    background: var(--bg-main); /* Harus ada background agar tidak tembus pandang */
+    padding-top: 15px;
+    padding-bottom: 10px;
+    z-index: 100;   /* Di atas elemen lain */
+}
+
+.btn-maint-tool {
+    flex: 1; 
+    padding: 14px 10px;
+    border-radius: 10px; 
+    border: none;
+    color: #fff; 
+    font-size: 11px;
+    font-weight: bold; 
+    cursor: pointer;
+    background: #2c3e50; 
+    transition: 0.3s;
+}
+.btn-maint-tool:hover { 
+    background: #34495e; 
+    box-shadow: 0 0 10px rgba(255,255,255,0.1); 
+}
+
+.btn-close-maint {
+    background: #ef4444; 
+    color: white; 
+    border: none; 
+    padding: 0 15px; 
+    border-radius: 10px; 
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* 4. HEADER INFO CARD (IDENTITAS UNIT) */
+/* HEADER INFO (UNIT & JADWAL) */
+.maint-header-info {
+    background: var(--bg-card);
+    padding: 15px; 
+    border-radius: 12px;
+    border-left: 4px solid var(--neon-gold);
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    
+    /* JADIKAN STICKY JUGA */
+    position: sticky; 
+    top: 55px; /* Diletakkan tepat di bawah Top Nav */
+    z-index: 100;
+}
+
+.info-grid-main {
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 12px; 
+    margin-bottom: 12px;
+}
+
+.info-box-highlight { 
+    background: rgba(0,0,0,0.2); 
+    padding: 8px; 
+    border-radius: 8px; 
+}
+
+.select-maint-neon {
+    width: 100%; 
+    padding: 8px; 
+    border-radius: 8px;
+    background: #1a202c; 
+    color: #fff; 
+    border: 1px solid var(--neon-gold);
+    font-size: 12px;
+    outline: none;
+}
+
+.info-grid-details {
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 8px; 
+    font-size: 12px;
+    color: var(--text-dim);
+}
+
+.info-grid-details label { 
+    color: var(--neon-gold); 
+    font-weight: bold;
+    margin-right: 5px; 
+}
+
+/* 5. NOTES & TEXTAREA */
+.maint-section {
+    margin-bottom: 20px;
+}
+
+.textarea-maint {
+    width: 100%; 
+    height: 100px; 
+    padding: 12px;
+    background: #1a202c; 
+    border: 1px solid var(--border-dim);
+    border-radius: 10px; 
+    color: #fff; 
+    resize: none; 
+    box-sizing: border-box; 
+    margin-top: 8px;
+    font-size: 13px;
+}
+
+/* 6. PHOTO SECTION (STACK VERTICAL) */
+
+/**CSS UNTUK AREA THMBNAIL MAINTENANCE LOG (MODAL DETAIL HISTORY) - THEME INDUSTRIAL NEON */
+/* Container Utama dari HTML-mu */
+.photo-group {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.photo-btn-large {
+    position: relative; /* Wajib agar thumb di dalam bisa absolute */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Tengah saat kosong */
+    min-height: 90px;
+    background: #2c3e50;
+    border: 2px dashed #4a5568;
+    border-radius: 12px;
+    overflow: hidden;
+    padding: 10px;
+    transition: all 0.3s ease;
+}
+
+/* Label Inside (BEFORE, AFTER, etc) */
+.photo-btn-large div[id^="prev_"] {
+    z-index: 5;
+    transition: all 0.3s ease;
+}
+
+/* Animasi Label Geser ke Kanan saat ada foto */
+.btn-has-content div[id^="prev_"] {
+    position: absolute;
+    right: 15px;
+    text-align: right;
+    font-size: 11px;
+    opacity: 0.7;
+}
+
+/* Area Thumbnail Baru (Dibuat Dinamis oleh JS di dalam Tombol) */
+.inner-thumb-float {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.thumb-wrapper {
+    position: relative;
+    width: 65px;
+    height: 65px;
+}
+
+.thumb-wrapper img {
+    width: 65px;
+    height: 65px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid var(--neon-blue);
+}
+
+.btn-delete-float {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ef4444;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #1e293b;
+    z-index: 20;
+    cursor: pointer;
+}
+/* 7. FOOTER ACTION BUTTONS */
+.maint-footer { 
+    display: grid; 
+    grid-template-columns: 1fr 1.5fr; 
+    gap: 12px; 
+    padding-bottom: 40px; /* Jarak extra agar tidak tertutup bar navigasi HP */
+}
+
+.btn-maint-action {
+    padding: 18px; 
+    border-radius: 10px; 
+    border: none;
+    font-weight: 800; 
+    color: white; 
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.btn-pending { background: #d97706; } /* Orange Brown */
+.btn-finish { background: #059669; }  /* Emerald Green */
+
+.btn-maint-action:active {
+    transform: scale(0.95);
+}
+
+/* 8. LABELS */
+.section-label { 
+    font-size: 11px; 
+    font-weight: bold; 
+    color: var(--text-dim); 
+    text-transform: uppercase;
+}
+
+.section-label-icon { 
+    font-size: 11px; 
+    font-weight: bold; 
+    color: var(--neon-gold); 
+    margin: 20px 0 10px 0; 
+}
+
+
+/* MODAL SCANNER QR - THEME GAHAR */
+.modal-qr-gahar {
+    display: none; 
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100vw; height: 100vh; 
+    background: rgba(15, 23, 42, 0.95); /* Gelap pekat */
+    backdrop-filter: blur(8px);
+    z-index: 4500; /* Paling atas */
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+}
+
+.qr-window {
+    width: 90%;
+    max-width: 400px;
+    background: #0f172a;
+    border: 2px solid var(--neon-gold);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(230, 126, 34, 0.3);
+}
+
+.qr-header {
+    background: var(--neon-gold);
+    color: #000;
+    padding: 12px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+/* AREA KAMERA */
+.qr-reader-container {
+    width: 100% !important;
+    background: #000 !important;
+    border: none !important;
+}
+
+/* Sembunyikan pesan sukses/error bawaan library jika ada */
+#reader img { display: none; }
+#reader span { color: var(--neon-gold) !important; }
+
+.qr-footer {
+    padding: 20px;
+    display: flex;
+    gap: 12px;
+    background: #1e293b;
+}
+
+.btn-qr-action {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: 0.3s;
+}
+
+.btn-qr-danger { background: #ef4444; }
+.btn-qr-primary { background: #3b82f6; }
+
+.btn-qr-action:active {
+    transform: scale(0.95);
+}
+
+/* Garis pemindai animasi (Opsional) */
+.qr-reader-container::after {
+    content: "";
+    position: absolute;
+    top: 50%; left: 10%;
+    width: 80%; height: 2px;
+    background: var(--neon-gold);
+    box-shadow: 0 0 10px var(--neon-gold);
+    animation: scanning 2s infinite;
+    z-index: 10;
+    pointer-events: none;
+}
+
+@keyframes scanning {
+    0% { top: 20%; }
+    50% { top: 80%; }
+    100% { top: 20%; }
+}

@@ -1,0 +1,93 @@
+<!-- [UI BLOCK: MODAL JADWAL MAINTENANCE - SLIM & GAHAR] -->
+<div id="modalMaint" class="modal-overlay-custom" style="display:none;">
+  <div class="modal-content-profile" style="max-width: 430px !important;">
+    
+    <!-- HEADER: Judul & Maint ID (Sejajar) -->
+    <div class="form-row-grid" style="align-items: flex-end; border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding-bottom: 10px; margin-bottom: 15px;">
+      <div class="flex-2">
+        <h3 >
+          <i class="fas fa-calendar-plus"></i> Form Jadwal
+        </h3>
+      </div>
+      <div class="flex-1">
+        <label class="label-neon" style="font-size: 9px;">MAINT ID (AUTO)</label>
+        <input type="text" id="m_id" disabled value="AUTO" class="input-neon readonly-neon-blue">
+      </div>
+    </div>    
+
+    <!-- BARIS 1: TIPE & NAMA ASSET (Grid 1:2) -->
+    <div class="form-row-grid" style="grid-template-columns: 1fr 2fr;">
+      <div>
+        <label class="label-neon">TIPE ASSET</label>
+        <input type="text" id="m_type" readonly class="input-neon readonly-neon">
+      </div>
+      <div>
+        <label class="label-neon">NAMA ASSET</label>
+        <input type="text" id="m_as_nama" readonly class="input-neon readonly-neon">
+      </div>
+    </div>
+
+    <!-- BARIS 2: ASSET ID & STATUS (Grid 1:1) -->
+    <div class="form-row-grid-equal">
+      <div>
+        <label class="label-neon">ASSET ID</label>
+        <input type="text" id="m_as_id" readonly class="input-neon readonly-neon">
+      </div>
+      <div>
+        <label class="label-neon">STATUS</label>
+        <select id="m_state" class="input-pendek">
+            <option value="all">🔍 MEMUAT STATUS...</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- BARIS 3: ID JADWAL & SEARCH (Aksen Orange) -->
+    <div class="form-row-grid" style="grid-template-columns: 2fr 1fr; align-items: flex-end;">
+      <div>
+        <label class="label-neon" style="color: #fb923c;">ID JADWAL</label>
+        <select id="maint_id_jadwal" class="select-custom" style="border-color: rgba(251, 146, 60, 0.4) !important;">
+          <option value="">Memuat...</option>
+        </select>
+      </div>
+      <button id="btnMaintSearch" onclick="openGlobalSearch()" class="btn-timbul btn-db-gold" style="height: 38px; width: 100%;">
+        <i class="fas fa-search"></i> CARI
+      </button>
+    </div>
+
+    <!-- BARIS 4: PLAN DATE -->
+    <div class="modal-field-neon">
+      <label class="label-neon">PLAN DATE (PELAKSANAAN)</label>
+      <input type="datetime-local" id="m_plan" class="input-neon">
+    </div>
+
+    <!-- BARIS 5 & 6: NOTES (Ramping) -->
+    <div class="modal-field-neon">
+      <label class="label-neon">SHIFT NOTE</label>
+      <textarea id="m_shift_note" placeholder="Alasan perubahan..." class="input-neon" style="height: 60px; resize: none;"></textarea>
+    </div>
+
+    <div class="modal-field-neon">
+      <label class="label-neon">OTHER NOTE</label>
+      <textarea id="m_other_note" placeholder="Catatan tambahan..." class="input-neon" style="height: 60px; resize: none;"></textarea>
+    </div>
+
+    <!-- TOMBOL AKSI SEJAJAR (50:50) -->
+    <div class="modal-action-footer-row">
+      <button id="btnCreateMaint" onclick="saveMaintData()" class="btn-timbul btn-backup">
+        <i class="fas fa-plus-circle"></i> CREATE
+      </button>
+      <button onclick="closeMaintModal()" class="btn-timbul btn-maintenance">
+        <i class="fas fa-times"></i> BATAL
+      </button>
+        <button id="btnGoMaint" class="btn-timbul btn-maintenance;">
+            <i class="fa-solid fa-toolbox"></i> GoTo Maintenance </span>
+        </button>
+    </div>
+        
+        <input id="maintRowIdx" type="hidden" >
+        <input id="m_created" type="hidden" >
+        <input id="m_updated" type="hidden" >
+        <input id="m_updater" type="hidden" >
+        <input id="m_lokasi" type="hidden" >
+  </div>
+</div>

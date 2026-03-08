@@ -1,0 +1,99 @@
+/* OVERLAY & CONTAINER */
+/** dipindahkan ke rightbar
+.modal-overlay-custom {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(8px);
+  z-index: 10001;
+  display: none; align-items: center; justify-content: center;
+  padding: 15px; box-sizing: border-box;
+}
+
+.modal-content-aset {
+  background: var(--bg-content);
+  border: 1px solid var(--neon-border);
+  border-radius: 20px;
+  width: 100%; max-width: 450px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  position: relative;
+  color: var(--text-main);
+  padding: 0; /* Supaya header h3 mepet ke atas */
+/** } */
+
+/* HEADER DENGAN EFEK ::AFTER ASLI DARI 1700 BARIS */
+/**
+.modal-content-aset h3 {
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  color: var(--neon-blue);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-bottom: 1px solid var(--neon-border);
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+}
+
+.modal-content-aset h3::after {
+  content: "";
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+*/
+
+/* QR SECTION */
+.qr-container-neon {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px dashed var(--neon-blue);
+  border-radius: 12px;
+  padding: 15px; text-align: center; 
+  margin: 20px 20px 15px 20px;
+}
+
+.qr-image-neon { width: 120px; height: 120px; border-radius: 8px; background: #fff; padding: 5px; }
+.qr-label-neon { font-family: 'Courier New', monospace; font-size: 12px; margin-top: 8px; color: var(--text-dim); }
+
+/* GRID & INPUTS */
+.form-row-grid { display: flex; gap: 10px; margin: 0 20px 12px 20px; }
+.flex-1 { flex: 1; }
+.flex-2 { flex: 2; }
+
+.label-neon { display: block; font-size: 10px; font-weight: bold; color: var(--neon-blue); margin-bottom: 5px; text-transform: uppercase; }
+
+.input-neon {
+  width: 100%; background: var(--bg-input); border: 1px solid #334155;
+  border-radius: 8px; padding: 10px; color: #fff; font-size: 14px; box-sizing: border-box;
+}
+
+.readonly-neon { background: var(--bg-readonly) !important; color: var(--text-readonly); border-style: dashed; }
+
+.select-custom {
+  width: 100%; background: var(--bg-input); border: 1px solid #334155;
+  border-radius: 8px; padding: 9px; color: #fff;
+}
+
+/* GALLERY VIEWER INDUSTRIAL */
+.gallery-container-neon { background: var(--bg-readonly); border: 1px solid var(--neon-border); border-radius: 12px; padding: 10px; margin: 10px 20px; }
+.gallery-viewer { display: flex; align-items: center; justify-content: space-between; background: #000; border-radius: 8px; overflow: hidden; height: 180px; }
+.img-asset-neon { max-width: 100%; max-height: 100%; object-fit: contain; }
+.btn-gallery-nav { background: rgba(56, 189, 248, 0.1); color: var(--neon-blue); border: none; padding: 15px 10px; cursor: pointer; height: 100%; }
+
+/* TOMBOL TIMBUL LOGIC (SESUAI ROOT) */
+.btn-timbul {
+  border: none; border-radius: 8px; padding: 12px;
+  font-weight: bold; cursor: pointer; color: #fff;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-refresh { background: var(--btn-blue); box-shadow: 0 4px 0 var(--btn-blue-shadow); }
+.btn-hapus { background: var(--btn-red); box-shadow: 0 4px 0 var(--btn-red-shadow); }
+.btn-backup { background: var(--btn-green); box-shadow: 0 4px 0 var(--btn-green-shadow); }
+
+.btn-timbul:active { transform: translateY(4px); box-shadow: none; }

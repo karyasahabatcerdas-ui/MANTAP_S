@@ -1,0 +1,77 @@
+<!-- [UI BLOCK: MODAL EDIT USER - SLIM 430PX BUTTONS ROW] -->
+<div id="editModal" class="modal-overlay-custom" style="display:none;">
+  <div class="modal-content-profile" style="max-width: 430px !important;"> 
+    
+    <h3 class="label-neon-header"><i class="fa-solid fa-user-gear"></i> EDIT USER PRIVILEGE</h3>
+    
+    <div class="profile-photo-wrapper">
+      <img id="admin_edit_photo"
+           src="https://lh3.googleusercontent.com"
+           onclick="document.getElementById('adminFileInput').click()"
+           class="avatar-neon"
+           title="Klik untuk ganti foto">
+      <input type="file" id="adminFileInput" accept="image/*" style="display:none" onchange="uploadPhotoFromAdmin(this)">
+      <p class="label-neon-small" onclick="document.getElementById('adminFileInput').click()">KLIK FOTO UNTUK UBAH</p>
+    </div>
+
+    <input type="hidden" id="m_row_idx">
+
+    <div class="modal-field-neon">
+      <label class="label-neon">USERNAME</label>
+      <input type="text" id="m_user" autocomplete="off" class="input-neon">
+    </div>
+
+    <div class="modal-field-neon">
+      <form>
+        <label class="label-neon">PASSWORD BARU</label>
+        <input type="password" id="m_pass" placeholder="Kosongkan jika tetap" autocomplete="off" class="input-neon">
+      </form>
+    </div>
+
+    <div class="modal-field-neon">
+      <label class="label-neon">NOMOR TELEPON</label>
+      <input type="text" id="m_phone" placeholder="0812..." class="input-neon">
+    </div>
+
+    <div class="form-row-neon modal-field-neon">
+      <div class="flex-1">
+        <label class="label-neon">ROLE</label>
+        <select id="m_role" class="select-custom">
+          <option value="user">USER</option>
+          <option value="admin">ADMIN</option>
+        </select>
+      </div>
+      <div class="flex-1">
+        <label class="label-neon">STATUS</label>
+        <select id="m_status" class="select-custom">
+          <option value="aktif">AKTIF</option>
+          <option value="nonaktif">NON-AKTIF</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-field-neon">
+      <label class="label-neon">EMAIL ADDRESS</label>
+      <input type="email" id="m_email" class="input-neon">
+    </div>
+
+    <div class="modal-field-neon">
+      <label class="label-neon">LOGIN ATTEMPTS (MAX 5)</label>
+      <div class="form-row-neon">
+        <input type="number" id="m_attempts" min="0" max="5" class="input-neon flex-1">
+        <button type="button" onclick="doResetAttempts()" class="btn-timbul btn-db-gold" style="padding: 0 15px;">RESET</button>
+      </div>
+    </div>
+
+    <!-- TOMBOL AKSI SEJAJAR (ROW) -->
+    <div class="modal-action-footer-row">
+      <button id="saveprofilmodal" type="button" onclick="saveAdminEdit()" class="btn-timbul btn-backup"> 
+        <i class="fa fa-floppy-o"></i> SIMPAN 
+      </button>
+      <button type="button" onclick="closeModal()" class="btn-timbul btn-maintenance"> 
+        <i class="fa fa-close"></i> BATAL
+      </button>
+    </div>
+
+  </div>
+</div>

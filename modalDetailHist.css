@@ -1,0 +1,112 @@
+/* --- MODAL PROFILE/LOG OVERRIDE --- */
+.modal-content-profile {
+  background: var(--bg-content);
+  border: 1px solid var(--neon-border);
+  border-radius: 15px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  position: relative;
+  color: var(--text-main);
+  animation: modalSlideUp 0.3s ease-out;
+} 
+
+/* TOMBOL CLOSE FLOATING NEON */
+.btn-close-floating {
+  position: absolute;
+  top: 10px; right: 10px;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--bg-readonly);
+  border: 1px solid var(--neon-blue);
+  color: var(--neon-blue);
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 10px var(--neon-blue);
+  transition: all 0.2s;
+}
+.btn-close-floating:hover { background: var(--neon-blue); color: #000; }
+
+/* HEADER LOG DENGAN EFEK ::AFTER */
+.header-log-neon {
+  background: linear-gradient(90deg, #1e293b, #0f172a);
+  padding: 15px;
+  border-bottom: 2px solid var(--neon-blue);
+  position: relative;
+  overflow: hidden;
+}
+.header-log-neon h3 { color: var(--text-main); font-family: 'Orbitron', sans-serif; }
+.header-log-neon::after {
+  content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(56, 189, 248, 0.03) 10px, rgba(56, 189, 248, 0.03) 20px);
+}
+
+/* INFO GRID (3 Kolom Industrial) */
+.info-grid-dark {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--bg-grid-dark);
+  border-radius: 8px;
+  border: 1px solid var(--border-item);
+  margin-bottom: 10px;
+}
+.info-item {
+  padding: 10px;
+  border-right: 1px solid var(--border-item);
+  text-align: center;
+}
+.info-item label {
+  display: block; font-size: 9px; color: var(--text-dim); margin-bottom: 3px;
+}
+.info-item b, .time-val { font-size: 11px; color: var(--text-main); }
+
+/* NOTE BOX NEON */
+.note-box-neon {
+  background: var(--bg-readonly);
+  border-left: 3px solid var(--neon-blue);
+  padding: 10px;
+  border-radius: 4px;
+}
+.note-box-neon label { font-size: 10px; color: var(--neon-blue); font-weight: bold; }
+#det_note { font-size: 12px; margin-top: 5px; color: var(--text-main); line-height: 1.4; }
+
+/* GALLERY GRID HISTORY */
+.gallery-grid-history {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+/* PHOTO CARD LOG */
+.photo-card-log {
+  background: var(--bg-readonly);
+  border: 1px solid var(--border-item);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.photo-card-log:hover { transform: scale(1.02); border-color: var(--neon-blue); }
+
+.photo-placeholder {
+  height: 100px;
+  display: flex; align-items: center; justify-content: center;
+  background: #000; color: #334155; font-size: 24px;
+}
+
+.photo-badge-top {
+  position: absolute; top: 5px; left: 5px; right: 5px;
+  display: flex; justify-content: space-between;
+  font-size: 9px; color: #fff; background: rgba(0,0,0,0.6);
+  padding: 2px 5px; border-radius: 4px;
+}
+
+.photo-label-bottom {
+  text-align: center;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 5px 0;
+  background: rgba(15, 23, 42, 0.8);
+  color: #fff;
+}

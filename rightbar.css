@@ -1,0 +1,548 @@
+/* ==========================================================================
+   CSS RIGHTBAR (MAIN-CONTENT) - INDUSTRIAL STEALTH VERSION
+   Semua variabel warna terpusat di :root
+   ========================================================================== */
+
+
+/* Tambahkan pembungkus untuk teks/tabel agar area ini yang bisa di-scroll */
+
+/* --- WRAPPER UTAMA (BINGKAI rightbar) --- */
+.cmain-content {
+  display: flex;   /* KUNCI: Agar Leftbar & Konten berdampingan */
+  width: 100%;
+  height: 100vh;   /* Tinggi penuh layar */
+  background: var(--bg-main);
+  overflow: hidden;  /* Mencegah scroll double di luar */
+}
+
+/* --- AREA RIGHTBAR (INNER CONTENT) --- */
+.inner-content {
+  flex-grow: 1;  /* KUNCI: Dia otomatis mengisi sisa ruang */
+  min-width: 0;  /* Mencegah tabel meluber keluar layar */
+  padding: 0.75rem 1.5rem !important; /* Diubah dari 1.5rem ke 0.75rem agar lebih rapat ke atas */
+  overflow-y: auto;
+  color: var(--text-bright);
+  background: var(--bg-main);
+  box-shadow: inset 10px 0 20px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* --- HEADER GAHAR REFINED --- */
+.inner-content header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(30, 41, 59, 0.7) !important;
+  backdrop-filter: var(--glass-blur);
+  padding: 0.5rem 1.25rem !important; /* Padding header dirampingkan */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  margin-bottom: 0.75rem !important; /* Jarak ke h3 dikurangi setengahnya */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* --- JUDUL HALAMAN (H3) DENGAN RGB ROTATE --- */
+.page h3 {
+  position: relative;
+  background: var(--bg-card);
+  color: var(--text-bright) !important;
+  font-size: 1.2rem;
+  padding: 0.9rem 1.25rem;
+  border-radius: 8px;
+
+  /* Logika Full Width & Center */
+  display: flex; 
+  justify-content: center; /* Tulisan ke tengah secara horizontal */
+  align-items: center;
+  width: 100%; /* Memenuhi lebar kontainer */
+  box-sizing: border-box; /* Penting agar tidak meluber keluar layar */
+
+  margin-bottom: 0.75rem !important; /* Jarak ke komponen di bawahnya dikurangi */
+  gap: 12px;
+  z-index: 1;
+  border: 1px solid var(--border-dim);
+
+  display: inline-flex;
+  z-index: 1;
+}
+
+.page h3::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  z-index: -2;
+  background: conic-gradient(from 0deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+  border-radius: 9px;
+  animation: h3-rotate 4s linear infinite;
+}
+
+.page h3::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  background: var(--bg-card);
+  border-radius: 7px;
+  z-index: -1;
+}
+
+@keyframes h3-rotate {
+  100% { filter: hue-rotate(360deg); }
+}
+
+.rightbar-action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+
+/* --- TABEL GAHAR (Clean & Solid) --- */
+.table-responsive-aset {
+  background: var(--bg-main);
+  border: 1px solid var(--border-dim);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.tabel-main-content {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: transparent;
+}
+
+.tabel-main-content thead th {
+  background: var(--bg-card) !important;
+  color: var(--neon-blue);
+  font-size: 0.7rem; /* ~11px */
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 1rem;
+  border-bottom: 2px solid var(--border-dim);
+  text-align: left;
+}
+
+.tabel-main-content td {
+  background: var(--bg-main) !important;
+  color: var(--text-bright) !important;
+  font-size: 0.75rem; /* ~12px */
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+}
+
+.tabel-main-content tbody tr:hover td {
+  background: var(--bg-card) !important;
+  color: var(--neon-blue) !important;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+  cursor: pointer;
+}
+
+/* --- CUSTOM SCROLLBAR (Agar Tidak Kaku) --- */
+.inner-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.inner-content::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+
+.inner-content::-webkit-scrollbar-thumb {
+  background: var(--border-dim);
+  border-radius: 10px;
+}
+
+.inner-content::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-blue);
+}
+
+
+/* ==========================================================================
+   CSS UI ELEMENTS (BUTTONS, INPUTS, SELECTS)
+   Industrial Stealth Theme - Powered by REM
+   ========================================================================== */
+
+/* --- 1. GAYA INPUT & SELECT (DARK GLASS) --- */
+input[type="text"], 
+input[type="number"], 
+input[type="date"],
+input[type="password"],
+input[type="email"],
+select, 
+textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-dim);
+  border-radius: 8px;
+  color: var(--text-bright) !important;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+/* Efek saat Input diklik (Focus) */
+input:focus, select:focus {
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+  background: var(--bg-card) !important;
+}
+
+.input-pendek{
+  width: auto;
+  min-width: 150px;
+}
+.input-sedang{
+  width: auto;
+  min-width: 250px;
+}
+
+.label-neon {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #38bdf8; /* Biru Neon */
+  display: block;
+  margin-bottom: 0.1rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* Memberi warna pada opsi di dalam Select */
+select option {
+  background: var(--bg-card);
+  color: var(--text-bright);
+}
+
+/* --- SEARCH WRAPPER (CONTAINER NYA) --- */
+.search-wrapper-neon {
+  position: relative; /* Wajib: Agar ikon bisa menempel relatif ke sini */
+  display: flex;
+  flex: 1; /* Agar dia otomatis mengisi ruang yang tersedia */
+  align-items: center;
+  width: 100%;
+}
+
+/* --- POSISI IKON (MELAYANG DI DALAM) --- */
+.search-wrapper-neon i {
+  position: absolute; /* Membuat ikon melayang */
+  left: 1rem;         /* Jarak dari kiri */
+  color: var(--neon-gold);
+  font-size: 0.9rem;
+  pointer-events: none; /* Agar klik tembus langsung ke input di bawahnya */
+  z-index: 2;
+  transition: 0.3s;
+}
+
+/* --- INPUT NYA (DIBAWAH IKON) --- */
+.input-neon-gold {
+  width: 100px !important;
+  /*max-width: 300px !important;*/
+  padding: 0.75rem 1rem 0.75rem 2.8rem !important; /* Kiri diberi 2.8rem (45px) agar teks tidak menabrak ikon */
+  background: var(--bg-input) !important;
+  border: 1px solid rgba(251, 191, 36, 0.3) !important; /* Warna Amber/Gold tipis */
+  border-radius: 8px;
+  color: var(--text-bright) !important;
+  outline: none;
+  transition: all 0.3s ease;
+  flex: none;
+}
+
+/* --- EFEK SAAT SEARCH AKTIF (FOCUS) --- */
+.input-neon-gold:focus {
+  border-color: var(--neon-gold) !important;
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+  background: var(--bg-card) !important;
+}
+
+/* Animasi Ikon saat Focus (Opsional) */
+.input-neon-gold:focus + i, 
+.search-wrapper-neon:focus-within i {
+  color: #ffffff;
+  text-shadow: 0 0 8px var(--neon-gold);
+}
+
+/* --- INPUT NYA (DIBAWAH IKON) --- */
+.input-neon-biasa {
+  width: 100px !important;
+  /*max-width: 300px !important;*/
+  padding: 0.75rem 1rem 0.75rem 0.8rem !important; /* Kiri diberi 2.8rem (45px) agar teks tidak menabrak ikon */
+  background: var(--bg-input) !important;
+  border: 1px solid rgba(36, 154, 251, 0.3) !important; /* Warna Amber/Gold tipis */
+  border-radius: 8px;
+  color: var(--text-bright) !important;
+  outline: none;
+  transition: all 0.3s ease;
+  flex:none;
+  box-sizing: border-box !important; /* WAJIB: Agar padding tidak menambah lebar luar */
+}
+
+/* --- EFEK SAAT SEARCH AKTIF (FOCUS) --- */
+.input-neon-biasa:focus {
+  border-color: var(--neon-blue) !important;
+  box-shadow: 0 0 15px rgba(36, 154, 251, 0.2);
+  background: var(--bg-card) !important;
+}
+
+/* Animasi Ikon saat Focus (Opsional) */
+.input-neon-biasa:focus + i, 
+.search-wrapper-neon:focus-within i {
+  color: #ffffff;
+  text-shadow: 0 0 8px var(--neon-biasa);
+}
+
+/* --- INPUT UTNUK CREATE DATABASE --- */
+.tambah-db {
+    display: flex;
+    flex-wrap: wrap; /* INI KUNCINYA: Agar jika tidak muat, dia otomatis turun ke bawah */
+    gap: 10px;
+    width: 100%;    /* Pastikan containernya tidak lebih lebar dari layar */
+    overflow: hidden; /* Potong jika ada yang meluber */
+}
+
+/* --- 2. GAYA TOMBOL (BUTTONS) --- */
+.btn-base {
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-sizing: border-box !important; /* WAJIB: Agar padding tidak menambah lebar luar */
+}
+
+/* Tombol Biru (Primary/Search) */
+.btn-blue {
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--neon-blue);
+  border: 1px solid var(--neon-blue);
+}
+
+.btn-blue:hover {
+  background: var(--neon-blue);
+  color: #000;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+}
+
+/* Tombol Hijau (Save/Add) */
+.btn-green {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--neon-green);
+  border: 1px solid var(--neon-green);
+}
+
+.btn-green:hover {
+  background: var(--neon-green);
+  color: #000;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+}
+
+/* Tombol Merah (Delete/Cancel) */
+.btn-red {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--neon-red);
+  border: 1px solid var(--neon-red);
+}
+
+.btn-red:hover {
+  background: var(--neon-red);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+}
+
+/* Tombol purple (fungsional) */
+.btn-purple {
+  background: rgba(147, 51, 234, 0.15);
+  color: var(--neon-purple);
+  border: 1px solid var(--neon-purple);
+}
+
+.btn-purple:hover {
+  background: var(--neon-purple);
+  color: #fff;
+  box-shadow: 0 0 20px rgb(146, 51, 234);
+}
+
+/* Tombol Gold (gold/khusu) */
+.btn-gold {
+  background: rgba(161, 98, 4, 0.15);
+  color: var(--neon-gold);
+  border: 1px solid var(--neon-gold);
+}
+
+.btn-gold:hover {
+  background: var(--neon-gold);
+  color: #fff;
+  box-shadow: 0 0 20px rgb(233, 150, 26);
+}
+
+
+/* --- 3. FORM GROUP (JARAK ANTAR INPUT) --- */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* --- 4. ANIMASI LOADING/PULSE PADA TOMBOL (OPSIONAL) --- */
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* --- 5. SEARCH BAR CONTAINER --- */
+.search-container {
+  display: flex;
+  gap: 10px;
+  background: var(--bg-card);
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-dim);
+  margin-bottom: 2rem;
+}
+/*css untuk halaman profile user (rightbar)*/
+/* Container Utama Profile */
+.modal-content-profile {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--bg-card);
+    padding: 2rem;
+    border-radius: 15px;
+    border: 1px solid var(--border-dim);
+}
+
+/* Photo Section */
+.profile-photo-wrapper {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.avatar-neon {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid var(--neon-blue);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+/* Grid Layout untuk Form */
+.form-grid-profile {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Membagi 2 kolom sama rata */
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* Memaksa elemen label tetap di atas input */
+.input-group-unit {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-full {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+}
+
+.full-width {
+    grid-column: span 2; /* Mengambil 2 kolom penuh */
+}
+
+/* Footer & Button */
+.profile-footer {
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid var(--border-dim);
+    padding-top: 20px;
+}
+
+.btn-large {
+    width: 100%;
+    justify-content: center;
+    padding: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .form-grid-profile {
+        grid-template-columns: 1fr; /* Jadi 1 kolom di HP */
+    }
+    .full-width {
+        grid-column: span 1;
+    }
+}
+
+
+/**=================================================================================================
+* --- [MODAL SYSTEM: SLIM, GAHAR & STEALTH] --- 
+* --- [INI UNTUK SEMUA MODAL LEVEL 1 - STELAH RIGHTBAR]
+**==================================================================================================
+*/
+/** BARU */
+.modal-overlay-custom {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: none; align-items: center; justify-content: center;
+  padding: 15px; box-sizing: border-box;
+}
+
+
+.modal-content-aset {
+  background: var(--bg-content);
+  border: 1px solid var(--neon-border);
+  border-radius: 20px;
+  width: 100%; max-width: 450px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  position: relative;
+  color: var(--text-main);
+  padding: 0; /* Supaya header h3 mepet ke atas */
+}
+
+/* HEADER DENGAN EFEK ::AFTER ASLI DARI 1700 BARIS */
+.modal-content-aset h3 {
+  margin: 0;
+  padding: 20px;
+  text-align: center;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  color: var(--neon-blue);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-bottom: 1px solid var(--neon-border);
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+}
+
+.modal-content-aset h3::after {
+  content: "";
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}

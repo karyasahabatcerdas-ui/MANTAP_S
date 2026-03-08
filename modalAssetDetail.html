@@ -1,0 +1,72 @@
+<!-- [UI BLOCK: MODAL DETAIL ASSET - REVISI MIDNIGHT STEALTH] -->
+<div id="assetDetailModal" class="modal-overlay-custom" style="display:none;">
+  <div class="modal-content-aset">
+    
+    <h3 id="assetModalTitle"><i class="fas fa-info-circle"></i> DETAIL ASSET</h3>
+
+    <!-- QR CODE ASSET (Panel Glassmorphism) -->
+    <div class="qr-container-neon">
+      <img id="assetQRCode" src="" class="qr-image-neon">
+      <p id="qrText" class="qr-label-neon"></p>
+    </div>
+
+    <input type="hidden" id="assetRowIdx">
+
+    <!-- BARIS 1: TIPE & ID (Grid 2:1) -->
+    <div class="form-row-grid">
+      <div class="flex-2">
+        <label class="label-neon">TIPE ASSET</label>
+        <input type="text" id="as_type" readonly class="input-neon readonly-neon">
+      </div>
+      <div class="flex-1">
+        <label class="label-neon">ID ASSET</label>
+        <input type="text" id="as_id" readonly class="input-neon readonly-neon">
+      </div>
+    </div>
+
+    <!-- BARIS 2: NAMA & STATUS (Grid 2:1) -->
+    <div class="form-row-grid">
+      <div class="flex-2">
+        <label class="label-neon">NAMA ASSET</label>
+        <input type="text" id="as_nama" class="input-neon">
+      </div>
+      <div class="flex-1">
+        <label class="label-neon">STATUS</label>
+        <select id="as_status" class="select-custom">
+          <option value="Baik">Baik</option>
+          <option value="Rusak">Rusak</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- BARIS 3: LOKASI -->
+    <div class="modal-field-neon">
+      <label class="label-neon">LOKASI ASSET</label>
+      <input type="text" id="as_lokasi" class="input-neon">
+    </div>
+
+    <!-- GALERI FOTO (Industrial Panel) -->
+    <div class="gallery-container-neon">
+      <label class="label-neon">GALERI FOTO ASSET</label>
+      <div class="gallery-viewer">
+        <button type="button" onclick="prevAssetImg()" class="btn-gallery-nav"><i class="fas fa-chevron-left"></i></button>
+        <img id="currAssetImg" src="https://lh3.googleusercontent.com/d/13Q4RtDMmEMVvErifoZOa_yKiAACUpg7a=s1000" class="img-asset-neon">
+        <button type="button" onclick="nextAssetImg()" class="btn-gallery-nav"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      <div class="form-row-grid" style="margin-top: 10px;">
+        <button onclick="takeAssetPhoto()" class="btn-timbul btn-refresh flex-1"><i class="fas fa-camera"></i> TAKE/LOAD</button>
+        <button onclick="deleteAssetPhoto()" class="btn-timbul btn-hapus flex-1"><i class="fas fa-trash"></i> DELETE</button>
+      </div>
+    </div>
+
+    <!-- TOMBOL AKSI -->
+    <div class="form-row-grid" style="margin-top: 15px;">
+      <button id="btnSaveAsset" onclick="saveAssetEdit()" class="btn-timbul btn-backup flex-1">
+        <i class="fas fa-save"></i> SIMPAN
+      </button>
+      <button id="btnCancelAsset" onclick="closeAssetModal()" class="btn-timbul btn-hapus flex-2">
+        <i class="fas fa-times"></i> BATAL/KELUAR
+      </button>
+    </div>
+  </div>
+</div>

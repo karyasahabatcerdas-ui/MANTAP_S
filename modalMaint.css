@@ -1,0 +1,57 @@
+/* FORM ROW GRID VARIATIONS */
+.form-row-grid-equal {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+/* MODAL ACTION FOOTER (50:50) */
+.modal-action-footer-row {
+  display: grid;
+  /*grid-template-columns: 1fr 1fr;*/
+    /* auto-fit akan menghitung jumlah elemen yang tidak 'display: none' */
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); 
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* READONLY BLUE VARIATION (Untuk Maint ID) */
+.readonly-neon-blue {
+  background: var(--bg-readonly) !important;
+  color: var(--neon-blue) !important;
+  border: 1px dashed var(--neon-blue) !important;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* BUTTON DB GOLD (CARI) */
+.btn-db-gold {
+  background: var(--btn-gold);
+  box-shadow: 0 4px 0 var(--btn-gold-shadow);
+  color: #000 !important; /* Agar teks hitam di atas emas */
+}
+
+/* BUTTON MAINTENANCE (BATAL) */
+.btn-maintenance {
+  background: var(--btn-cancel);
+  box-shadow: 0 4px 0 var(--btn-cancel-shadow);
+}
+
+/* OVERRIDE SELECT UNTUK AKSEN ORANGE */
+#maint_id_jadwal {
+  border-color: var(--neon-orange-glow);
+  color: var(--neon-orange);
+}
+
+/* TEXTAREA STYLING (INDUSTRIAL SLIM) */
+textarea.input-neon {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.4;
+  padding: 8px;
+}
+
+/* HOVER & TRANSITION UNTUK BUTTON CARI */
+.btn-db-gold:hover {
+  filter: brightness(1.2);
+}

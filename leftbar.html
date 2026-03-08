@@ -1,0 +1,73 @@
+<!-- STRUKTUR LEFTBAR TERESTRUKTUR -->
+<div id="leftbar" class="leftbar-container collapsed">
+    
+    <!-- TOMBOL TOGGLE (UI Atas) -->
+    <button id="btn-toggle" class="btn-ui-toggle" onclick="toggleleftbar()"> 
+      >>>
+    </button>
+    
+    <!-- HEADER & PROFIL -->
+    <div class="leftbar-header-wrapper">
+      <h3 id="side-title" class="leftbar-header-title">MAINTENANCE<br>APP</h3>
+      <div class="profile-wrapper">
+        <img id="user_profile_shared" 
+             class="profile-img-container" 
+             src="https://lh3.googleusercontent.com">
+      </div>
+    </div>
+
+    <!-- GROUP: MENU UMUM (Muncul untuk SEMUA) -->
+    <div class="menu-group">
+      <div class="menu-item" onclick="showPage('history')">
+        <i class="fa-solid fa-history"></i> <span>Activity</span>
+      </div>
+      <div class="menu-item" onclick="showPage('jadwal')">
+        <i class="fa-solid fa-calendar-alt"></i> <span>Jadwal</span>
+      </div>
+      <div class="menu-item" onclick="showPage('lihat_aset')">
+        <i class="fa-solid fa-search"></i> <span>Aset</span>
+      </div>
+    </div>
+
+    <!-- GROUP: MENU ADMIN (Kondisional via JS) -->
+    <div id="adminMenuArea" class="admin-section" style="display: inline-block;"> <!-- sementara terlihat nanti = Awalnya none, ditampilkan jika user =admin -->
+      <div class="menu-item" onclick="showPage('kelola')">
+        <i class="fa-solid fa-edit"></i>
+        <span>Jadwal<sup class="badge-admin">admin</sup></span>
+      </div>
+      <div class="menu-item" onclick="showPage('m_user')">
+        <i class="fa-solid fa-users-cog"></i>
+        <span>User<sup class="badge-admin">admin</sup></span>
+      </div>
+      <div class="menu-item" onclick="showPage('aset')">
+        <i class="fa-solid fa-boxes"></i>
+        <span>Aset<sup class="badge-admin">admin</sup></span>
+      </div>
+      <div class="menu-item" onclick="showPage('log_book'); loadAuditLogs();">
+        <i class="fa-solid fa-book-open"></i>
+        <span>Log<sup class="badge-admin">admin</sup></span>
+      </div>
+      <div class="menu-item" id="menu_db_manager" onclick="showPage('db_manager')">
+        <i class="fa-solid fa-database"></i>
+        <span>DB <sup class="badge-sys">sys</sup></span>
+      </div>
+    </div>
+
+    <!-- GROUP: MENU UMUM (Muncul untuk SEMUA) -->
+      <div class="menu-group">
+        <div class="menu-item" onclick="showPage('setting')">
+          <i class="fa-solid fa-user-cog"></i> <span>Profil</span>
+        </div>
+      </div>
+
+
+
+          <!-- GROUP: MENU BAWAH -->
+    <div class="menu-group bottom-nav">
+      <!-- TOMBOL LOGOUT (Dipaksa di paling bawah lewat class btn-logout) -->
+      <div class="menu-item btn-logout" onclick="logout()">
+        <i class="fa-solid fa-sign-out-alt"></i> <span>Logout</span>
+      </div>
+    </div>
+
+</div>

@@ -1,0 +1,87 @@
+<!-- [UI BLOCK: MODAL DETAIL HISTORY - INDUSTRIAL NEON EDITION] -->
+<div id="modalDetailHist" class="modal-overlay-custom" style="display:none;">
+  <div class="modal-content-profile" style="max-width: 430px !important; padding: 0; overflow: hidden;">
+
+    <!-- TOMBOL CLOSE (Floating Neon) -->
+    <button onclick="closeDetailHist()" class="btn-close-floating">&times;</button>
+
+    <!-- HEADER GAHAR -->
+    <div class="header-log-neon">
+      <h3 >
+        <i class="fas fa-fingerprint"></i> LOG ID: <span id="det_log_id" style="color:#38bdf8;">#</span>
+      </h3>
+    </div>
+
+  <div style="padding: 15px;">
+      <!-- KOTAK INFO UTAMA (3 Kolom Industrial) -->
+      <div class="info-grid-dark">
+        <div class="info-item">
+          <label>PETUGAS</label><b id="det_petugas">-</b>
+        </div>
+        <div class="info-item">
+          <label>ASSET ID</label><b id="det_asset_id">-</b>
+        </div>
+        <div class="info-item" style="border:none;">
+          <label>JADWAL</label><b id="det_id_jadwal">-</b>
+        </div>
+      </div>
+
+      <!-- KOTAK WAKTU (3 Kolom Neon Status) -->
+      <div class="info-grid-dark" style="margin-bottom: 15px;">
+        <div class="info-item">
+          <label style="color:#22c55e;">START</label><span id="det_start" class="time-val">-</span>
+        </div>
+        <div class="info-item">
+          <label style="color:#fb923c;">PENDING</label><span id="det_pending" class="time-val">-</span>
+        </div>
+        <div class="info-item" style="border:none;">
+          <label style="color:#38bdf8;">SELESAI</label><span id="det_selesai" class="time-val">-</span>
+        </div>
+      </div>
+
+      <!-- CATATAN AKTIVITAS (Industrial Note) -->
+      <div class="note-box-neon">
+        <label><i class="fas fa-edit"></i> CATATAN AKTIVITAS:</label>
+        <div id="det_note">-</div>
+      </div>
+
+      <!-- AREA DOKUMENTASI (Grid 2x2) -->
+      <label class="label-neon" style="text-align:center; display:block; margin: 15px 0 10px;">
+        DOKUMENTASI FOTO (TAP UNTUK ZOOM)
+      </label>
+
+      <div class="gallery-grid-history">
+        <!-- FOTO: BEFORE -->
+        <div onclick="initPhotoSlider('BEFORE')" class="photo-card-log">
+          <div id="gal_before" class="photo-placeholder"><i class="fas fa-image"></i></div>
+          <div class="photo-badge-top"><span id="cnt_before">0</span> <span id="time_before">-</span></div>
+          <div class="photo-label-bottom" style="border-bottom: 2px solid #38bdf8;">BEFORE</div>
+        </div>
+
+        <!-- FOTO: ON-PROCESS -->
+        <div onclick="initPhotoSlider('ON')" class="photo-card-log">
+          <div id="gal_on" class="photo-placeholder"><i class="fas fa-image"></i></div>
+          <div class="photo-badge-top"><span id="cnt_on">0</span> <span id="time_on">-</span></div>
+          <div class="photo-label-bottom" style="border-bottom: 2px solid #fb923c;">ON-PROCESS</div>
+        </div>
+
+        <!-- FOTO: AFTER -->
+        <div onclick="initPhotoSlider('AFTER')" class="photo-card-log">
+          <div id="gal_after" class="photo-placeholder"><i class="fas fa-image"></i></div>
+          <div class="photo-badge-top"><span id="cnt_after">0</span> <span id="time_after">-</span></div>
+          <div class="photo-label-bottom" style="border-bottom: 2px solid #22c55e;">AFTER</div>
+        </div>
+
+        <!-- FOTO: FINAL CHECK -->
+        <div onclick="initPhotoSlider('CHECK')" class="photo-card-log">
+          <div id="gal_check" class="photo-placeholder"><i class="fas fa-image"></i></div>
+          <div class="photo-badge-top"><span id="cnt_check">0</span> <span id="time_check">-</span></div>
+          <div class="photo-label-bottom" style="border-bottom: 2px solid #fbbf24;">FINAL CHECK</div>
+        </div>
+    </div>
+  </div>
+      <button id="btnupdateMaintenance" onclick="startMaintenanceModeUpdate()" class="btn-base btn-gold">
+            <span class="status-badge-indicator" > ${statusLabel} </span> Update Kegiatan
+      </button>
+</div>
+</div>

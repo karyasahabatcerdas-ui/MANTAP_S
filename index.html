@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <!-- Untuk Chrome Android & Safari iOS -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MANTAP-KSC">
+    <!-- Viewport tunggal & responsif -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta http-equiv="Permissions-Policy" content="camera=*, microphone=*, geolocation=*"> 
+    <!-- Warna bar status (Pilih satu warna saja, misal Hijau) -->
+    <meta name="theme-color" content="#27ae60">  
+    <!-- Library Internal (QR Scanner) https://app.unpkg.com/html5-qrcode@2.3.8/files/html5-qrcode.js -->
+    <script src="html5-qrcode.js"></script>
+    <!-- Library Internal (QR Scanner) https://davidshimjs.github.io/qrcodejs/ -->
+    <script src="qrcode.min.js"></script>
+    <!-- Library Internal (pengganti pop-up sweetalert2 ver 11) DIDAPAT DARI https://cdn.jsdelivr.net/npm/sweetalert2@11.26.18/dist/sweetalert2.all.min.js-->
+    <script src="sweetalert2.all.min.js"></script>
+
+    <title>MANTAP-KSC</title>    
+     <!-- Ikon iPhone/iOS -->
+    <link rel="apple-touch-icon" href="https://lh3.googleusercontent.com/d/1QtvGb-tHqeGuvCEUi39cGLgdLAuVrfpP">
+    <!-- Font Awesome (Versi terbaru saja) lokal sumber :  -->  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <!-- Manifest agar bisa di-install & Fullscreen Native -->
+     
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="leftbar.css">
+    <link rel="stylesheet" href="rightbar.css">
+    <link rel="stylesheet" href="modalMaintenanceLog.css">
+    <link rel="stylesheet" href="modalGlobalSearch.css">
+    <link rel="stylesheet" href="modalMaint.css">
+    <link rel="stylesheet" href="modalDetailHist.css">
+    <link rel="stylesheet" href="modalAssetDetail.css"> 
+    <link rel="stylesheet" href="modalPhotoSlider.css"> 
+    <link rel="stylesheet" href="modalImport.css">
+    <link rel="stylesheet" href="modalEditUser.css"> 
+    <style>
+        .iframe-container {
+            display: none; /* Sembunyikan iframe secara default */
+        }
+         /* Pastikan iframe tidak mengganggu interaksi dengan konten utama */
+    </style>
+
+</head>
+<body>
+    <!--
+<iframe id="iframeGAS" class="iframe-container"
+  src="https://script.google.com/macros/s/AKfycbwUtk-JxiQUUO0wyJA72OaWZf_MPiNHkcSZJbkCcpKt5mVfUuTlop8IYQ4c-hE6EFpG/exec"
+  ></iframe>
+
+  -->
+
+<!--Konten utama di sini kita tidak pakai iframe lagi karena komunikasi langsung ke GAS sisi server-->
+
+<script>
+  // Cukup ganti ID ini saja setiap kali deploy ulang
+  var APPSCRIPT_ID = "AKfycbzNlFUDEPeg4p5qXHRtP4bCU5a_Oe-jcwne7kw4ILxVNrqOJ9q9mcN2_AOvGv8_1O7P";
+  
+  // URL akan otomatis terbentuk menggunakan ID di atas
+  var APPSCRIPT_URL = "https://script.google.com/macros/s/" + APPSCRIPT_ID + "/exec";
+
+  console.log("🔗 GAS URL Ready: " + APPSCRIPT_URL);
+</script>
+
+<main id="main-content" class="cmain-content">
+    <div id="leftbar-placeholder"></div>
+
+    <div class="inner-content">
+    <!-- <h1>Selamat Datang di Portal Native</h1>
+        <p>Konten ini bukan lagi di dalam Iframe.</p>   --> <!-- dihilangkan -->
+        <div id="rightbar-placeholder"></div>
+    </div>
+</main>
+
+<div id="modalMaintenanceLog-placeholder"></div>
+<div id="modalGlobalSearch-placeholder"></div>
+<div id="modalDetailHist-placeholder"></div>
+<div id="modalMaint-placeholder"></div>
+<div id="modalAssetDetail-placeholder"></div>
+<div id="modalPhotoSlider-placeholder"></div>
+<div id="modalImport-placeholder"></div>
+<div id="modalEditUser-placeholder"></div>
+
+
+<script src="script.js"></script> /* script terbaru */
+<script src="leftbar.js"></script>
+<script src="script_logs.js"></script>
+<script src="script_dataBase.js"></script>
+<script src="script_login.js"></script>
+<!-- <script src="rightbar.js"></script> --><!-- rightbar.js sudah digabung ke dalam script.js untuk efisiensi -->
+
+ <!--Konten utama di sini -->
+<!--IFRAME GAS UNTUK FUNGSI-FUNGSI KHUSUS YANG MEMBUTUHKAN IFRAME (SEPERTI SCANNER QR)-->
+
+</body>
+</html>

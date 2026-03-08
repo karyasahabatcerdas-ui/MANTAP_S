@@ -1,0 +1,110 @@
+/* OVERLAY GAHAR (Lebih Gelap & Deep) */
+.modal-overlay-gahar {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.92); /* Hampir hitam sempurna */
+  backdrop-filter: blur(10px);
+  z-index: 6005;
+  display: none; align-items: center; justify-content: center;
+  padding: 15px;
+}
+
+.search-modal-content {
+  background: var(--bg-content);
+  border: 1px solid var(--neon-border);
+  border-radius: 20px;
+  width: 100%; max-width: 550px;
+  padding: 20px;
+  box-shadow: 0 0 40px rgba(0,0,0,1), 0 0 20px rgba(56, 189, 248, 0.1);
+  color: var(--text-main);
+}
+
+/* SEARCH INPUT WRAPPER (Icon Inside) */
+.search-input-wrapper {
+  position: relative;
+  margin: 15px 0;
+}
+
+.search-icon-inside {
+  position: absolute;
+  left: 15px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--neon-blue);
+  font-size: 16px;
+}
+
+.input-search-neon {
+  width: 100%;
+  background: var(--bg-search-input);
+  border: 1px solid var(--neon-border);
+  border-radius: 30px; /* Lebih rounded untuk Search Bar */
+  padding: 12px 15px 12px 45px; /* Offset untuk icon */
+  color: #fff;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: all 0.3s;
+}
+
+.input-search-neon:focus {
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 15px var(--neon-dim);
+  outline: none;
+}
+
+/* TABLE SEARCH STYLE (Industrial Slim) */
+.tabel-main-content {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.tabel-main-content thead th {
+  background: var(--bg-table-header);
+  color: var(--neon-blue);
+  padding: 10px;
+  text-align: left;
+  border-bottom: 2px solid var(--neon-border);
+  position: sticky; top: 0;
+}
+
+.tabel-main-content tbody td {
+  padding: 10px;
+  border-bottom: 1px solid var(--neon-border);
+  color: var(--text-dim);
+}
+
+.tabel-main-content tbody tr:hover {
+  background: var(--row-hover);
+  cursor: pointer;
+}
+
+.tabel-main-content tbody tr:hover td {
+  color: #fff;
+}
+
+/* FOOTER ACTION BUTTONS */
+.modal-footer-action {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.btn-aktif-neon {
+  border: none; border-radius: 8px; padding: 12px;
+  font-weight: bold; cursor: pointer; color: #fff;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+
+.btn-green-neon {
+  background: var(--btn-green);
+  box-shadow: 0 4px 0 var(--btn-green-shadow);
+}
+
+.btn-grey-dark {
+  background: var(--btn-grey);
+  box-shadow: 0 4px 0 var(--btn-cancel-shadow);
+}
+
+.btn-aktif-neon:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}

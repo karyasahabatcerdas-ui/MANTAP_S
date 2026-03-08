@@ -1,0 +1,250 @@
+/* ==========================================================================
+   MASTER CSS: LEFTBAR - INDUSTRIAL STEALTH
+   ========================================================================== */
+
+/* Style Default Leftbar (Besar) */
+.leftbar-container {
+  width: var(--leftbar-width); /* Lebar awal */
+  height: 100vh;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border-dim);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0; /* Jangan biarkan dia gepeng */
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow-x: hidden;
+  z-index: 1000;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.leftbar-container.collapsed {
+  width: var(--leftbar-collapsed-width);
+}
+
+/* --- TOMBOL TOGGLE --- */
+.btn-ui-toggle {
+  background: transparent;
+  border: none;
+  color: var(--neon-blue);
+  padding: 1rem;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-align: right;
+  transition: 0.3s;
+  outline: none;
+}
+
+.btn-ui-toggle:hover {
+  text-shadow: 0 0 8px var(--neon-blue);
+  transform: translateX(3px);
+}
+
+/* --- HEADER & PROFIL --- */
+.leftbar-header-wrapper {
+  padding: 1.25rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+  margin-bottom: 0.625rem;
+}
+
+.leftbar-header-title {
+  color: var(--text-bright);
+  font-size: 0.875rem;
+  letter-spacing: 2px;
+  margin-bottom: 0.938rem;
+  line-height: 1.2;
+  transition: all 0.3s ease;
+}
+
+.profile-img-container {
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: 50%;
+  border: 2px solid var(--neon-blue);
+  object-fit: cover;
+  transition: all 0.3s ease;
+}
+
+
+
+
+
+
+
+/* --- MENU ITEMS --- */
+.menu-group {
+  padding: 0.625rem 0;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  gap: 0.938rem;
+}
+
+.menu-item i {
+  font-size: 1.125rem;
+  width: 1.563rem;
+  text-align: center;
+  color: var(--neon-blue);
+}
+
+.menu-item span {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.menu-item:hover {
+  background: rgba(56, 189, 248, 0.1);
+  color: var(--text-bright);
+}
+
+
+/* EFEK SAAT MENU AKTIF */
+.menu-item.active {
+  background: rgba(56, 189, 248, 0.15) !important;
+  color: var(--neon-blue) !important;
+  border-left: 3px solid var(--neon-blue); /* Garis indikator di kiri */
+}
+
+.menu-item.active i {
+  text-shadow: 0 0 10px var(--neon-blue);
+}
+
+/* EFEK FLASH SAAT PINDAH HALAMAN */
+.side-glow-flash {
+  box-shadow: 10px 0 30px rgba(56, 189, 248, 0.4) !important;
+  border-right: 1px solid var(--neon-blue) !important;
+}
+
+/* --- BADGES --- */
+.badge-admin { background: var(--neon-red); color:  #fde55f; }
+.badge-sys { background: var(--neon-purple-sys); color: #fff; }
+.badge-admin, .badge-sys {
+  font-size: 0.563rem;
+  padding: 1px 4px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+/* --- LOGOUT (BOTTOM) --- */
+.bottom-nav {
+  margin-top: auto;
+  border-top: 1px solid var(--border-dim);
+  padding: 0.5rem 0;
+}
+
+/* Base: Override tegas agar tidak ada warna biru */
+.btn-logout {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  
+  /* OVERRIDE: Mematikan warna biru bawaan menu-item */
+  background: transparent !important; 
+  color: var(--text-dim) !important;
+  
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  gap: 0.938rem;
+}
+
+/* Ikon Logout sebelum hover (Merah redup agar elegan) */
+.btn-logout i {
+  font-size: 1.125rem;
+  width: 1.563rem;
+  text-align: center;
+  color: #ef4444; /* Merah tapi tanpa glow dulu */
+  transition: 0.3s;
+}
+
+/* --- PERILAKU SAAT HOVER (Baru Muncul Merah Solid) --- */
+.btn-logout:hover {
+  /* Saat disentuh, baru kita beri background merah */
+  background: var(--neon-red) !important; 
+  color: #ffffff !important;
+  font-weight: 800;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+
+/* Icon jadi putih bersih saat hover */
+.btn-logout:hover i {
+  color: #ffffff !important;
+}
+
+/* Menghilangkan efek biru hover bawaan jika class menu-item masih menempel */
+.menu-item.btn-logout:hover {
+  background: var(--neon-red) !important;
+}
+
+/* --- LOGIKA COLLAPSED --- */
+.leftbar-container.collapsed .leftbar-header-title,
+.leftbar-container.collapsed .menu-item span,
+.leftbar-container.collapsed .badge-admin,
+.leftbar-container.collapsed .badge-sys {
+  display: none;
+}
+
+.leftbar-container.collapsed .profile-img-container {
+  width: 2.188rem;
+  height: 2.188rem;
+}
+
+.leftbar-container.collapsed .menu-item {
+  justify-content: center;
+  padding: 0.938rem 0;
+}
+
+/* --- MOBILE RESPONSIVE --- */
+@media (max-width: 600px) {
+  .leftbar-container { width: 11.25rem; }
+  .leftbar-container.collapsed { width: var(--leftbar-collapsed-width); }
+  .inner-content { padding: 0.938rem !important; }
+}
+
+/* --- CONTAINER PROFIL (HEADER) --- */
+.profile-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 0;
+  transition: all 0.3s ease;
+}
+
+/* --- STYLE GAMBAR PROFIL --- */
+.profile-img-container {
+  width: 3.75rem;          /* 60px - Ukuran Default */
+  height: 3.75rem;         /* 60px */
+  border-radius: 50%;      /* Membuat gambar bulat sempurna */
+  border: 2px solid var(--neon-blue);
+  object-fit: cover;       /* Agar foto tidak gepeng/ketarik */
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: block;
+}
+
+/* --- SAAT LEFTBAR MENGECIL (COLLAPSED) --- */
+.leftbar-container.collapsed .profile-img-container {
+  width: 2.188rem;         /* 35px - Ukuran Kecil */
+  height: 2.188rem;        /* 35px */
+  border-width: 1.5px;     /* Border sedikit lebih tipis agar proporsional */
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+}
+
+/* Efek Hover pada Profil */
+.profile-img-container:hover {
+  border-color: var(--text-bright);
+  box-shadow: 0 0 20px var(--neon-blue);
+  cursor: pointer;
+  transform: scale(1.05); /* Sedikit membesar saat disentuh */
+}

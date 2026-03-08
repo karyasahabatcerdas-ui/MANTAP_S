@@ -1,0 +1,20 @@
+  <!-- [UI BLOCK: MODAL PHOTO SLIDER - STEALTH EDITION] -->
+<div id="modalPhotoSlider" class="modal-slider-overlay" style="display:none;">
+  
+  <!-- TOMBOL CLOSE (Neon Red) -->
+  <button onclick="closePhotoSlider()" class="btn-slider-close">&times;</button>
+  
+  <!-- AREA FOTO UTAMA -->
+  <div id="sliderContent" class="slider-main-viewport">
+    <img id="fullPhotoView" src="" class="img-full-neon">
+  </div>
+
+  <!-- NAVIGASI BAWAH (Floating Neon) -->
+  <div class="slider-nav-container">
+    <button onclick="changePhoto(-1)" class="btn-nav-neon"><i class="fas fa-chevron-left"></i></button>
+    
+    <div id="photoCounter" class="badge-counter-neon">1 / 1</div>
+    
+    <button onclick="changePhoto(1)" class="btn-nav-neon"><i class="fas fa-chevron-right"></i></button>
+  </div>
+</div>
