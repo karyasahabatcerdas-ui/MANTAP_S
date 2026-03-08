@@ -197,6 +197,33 @@ async function hapusAset(sheetName, assetId) {
   return res;
 }
 
+
+/**
+ * JEMBATAN SERVER: Namanya sama ama di GAS biar gak pusing
+ * Cara pakai: const jam = await getServerTime();
+ */
+async function getServerTime(dateform = null) {
+  try {
+    // 1. Kalau ada parameter (Mode Formatter), kita olah di lokal aja biar cepet
+    if (dateform) {
+      const targetDate = new Date(dateform);
+      const pad = (n) => n.toString().padStart(2, '0');
+      return `${pad(targetDate.getDate())}/${pad(targetDate.getMonth()+1)}/${targetDate.getFullYear()} ${pad(targetDate.getHours())}:${pad(targetDate.getMinutes())}:${pad(targetDate.getSeconds())}`;
+    }
+
+    // 2. Kalau GAK ADA parameter (Mode Real-time), baru nembak ke Google
+    const resp = await fetch(`${GAS_URL}?action=getServerTime`);
+    const res = await resp.json();
+    return res.time;
+
+  } catch (err) {
+    console.error("Gagal ambil jam server, pakai jam lokal:", err);
+    return new Date().toLocaleString('id-ID'); // Fallback biar gak error
+  }
+}
+
+
+
 /* ----- script inisialisasi berakhir disini------------------*/
 
 /**
@@ -415,7 +442,7 @@ function closeGlobalSearch() {
  * ============================================================================
  */
 
-async function fetchAssetDetailForLog(idasset) {
+async function fetchAssetDetailForLog(unitID) {
   if (!unitID) return;    
   const uiNama = document.getElementById('log_as_id');    
   //const iframe = document.getElementById('iframeGAS');
@@ -427,26 +454,8 @@ async function fetchAssetDetailForLog(idasset) {
     // Memanggil server dengan parameter action dan unitID
     //const response = await fetch(`${urlGAS}?action=getAssetDetailForLog&unitID=${unitID}`);
     //const res = await response.json();
-    let res = null; // Gunakan 'let' supaya bisa diisi data hasil pencarian
-    const cari = megaSearch("ALL",idasset); // Fungsi pencarian global yang sudah kita buat di fungsiGlobal.js); 
-
-    if (cari.status === "success") {
-        // 1. Ambil paket hasil pertama dari array 'results'
-        const item = cari.results[0]; 
-        
-        // 2. Sekarang kamu bisa akses 'type' dan 'data'-nya
-        const resType = item.type; // Nama Sheet
-        const resData = item.data; // Array 1 Baris Presisi [ID, Barcode, Nama, ...]
-        
-        console.log("✅ Unit Ketemu di Sheet:", resType);
-        console.log("📦 Data Array Presisi:", resData);
-
-        // Kalau mau disimpan ke variabel 'res' yang sudah kamu siapkan:
-        res = item; 
-    }
-
-
-    if (res && res[2] !== "TIDAK DITEMUKAN") { //re.nama
+    const res = getAssetDetailForLogRAM(unitID);//pengganti fungsi gas dilokal
+    if (res && res.nama !== "TIDAK DITEMUKAN") {
       
       // 1. TAMPILKAN KONFIRMASI UNIT
       await Swal.fire({
