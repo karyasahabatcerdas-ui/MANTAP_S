@@ -936,10 +936,12 @@ async function loadJad() {
 
     try {
       // 2. Panggil Server (GET)
-      const response = await fetch(`${urlGAS}?action=getJadwal`);
-      const data = await response.json();
+      //const response = await fetch(`${urlGAS}?action=getJadwal`);
+      //const data = await response.json();
 
+      const data = getMaint("Maintenance").slice(1).reverse(); //pengganti fungsi gas dilokal
       historyJadwal = data ;
+      
       if (!data || data.length < 2) return;
       
       // Ambil data tanpa header (asumsi data[0] adalah header)
