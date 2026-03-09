@@ -934,6 +934,8 @@ async function loadJad() {
 
     // 1. Ambil Nilai Filter dari UI GitHub
     const fType = baris ? baris[1] : ""; 
+    console.log("Filter Type Asset:", fType); 
+    console.log("Nilai Baris Referensi:", baris);
     const fState = document.getElementById('filterState')?.value || ""; 
     const sortBy = document.getElementById('sortJadwal')?.value || "";   
     const keyword = document.getElementById('cari_jadwal')?.value.toUpperCase() || "";
