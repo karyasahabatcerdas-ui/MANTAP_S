@@ -3405,7 +3405,8 @@ async function loadAssetDataView(sheetName) {
    // const data = await response.json();
 
     const data = getAsset(sheetName); 
-
+    console.log("Data aset untuk view:", data);
+    console.log('namasheet :', sheetName);
     if (!data || data.length < 2) {
       const tbody = document.getElementById('viewAssetBody');
       if (tbody) tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>📭 Data Kosong</td></tr>";
@@ -3438,6 +3439,10 @@ function renderAssetTableIncrementalView(sheetName, data) {
   const existingRows = tbody.rows;
   const newDataLength = data.length - 1;
 
+
+
+  console.log("Data aset untuk view:", data);
+  console.log('namasheet :', sheetName);
   for (let i = 1; i < data.length; i++) {
     const rowData = data[i];
     const rowIdx = i - 1;
@@ -3475,14 +3480,14 @@ function renderAssetTableIncrementalView(sheetName, data) {
  * Pastikan fungsi ini dipanggil dengan data yang benar (array tipe aset) agar dropdown terisi dengan benar.
  * ==========================================================================
  */
-
+/*
 function renderViewDropdown(types) {
   const sel = document.getElementById('viewAssetTypeSelect');
   let h = '<option value="">-- Pilih  --</option>';
   types.forEach(t => h += `<option value="${t}">${t}</option>`);
   sel.innerHTML = h;
 }
-
+*/
 
 
 /**
@@ -3559,7 +3564,8 @@ async function openAssetDetail(sheetName, row) {
     //if (!response.ok) throw new Error(`HTTP Error! Status: ${response.status}`);
 
     const data = getAsset(sheetName)[row-1];
-
+    console.log("Data aset untuk view:", data);
+    console.log('namasheet :', sheetName);
     //const data = await response.json();
     console.log("table data di openassetdetai: ");
     console.table(data);
