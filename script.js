@@ -929,7 +929,7 @@ async function loadJad() {
     //const urlGAS = APPSCRIPT_URL;
     const fType_val = document.getElementById('filterType')?.value || "";
       const dataRef = getRef("Type_Asset");
-      const baris = dataRef.find(row => row[0] === fType_val);
+      const baris = dataRef.find(row => row[1] === fType_val);
 
 
     // 1. Ambil Nilai Filter dari UI GitHub
@@ -3310,7 +3310,7 @@ async function openAddAssetModal() {
   //value bantu
   const Type_val = document.getElementById('assetTypeSelect')?.value || "";
   const dataRef = getRef("Type_Asset");
-  const baris = dataRef.find(row => row[0] === Type_val);
+  const baris = dataRef.find(row => row[1] === Type_val);
   //value real
   const type = baris ? baris[1] : "" ;
   if (!type) {
