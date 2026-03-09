@@ -927,9 +927,13 @@ async function loadJad() {
   timerPencarian = setTimeout(async function() {
     //const iframe = document.getElementById('iframeGAS');
     //const urlGAS = APPSCRIPT_URL;
-    
+    const fType_val = document.getElementById('filterType')?.value || "";
+      const dataRef = getRef("Type_Asset");
+      const baris = dataRef.find(row => row[0] === fType_val);
+
+
     // 1. Ambil Nilai Filter dari UI GitHub
-    const fType = document.getElementById('filterType')?.value || "";   
+    const fType = baris ? baris[1] : ""; 
     const fState = document.getElementById('filterState')?.value || ""; 
     const sortBy = document.getElementById('sortJadwal')?.value || "";   
     const keyword = document.getElementById('cari_jadwal')?.value.toUpperCase() || "";
