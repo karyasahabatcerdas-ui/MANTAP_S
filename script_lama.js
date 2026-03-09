@@ -85,3 +85,11 @@ const mAX_IMG = 5;
 
 
 
+/**=============================================================================================
+ * [FUNGSI: SAVE ADMIN EDIT]
+ * SIMPAN USER SIAPAPUN KETIKA BERADA DI LOGIN ADMIN.
+ * =============================================================================================
+ */
+function closeModal() {
+  document.getElementById('editModal').style.display = 'none';
+}
