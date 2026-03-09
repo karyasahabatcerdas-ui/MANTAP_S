@@ -36,7 +36,9 @@ function getAssetDetailForLogRAM(unitID) {
   // 3. CEK JADWAL MAINTENANCE (Direct Access ke RAM)
   if (foundAsset) {
     result = { ...result, ...foundAsset };
-    const mData = window.APP_STORE.maintenance["Maintenance"] || [];
+    //const mData = window.APP_STORE.maintenance["Maintenance"] || [];
+
+    const mData = getMaint("Maintenance");
     
     const skrg = new Date();
     const rangeMilli = 14 * 24 * 60 * 60 * 1000; // 2 Minggu

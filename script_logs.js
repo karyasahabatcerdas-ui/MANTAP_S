@@ -9,7 +9,7 @@ async function loadAuditLogs() {
   if (!logContainer) return;
   //if (!iframe || !iframe.src) return console.error("URL GAS tidak ditemukan!");
 
-  const urlGAS = APPSCRIPT_URL;
+  //const urlGAS = APPSCRIPT_URL;
 
   // 1. Tampilkan loading spinner
   logContainer.innerHTML = `<tr><td colspan="3" class="text-center">
@@ -17,12 +17,14 @@ async function loadAuditLogs() {
 
   try {
     // 2. Fetch data dari doGet dengan action getLatestLogs
-    const response = await fetch(`${urlGAS}?action=getLatestLogs`);
+    //const response = await fetch(`${urlGAS}?action=getLatestLogs`);
     
-    if (!response.ok) throw new Error("Respon server gagal: " + response.status);
+    
+    //if (!response.ok) throw new Error("Respon server gagal: " + response.status);
 
-    const logs = await response.json();
+    //const logs = await response.json();
 
+    const logs = getMaint("Logs");
     // 3. Cek jika data kosong
     if (!logs || logs.length === 0) {
       logContainer.innerHTML = "<tr><td colspan='3' class='text-center text-muted'>Belum ada aktivitas tercatat.</td></tr>";
@@ -60,87 +62,122 @@ async function loadAuditLogs() {
 }
 
 
-// --- FUNGSI BACKUP & ARCHIVE LOGS ---
+/**
+ * [FUNGSI CLIENT: BACKUP LOGS INSTAN DARI RAM]
+ * Murni Lokal, Tanpa Fetch ke GAS, Langsung Download!
+ */
 async function backupLogSekarang() {
-  const urlGAS = APPSCRIPT_URL;
+  // 1. AMBIL DATA UTUH DARI RAM (Termasuk Header)
+  const rawData = window.APP_STORE.maintenance["Logs"] || [];
+  
+  if (rawData.length <= 1) {
+    return Swal.fire({ title: "Kosong!", text: "Belum ada log untuk di-backup, Señor.", icon: "info" });
+  }
 
   const result = await Swal.fire({
-    title: "Backup Logs!",
-    text: "Arsip dan kosongkan LOG sekarang? Tindakan ini tidak dapat dibatalkan.",
-    icon: "warning",
+    title: "Backup Logs?",
+    text: `Download ${rawData.length - 1} baris log ke format CSV?`,
+    icon: "question",
     showCancelButton: true,
-    confirmButtonColor: "#28a745",
-    confirmButtonText: "Ya, Arsipkan",
-    cancelButtonText: "Batal",
-    width: '80%'
+    confirmButtonText: "Ya, Download!",
+    background: "#0f172a", color: "#fff"
   });
 
-  if (result.isConfirmed) {
-    Swal.fire({
-      title: 'Memproses Backup...',
-      text: 'Membuat file arsip di Drive, mohon tunggu...',
-      allowOutsideClick: false,
-      showConfirmButton: false,
-      didOpen: () => { Swal.showLoading(); }
-    });
+  if (!result.isConfirmed) return;
 
-    try {
-      const response = await fetch(urlGAS, {
-        method: "POST",
-        body: JSON.stringify({ action: "archiveLogs" })
-      });
-      const res = await response.json(); // Asumsi server kirim JSON {message: "..."}
+  try {
+    // 2. LOGIKA RAKIT CSV (Wuzzz!)
+    const csvContent = rawData.map(row => {
+      return row.map(cell => {
+        // Bersihkan tanda petik agar format CSV aman
+        let cleanCell = String(cell).replace(/"/g, '""'); 
+        return `"${cleanCell}"`;
+      }).join(",");
+    }).join("\n");
 
-      await Swal.fire({
-        title: "Arsip Berhasil",
-        text: res.message || res,
-        icon: "success",
-        width: '80%'
-      });
-    } catch (err) {
-      Swal.fire({ title: "Gagal Backup", text: "Terjadi gangguan: " + err.message, icon: "error", width: '80%' });
-    }
+    // 3. BUAT BLOB & LINK DOWNLOAD "SILUMAN"
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    
+    const tgl = new Date().toISOString().slice(0, 10);
+    link.href = url;
+    link.download = `Backup_Logs_KSC_${tgl}.csv`;
+    
+    // 4. EKSEKUSI DOWNLOAD
+    document.body.appendChild(link);
+    link.click();
+
+    // 5. BERSIHKAN JEJAK
+    setTimeout(() => {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      speakSenor("Laporan log berhasil diunduh, Señor.");
+      Swal.fire({ title: "Berhasil!", text: "File sudah masuk folder download.", icon: "success", timer: 2000 });
+    }, 500);
+
+  } catch (err) {
+    console.error("Backup Error:", err);
+    Swal.fire({ title: "Gagal", text: err.message, icon: "error" });
   }
 }
 
-// --- FUNGSI HAPUS LOGS ---
+
+
+/**
+ * [FUNGSI CLIENT: BACKUP LOKAL & KOSONGKAN LOGS]
+ * Memanfaatkan fungsi deleteRowGeneric yang sudah ada di GAS
+ */
 async function hapusLog() {
-  const urlGAS = APPSCRIPT_URL;
+  // 1. AMBIL DATA LOGS DARI RAM
+  const rawData = window.APP_STORE.maintenance["Logs"] || [];
+  if (rawData.length <= 1) return Swal.fire("Kosong!", "Logs sudah bersih, Señor.", "info");
 
   const result = await Swal.fire({
     title: "Kosongkan Logs?",
-    text: "PERINGATAN: Semua riwayat aksi akan dihapus permanen. Lanjutkan?",
+    text: "Sistem akan mendownload Backup CSV & menghapus semua baris di Server.",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#d33",
-    confirmButtonText: "Ya, Hapus Semua",
-    cancelButtonText: "Batal",
-    width: '80%'
+    confirmButtonText: "Ya, Eksekusi!",
+    background: "#0f172a", color: "#fff"
   });
 
-  if (result.isConfirmed) {
-    Swal.fire({
-      title: 'Membersihkan...',
-      allowOutsideClick: false,
-      didOpen: () => { Swal.showLoading(); }
-    });
+  if (!result.isConfirmed) return;
 
-    try {
-      const response = await fetch(urlGAS, {
-        method: "POST",
-        body: JSON.stringify({ action: "clearLogsOnly" })
-      });
-      const res = await response.json();
+  try {
+    // 2. BACKUP LOKAL (BIAR AMAN)
+    const csvContent = rawData.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Backup_Logs_${new Date().getTime()}.csv`;
+    link.click();
 
-      await Swal.fire({
-        title: "Selesai",
-        text: res.message || res,
-        icon: "success",
-        width: '80%'
-      });
-      if (typeof loadAuditLogs === 'function') loadAuditLogs(); // Refresh tabel log
-    } catch (err) {
-      Swal.fire({ title: "Gagal", text: "Terjadi kesalahan: " + err.message, icon: "error", width: '80%' });
+    // 3. LOGIKA HAPUS MASSAL (MEMAKAI DELETE YANG SUDAH ADA)
+    Swal.fire({ title: 'Cleaning Server...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+    // Kita hitung jumlah baris yang mau dihapus (Total baris minus Header)
+    const totalData = rawData.length - 1;
+    
+    // Kirim perintah hapus ke GAS secara berurutan
+    // Kita hapus dari baris TERBAWAH dulu agar index tidak geser
+    for (let i = rawData.length; i > 1; i--) {
+        await fetch(APPSCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({
+                action: "delete", // Pakai action delete yang sudah kamu punya!
+                sheetName: "Logs",
+                id: i // Hapus baris nomor i
+            })
+        });
     }
+
+    // 4. SELESAI & SYNC
+    await syncDataGhoib(); 
+    Swal.fire({ title: "Berhasil!", text: "Logs dibersihkan & Backup terunduh.", icon: "success" });
+
+  } catch (err) {
+    Swal.fire({ title: "Gagal", text: err.message, icon: "error" });
   }
 }
