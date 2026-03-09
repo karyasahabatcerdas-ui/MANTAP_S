@@ -18,12 +18,12 @@
 
                     <!-- Filter Status -->
                     <select id="filterStatusLog" onchange="applyHistoryFilter()" class="input-pendek">
-                    <option value="all">🔍 MEMUAT STATUS...</option>
+                    <option value="all">SEMUA STATUS</option>
                     </select>
 
                     <!-- Filter ID Jadwal Dinamis -->
                     <select id="filterJadwalLog" onchange="applyHistoryFilter()" class="input-pendek">
-                    <option value="">📅 MEMUAT JADWAL...</option>
+                    <option value="all">SEMUA ID JADWAL</option>
                     </select>
                     
                     <!-- TOMBOL GLOBAL SEARCH (GOLD / AMBER NEON) -->
@@ -40,7 +40,7 @@
                         <tr>
                         <th style="width: 80px; min-width: 60px;">ID LOG/ WAKTU</th>
                         <th style="width: 80px; min-width: 60px;">PETUGAS/ ASET/ ID Jadwal</th>
-                        <th class="text-center" style="width: 120px; min-width: 100px;">AKSI</th>
+                        <th class="text-center" style="width: 100px; min-width: 90px;">AKSI</th>
                         </tr>
                     </thead>
                     <tbody id="historyBody">
@@ -63,17 +63,15 @@
             <div class="rightbar-action-bar"> 
            
                 <select id="sortJadwal" onchange="loadJad()" class="input-pendek">
-                    <option value="newest">MEMUAT FILTER TANGGAL...</option>
-
+                    <!-- <option value="newest">MEMUAT FILTER TANGGAL...</option> -->
                 </select>
 
                 <select id="filterType" onchange="loadJad()" class="input-pendek">
-                    <option value="">MEMUAT TYPE...</option>
+                    <option value="all">SEMUA TIPE</option>
                 </select>
 
                 <select id="filterStateJadwal" onchange="loadJad()" class="input-pendek">
-                    <option value="">MEMUAT STATUS JADWAL.... </option>
-
+                    <option value="all">SEMUA STATUS</option>
                 </select>
 
                 <div class="search-wrapper-neon" >
@@ -98,7 +96,7 @@
                 </thead>
                 <tbody id="jadwalBody">
                     <tr>
-                    <td colspan="5" class="text-loading">
+                    <td colspan="4" class="text-loading">
                         <i class="fa-solid fa-spinner fa-spin"></i> Memuat jadwal maintenance...
                     </td>
                     </tr>
@@ -145,7 +143,7 @@
                 </thead>
                 <tbody id="kelolaBody">
                     <tr>
-                    <td colspan="5" class="text-loading">
+                    <td colspan="4" class="text-loading">
                         <i class="fa-solid fa-spinner fa-spin"></i> Sinkronisasi jadwal...
                     </td>
                     </tr>
@@ -190,13 +188,13 @@
                         <input type="checkbox" id="selectAll" onclick="toggleSelectAll()">
                     </th>
                     <th style="width: 40px; min-width: 25px;">USER INFO</th>
-                    <th style="width: 100px; min-width: 80px;">LOG LOGIN</th>
+                    <th style="width: 70px; min-width: 50px;">LOG LOGIN</th>
                     <th style="width: 70px; min-width: 50px; text-align: center;">AKSI</th>
                     </tr>
                 </thead>
                 <tbody id="userListBody">
                     <tr>
-                    <td colspan="5" style="text-align:center; padding: 40px; opacity: 0.5;">
+                    <td colspan="4" style="text-align:center; padding: 40px; opacity: 0.5;">
                         <i class="fa-solid fa-spinner fa-spin"></i> Sinkronisasi database user...
                     </td>
                     </tr>
@@ -217,7 +215,7 @@
                 <!-- Bagian Filter Dropdown (Sekarang Glassmorphism) -->
                 <div class="filter-container-aset input-pendek">
                     <select id="assetTypeSelect" onchange="loadAssetData(this.value)" >
-                    <option value="">-- Pilih Tipe Aset --</option>
+                    <option value="all">SEMUA TIPE ASSET</option>
                     </select>
                 </div>
                 <button onclick="openAddAssetModal()" class="btn-base btn-blue">
@@ -225,7 +223,7 @@
                 </button>
 
                 <button id="btnBulkQR" onclick="bulkUpdateQR()" class="btn-base btn-purple">
-                <i class="fa-solid fa-qrcode"></i> QR BULK GENERATE
+                <i class="fa-solid fa-qrcode"></i> QR GENERATE
                 </button>
 
                 <button onclick="openGlobalSearch()" class="btn-base btn-gold">
@@ -248,13 +246,13 @@
                         <input type="checkbox" id="checkAllAsset" onclick="toggleAllAssets()">
                     </th>
                     <th style="width: 40px; min-width: 35px;">ID/ NAMA ASET/ STATUS</th>
-                    <th style="width: 90px; min-width: 80px;">LOKASI</th>
-                    <th style="width: 80px; min-width: 50px; text-align: center;">AKSI</th>
+                    <th style="width: 70px; min-width: 50px;">LOKASI</th>
+                    <th style="width: 70px; min-width: 50px; text-align: center;">AKSI</th>
                     </tr>
                 </thead>
                 <tbody id="assetBody">
                     <tr>
-                    <td colspan="6" style="text-align:center; padding: 40px; opacity: 0.5;">
+                    <td colspan="4" style="text-align:center; padding: 40px; opacity: 0.5;">
                         <i class="fa-solid fa-spinner fa-spin"></i> Memuat data aset...
                     </td>
                     </tr>
@@ -288,8 +286,8 @@
                 <thead>
                     <tr>
                     <th style="width: 60px; min-width: 40px;">WAKTU</th>
-                    <th style="width: 60px; min-width: 40px;">PIC / ADMIN</th>
-                    <th style="width: 100px; min-width: 80px;" >AKTIVITAS / DETAIL PERUBAHAN</th>
+                    <th style="width: 60px; min-width: 40px;">PIC</th>
+                    <th style="width: 100px; min-width: 80px;" >DETAIL AKSI</th>
                     </tr>
                 </thead>
                 <!-- ID logTableBody WAJIB ADA untuk JavaScript Render -->
@@ -312,7 +310,7 @@
             <div class="rightbar-action-bar">
                 <div class="input-pendek">
                 <select id="viewAssetTypeSelect" onchange="loadAssetDataView(this.value)">
-                <option value="">-- Pilih Tipe Aset --</option>
+                <option value="all">SEMUA TIPE ASSET</option>
                 </select>
                 </div>
                 <button onclick="openGlobalSearch()" class="btn-base btn-gold input-sedang">
