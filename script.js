@@ -927,13 +927,13 @@ async function loadJad() {
   timerPencarian = setTimeout(async function() {
     //const iframe = document.getElementById('iframeGAS');
     //const urlGAS = APPSCRIPT_URL;
-    const fType_val = document.getElementById('filterType')?.value || "";
+    const fType_val = document.getElementById('filterType').value || "";
       const dataRef = getRef("Type_Asset");
       const baris = dataRef.find(row => row[1] === fType_val);
 
 
     // 1. Ambil Nilai Filter dari UI GitHub
-    const fType = baris ? baris[1] : ""; 
+    const fType = baris ? baris[1] : "ftype tidak ditemukan"; 
     console.log("Filter Type Asset:", fType); 
     console.log("Nilai Baris Referensi:", baris);
     const fState = document.getElementById('filterState')?.value || ""; 
