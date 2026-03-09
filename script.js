@@ -3178,6 +3178,8 @@ async function loadAssetData(sheetName) {
 
       const dataRef = getRef("Type_Asset");
       const baris = dataRef.find(row => row[0] === sheetName);
+      console.log("isi dataRef:", dataRef);
+      console.log(`Mencari sheet "${sheetName}" di dataRef...`, baris);
       const data = baris ? baris[1] : "";
          
     if (!data || data.length < 2) {
