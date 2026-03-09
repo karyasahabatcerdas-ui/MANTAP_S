@@ -1,4 +1,4 @@
-ñ ko gig// --- 1. KONFIGURASI & GUDANG DATA ---
+// --- 1. KONFIGURASI & GUDANG DATA ---
 //const GAS_URL = "https://script.google.com/macros/s/AKfycbwwJVU-AHjjg3Lhj_zDIVtDCfTWV114zbQMve87e6b6Rh_FQRzuwyVoiGZzd__slPbb/exec";
 const GAS_URL = APPSCRIPT_URL; // Gunakan URL yang dibentuk dari APPSCRIPT_ID di index.html
 
