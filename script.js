@@ -3173,9 +3173,11 @@ async function loadAssetData(sheetName) {
     // EncodeURIComponent penting jika nama sheet ada spasi (misal: 'Pompa Air')
     //const response = await fetch(`${urlGAS}?action=getSpecificAsset&sheetName=${encodeURIComponent(sheetName)}`);
     //const data = await response.json();
-    
-    const data = getAsset(sheetName);
 
+      const dataRef = getRef("Type_Asset");
+      const baris = dataRef.find(row => row[0] === sheetName);
+      const data = baris ? baris[1] : "";
+         
     if (!data || data.length < 2) {
       document.getElementById('assetBody').innerHTML = "<tr><td colspan='5' style='text-align:center;'>📭 Data Kosong</td></tr>";
       return;
@@ -3308,12 +3310,12 @@ async function updateQRCode(type, id) {
 
 async function openAddAssetModal() {
   //value bantu
-  const Type_val = document.getElementById('assetTypeSelect')?.value || "";
-  console.log("Type_Asset", type_val);
+  const val_type = document.getElementById('assetTypeSelect')?.value || "";
   const dataRef = getRef("Type_Asset");
-  const baris = dataRef.find(row => row[1] === Type_val);
-  //value real
+  const baris = dataRef.find(row => row[1] === val_type);
   const type = baris ? baris[1] : "" ;
+
+  //const type = document.getElementById('assetTypeSelect')?.value || "";
   console.log("Type_Asset", type);
   if (!type) {
     return Swal.fire({
