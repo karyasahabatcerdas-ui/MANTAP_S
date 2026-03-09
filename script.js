@@ -1,4 +1,4 @@
-// --- 1. KONFIGURASI & GUDANG DATA ---
+ñ ko gig// --- 1. KONFIGURASI & GUDANG DATA ---
 //const GAS_URL = "https://script.google.com/macros/s/AKfycbwwJVU-AHjjg3Lhj_zDIVtDCfTWV114zbQMve87e6b6Rh_FQRzuwyVoiGZzd__slPbb/exec";
 const GAS_URL = APPSCRIPT_URL; // Gunakan URL yang dibentuk dari APPSCRIPT_ID di index.html
 
@@ -941,11 +941,11 @@ async function loadJad() {
     const keyword = document.getElementById('cari_jadwal')?.value.toUpperCase() || "";
 
     try {
-      // 2. Panggil Server (GET)
+      // 2. Panggil Server (GET)getref
       //const response = await fetch(`${urlGAS}?action=getJadwal`);
       //const data = await response.json();
 
-      const data = getMaint("Maintenance").slice(1).reverse(); //pengganti fungsi gas dilokal
+      const data = getMaint("Maintenance").slice(1); //pengganti fungsi gas dilokal
       historyJadwal = data ;
       
       if (!data || data.length < 2) return;
@@ -2017,7 +2017,7 @@ async function loadKel() {
   if (!tbody) return;
 
   //const iframe = document.getElementById('iframeGAS');
-  const urlGAS = APPSCRIPT_URL;
+  //const urlGAS = APPSCRIPT_URL;
 
   // Berikan loading indicator sederhana
   tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'><i class='fas fa-spinner fa-spin'></i> Memuat panel kelola...</td></tr>";
@@ -3163,8 +3163,8 @@ function renderAllTypeDropdowns(types) {
  * Menarik data dari sheet tertentu sesuai type_asset yg juga nama sheet nya, lalu memanggil mesin render untuk menampilkan di tabel aset.
  * ====================================================================================================================
  */
-async function loadAssetData(sheetName) {
-  if (!sheetName) return;
+async function loadAssetData(sheetName_val) {
+  if (!sheetName_val) return;
   
   //const iframe = document.getElementById('iframeGAS');
   //const urlGAS = APPSCRIPT_URL;
@@ -3176,11 +3176,9 @@ async function loadAssetData(sheetName) {
     //const response = await fetch(`${urlGAS}?action=getSpecificAsset&sheetName=${encodeURIComponent(sheetName)}`);
     //const data = await response.json();
 
-      const dataRef = getRef("Type_Asset");
-      const baris = dataRef.find(row => row[0] === sheetName);
-      console.log("isi dataRef:", dataRef);
-      console.log(`Mencari sheet "${sheetName}" di dataRef...`, baris);
-      const data = baris ? baris[1] : "";
+      const sheetRef = getRef("Type_Asset").slice(1);
+      const sheetName = sheetRef.find(row => row[0] === sheetName_val);
+      const data = getAsset(sheetName).slice(1);
          
     if (!data || data.length < 2) {
       document.getElementById('assetBody').innerHTML = "<tr><td colspan='5' style='text-align:center;'>📭 Data Kosong</td></tr>";
