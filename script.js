@@ -1001,9 +1001,9 @@ async function loadJad() {
         limitAhead.setDate(now.getDate() - 30);
         rawData = rawData.filter(d => {
           const dDate = toDate(d[7]);
-          return dDate >= now && dDate <= limitAhead;
+          return dDate >= now && dDate <= limitBack;
         });
-
+      }
       // 5. RENDER KE TABEL/VIEW
       renderJadwalViewIncremental(rawData);
 
