@@ -3174,7 +3174,7 @@ async function loadAssetData(sheetName) {
     //const response = await fetch(`${urlGAS}?action=getSpecificAsset&sheetName=${encodeURIComponent(sheetName)}`);
     //const data = await response.json();
 
-    const data = getasset(sheetName);
+    const data = getAsset(sheetName);
 
     if (!data || data.length < 2) {
       document.getElementById('assetBody').innerHTML = "<tr><td colspan='5' style='text-align:center;'>📭 Data Kosong</td></tr>";
@@ -3309,10 +3309,12 @@ async function updateQRCode(type, id) {
 async function openAddAssetModal() {
   //value bantu
   const Type_val = document.getElementById('assetTypeSelect')?.value || "";
+  console.log("Type_Asset", type_val);
   const dataRef = getRef("Type_Asset");
   const baris = dataRef.find(row => row[1] === Type_val);
   //value real
   const type = baris ? baris[1] : "" ;
+  console.log("Type_Asset", type);
   if (!type) {
     return Swal.fire({
       title: "Pilih Tipe!",
