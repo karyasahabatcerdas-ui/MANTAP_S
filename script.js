@@ -3173,7 +3173,7 @@ async function loadAssetData(sheetName) {
     // EncodeURIComponent penting jika nama sheet ada spasi (misal: 'Pompa Air')
     //const response = await fetch(`${urlGAS}?action=getSpecificAsset&sheetName=${encodeURIComponent(sheetName)}`);
     //const data = await response.json();
-
+    
     const data = getAsset(sheetName);
 
     if (!data || data.length < 2) {
