@@ -927,15 +927,10 @@ async function loadJad() {
   timerPencarian = setTimeout(async function() {
     //const iframe = document.getElementById('iframeGAS');
     //const urlGAS = APPSCRIPT_URL;
-    const fType_val = document.getElementById('filterType').value || "";
-      const dataRef = getRef("Type_Asset");
-      const baris = dataRef.find(row => row[1] === fType_val);
-
-
+    const el = document.getElementById('filterType');
+    const sheetName= el.options[el.selectedIndex].text
     // 1. Ambil Nilai Filter dari UI GitHub
-    const fType = baris ? baris[1] : "ftype tidak ditemukan"; 
-    console.log("Filter Type Asset:", fType); 
-    console.log("Nilai Baris Referensi:", baris);
+    const fType = sheetName;
     const fState = document.getElementById('filterState')?.value || ""; 
     const sortBy = document.getElementById('sortJadwal')?.value || "";   
     const keyword = document.getElementById('cari_jadwal')?.value.toUpperCase() || "";
@@ -945,7 +940,7 @@ async function loadJad() {
       //const response = await fetch(`${urlGAS}?action=getJadwal`);
       //const data = await response.json();
 
-      const data = getMaint("Maintenance").slice(1); //pengganti fungsi gas dilokal
+      const data = getMaint("Maintenance"); //pengganti fungsi gas dilokal
       historyJadwal = data ;
       
       if (!data || data.length < 2) return;
@@ -971,13 +966,13 @@ async function loadJad() {
       };
 
       // 4. SORTING & RENTANG WAKTU
-      if (sortBy === 'newest') {
+      if (sortBy === 'terbaru') {
         rawData.sort((a, b) => toDate(b[7]) - toDate(a[7]));
       } 
-      else if (sortBy === 'oldest') {
+      else if (sortBy === 'terlama') {
         rawData.sort((a, b) => toDate(a[7]) - toDate(b[7]));
       } 
-      else if (sortBy === 'two_weeks_ahead') {
+      else if (sortBy === '2mgdepan') {
         const limitAhead = new Date();
         limitAhead.setDate(now.getDate() + 14);
         rawData = rawData.filter(d => {
@@ -985,7 +980,7 @@ async function loadJad() {
           return dDate >= now && dDate <= limitAhead;
         });
       } 
-      else if (sortBy === 'two_weeks_back') {
+      else if (sortBy === '2mglalu') {
         const limitBack = new Date();
         limitBack.setDate(now.getDate() - 14);
         rawData = rawData.filter(d => {
@@ -993,6 +988,21 @@ async function loadJad() {
           return dDate <= now && dDate >= limitBack;
         });
       }
+      else if (sortBy === '1blndepan') {
+        const limitAhead = new Date();
+        limitAhead.setDate(now.getDate() + 30);
+        rawData = rawData.filter(d => {
+          const dDate = toDate(d[7]);
+          return dDate >= now && dDate <= limitAhead;
+        });
+      }
+        else if (sortBy === '1blnlalu') {
+        const limitAhead = new Date();
+        limitAhead.setDate(now.getDate() - 30);
+        rawData = rawData.filter(d => {
+          const dDate = toDate(d[7]);
+          return dDate >= now && dDate <= limitAhead;
+        });
 
       // 5. RENDER KE TABEL/VIEW
       renderJadwalViewIncremental(rawData);
@@ -2027,7 +2037,7 @@ async function loadKel() {
     //const response = await fetch(`${urlGAS}?action=getJadwal`);
     //const data = await response.json();
 
-    const data = getMaint("Maintenance").slice(1).reverse(); 
+    const data = getMaint("Maintenance"); 
 
     if (!data || data.length < 2) {
       tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>Belum ada jadwal maintenance.</td></tr>";
@@ -3094,6 +3104,7 @@ function downloadTemplate() {
  * Sekali ambil dari server (fetch), semua dropdown tipe aset langsung sinkron via Cache.
  * ==========================================================================
  */
+/**
 async function loadAssetTypes() {
   //const iframe = document.getElementById('iframeGAS');
   //const urlGAS = APPSCRIPT_URL;
@@ -3122,7 +3133,7 @@ async function loadAssetTypes() {
   }
 }
 
-
+*/
 /**=========================================================================
  * [FUNGSI PEMBANTU: SEBAR DATA KE SEMUA DROPDOWN]
  * Menghindari penulisan berulang untuk setiap ID dropdown.
@@ -3176,9 +3187,10 @@ async function loadAssetData(sheetName_val) {
     //const response = await fetch(`${urlGAS}?action=getSpecificAsset&sheetName=${encodeURIComponent(sheetName)}`);
     //const data = await response.json();
 
-      const sheetRef = getRef("Type_Asset").slice(1);
-      const sheetName = sheetRef.find(row => row[0] === sheetName_val);
-      const data = getAsset(sheetName).slice(1);
+    const sheetRef = getRef("Type_Asset").slice(1);
+    const sheetRow = sheetRef.find(row => row[0] === sheetName_val);
+    const sheetName = sheetRow[1] ;
+    const data = getAsset(sheetName);
          
     if (!data || data.length < 2) {
       document.getElementById('assetBody').innerHTML = "<tr><td colspan='5' style='text-align:center;'>📭 Data Kosong</td></tr>";
@@ -3421,7 +3433,7 @@ async function loadAssetDataView(val_sheetName) {
    // const data = await response.json();
   
   // 1. Ambil Gudang Referensi dari RAM
-  const dataRef = getRef("Type_Asset");
+  const dataRef = getRef("Type_Asset").slice(1);
   // 2. Cari baris yang ID-nya (Kolom 0) cocok dengan 'val'
   const baris = dataRef.find(row => row[0] === val_sheetName);
   // 3. Ambil Nama Tipe dari Kolom 1
