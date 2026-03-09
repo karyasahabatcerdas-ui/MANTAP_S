@@ -3127,6 +3127,7 @@ async function loadAssetTypes() {
  * Menerima array tipe aset dan mengisi semua dropdown yang relevan dengan opsi baru.
  * ==========================================================================
  */
+/*
 function renderAllTypeDropdowns(types) {
   // Daftar ID dropdown yang harus diisi
   const dropdownIds = ['assetTypeSelect', 'viewAssetTypeSelect', 'filterType', 'm_type'];
@@ -3151,7 +3152,7 @@ function renderAllTypeDropdowns(types) {
     if (currentVal) sel.value = currentVal;
   });
 }
-
+*/
 
 
 
@@ -3306,7 +3307,12 @@ async function updateQRCode(type, id) {
 
 
 async function openAddAssetModal() {
-  const type = document.getElementById('assetTypeSelect').value;
+  //value bantu
+  const Type_val = document.getElementById('assetTypeSelect')?.value || "";
+  const dataRef = getRef("Type_Asset");
+  const baris = dataRef.find(row => row[0] === Type_val);
+  //value real
+  const type = baris ? baris[1] : "" ;
   if (!type) {
     return Swal.fire({
       title: "Pilih Tipe!",
