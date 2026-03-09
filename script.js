@@ -3392,9 +3392,9 @@ function toggleSelectAset(master) {
  * Setiap baris memiliki tombol "Lihat Detail" yang memanggil fungsi openAssetDetailView dengan parameter sheetName dan row index untuk menampilkan detail aset di modal.
  * ==========================================================================
  */
-async function loadAssetDataView(sheetName) {
+async function loadAssetDataView(val_sheetName) {
   
-  if (!sheetName) return;
+  if (!val_sheetName) return;
   
   //const iframe = document.getElementById('iframeGAS');
   //const urlGAS = APPSCRIPT_URL;
@@ -3403,6 +3403,15 @@ async function loadAssetDataView(sheetName) {
     // 1. PANGGIL SERVER (GET) - Menggunakan action yang sama dengan Kelola Aset
     //const response = await fetch(`${urlGAS}?action=getSpecificAsset&sheetName=${encodeURIComponent(sheetName)}`);
    // const data = await response.json();
+  
+  // 1. Ambil Gudang Referensi dari RAM
+  const dataRef = getRef("Type_Asset");
+  // 2. Cari baris yang ID-nya (Kolom 0) cocok dengan 'val'
+  const baris = dataRef.find(row => row[0] === val_sheetName);
+  // 3. Ambil Nama Tipe dari Kolom 1
+  const sheetName = baris ? baris[1] : "TIDAK DITEMUKAN";
+
+
 
     const data = getAsset(sheetName); 
     console.log("Data aset untuk view:", data);
