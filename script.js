@@ -3175,28 +3175,31 @@ function renderAllTypeDropdowns(types) {
  * ====================================================================================================================
  */
 async function loadAssetData(sheetName_val) {
-  if (!sheetName_val) return;
-  
-  //const iframe = document.getElementById('iframeGAS');
-  //const urlGAS = APPSCRIPT_URL;
-  const masterCheck = document.getElementById('checkAllAsset');
+  let data; // Siapkan variabel penampung
 
-  try {
-    // 1. PANGGIL SERVER (GET) dengan parameter action dan sheetName
-    // EncodeURIComponent penting jika nama sheet ada spasi (misal: 'Pompa Air')
-    //const response = await fetch(`${urlGAS}?action=getSpecificAsset&sheetName=${encodeURIComponent(sheetName)}`);
-    //const data = await response.json();
-
+  if (!sheetName_val) {
+    // 1. Jika value kosong, ambil SEMUA asset dari SEMUA sheet (Array 2D)
+    data = Object.values(window.APP_STORE.assets).flat(1);
+  } else {
+    // 2. Jika ada value, cari nama sheet yang sesuai di Reference
     const sheetRef = getRef("Type_Asset").slice(1);
     const sheetRow = sheetRef.find(row => row[0] === sheetName_val);
-    const sheetName = sheetRow[1] ;
-    const data = getAsset(sheetName);
-         
-    if (!data || data.length < 2) {
-      document.getElementById('assetBody').innerHTML = "<tr><td colspan='5' style='text-align:center;'>📭 Data Kosong</td></tr>";
-      return;
-    }    
+    
+    if (sheetRow) {
+      const sheetName = sheetRow[1];
+      data = getAsset(sheetName);
+    } else {
+      data = []; // Jaga-jaga jika ID tidak ditemukan
+    }
+  }
+try {
+  // 3. Eksekusi pengecekan data
+  if (!data || data.length === 0) {
+    document.getElementById('assetBody').innerHTML = "<tr><td colspan='5' style='text-align:center;'>📭 Data Kosong</td></tr>";
+    return;
+  }
 
+    const masterCheck = document.getElementById('checkAllAsset');
     // Reset checkbox master jika ada
     if (masterCheck) masterCheck.checked = false; 
 
