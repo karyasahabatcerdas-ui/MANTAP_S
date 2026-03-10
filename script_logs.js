@@ -36,9 +36,9 @@ async function loadAuditLogs() {
     logs.forEach(log => {
       html += `
         <tr>
-          <td style="font-size: 11px; color: #888; white-space: nowrap;">${log.timestamp || "-"}</td>
-          <td style="font-weight: bold; font-size: 13px;">${log.pic || "System"}</td>
-          <td style="font-size: 12px; color: #444;">${log.action || ""}</td>
+          <td style="font-size: 11px; color: #888; white-space: nowrap;">${log.Timestamp || "-"}</td>
+          <td style="font-weight: bold; font-size: 13px;">${log.PIC || "System"}</td>
+          <td style="font-size: 12px; color: #444;">${log.Aksi || ""}</td>
         </tr>
       `;
     });
