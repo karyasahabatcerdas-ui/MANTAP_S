@@ -949,7 +949,7 @@ async function loadJad() {
       let rawData = data.slice(1); 
 
       // 3. FILTERING (Logika tetap sama di Client)
-      if (fType) rawData = rawData.filter(d => String(d[1]) === fType);
+      if (fType) rawData = rawData.filter(d => String(d[1])=== fType);
       if (fState) rawData = rawData.filter(d => String(d[9]) === fState);
       if (keyword) rawData = rawData.filter(d => d.join(" ").toUpperCase().includes(keyword));
 
@@ -989,16 +989,16 @@ async function loadJad() {
         });
       }
       else if (sortBy === '1blndepan') {
-        const limitAhead = new Date();
-        limitAhead.setDate(now.getDate() + 30);
+        const limitAheadb = new Date();
+        limitAheadb.setDate(now.getDate() + 30);
         rawData = rawData.filter(d => {
           const dDate = toDate(d[7]);
           return dDate >= now && dDate <= limitAhead;
         });
       }
         else if (sortBy === '1blnlalu') {
-        const limitAhead = new Date();
-        limitAhead.setDate(now.getDate() - 30);
+        const limitBackb = new Date();
+        limitBackb.setDate(now.getDate() - 30);
         rawData = rawData.filter(d => {
           const dDate = toDate(d[7]);
           return dDate >= now && dDate <= limitBack;
