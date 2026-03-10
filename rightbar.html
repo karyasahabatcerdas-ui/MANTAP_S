@@ -18,12 +18,12 @@
 
                     <!-- Filter Status -->
                     <select id="filterStatusLog" onchange="applyHistoryFilter()" class="input-pendek">
-                    <option value="all">SEMUA STATUS</option>
+                    <option value="">SEMUA STATUS</option>
                     </select>
 
                     <!-- Filter ID Jadwal Dinamis -->
                     <select id="filterJadwalLog" onchange="applyHistoryFilter()" class="input-pendek">
-                    <option value="all">SEMUA ID JADWAL</option>
+                    <option value="">SEMUA ID JADWAL</option>
                     </select>
                     
                     <!-- TOMBOL GLOBAL SEARCH (GOLD / AMBER NEON) -->
@@ -63,15 +63,15 @@
             <div class="rightbar-action-bar"> 
            
                 <select id="sortJadwal" onchange="loadJad()" class="input-pendek">
-                    <!-- <option value="newest">MEMUAT FILTER TANGGAL...</option> -->
+                    <!--<option value="newest">MFILTER TANGGAL.</option> -->
                 </select>
 
                 <select id="filterType" onchange="loadJad()" class="input-pendek">
-                    <option value="all">SEMUA TIPE</option>
+                    <option value="">SEMUA TIPE</option>
                 </select>
 
                 <select id="filterStateJadwal" onchange="loadJad()" class="input-pendek">
-                    <option value="all">SEMUA STATUS</option>
+                    <option value="">SEMUA STATUS</option>
                 </select>
 
                 <div class="search-wrapper-neon" >
@@ -215,7 +215,7 @@
                 <!-- Bagian Filter Dropdown (Sekarang Glassmorphism) -->
                 <div class="filter-container-aset input-pendek">
                     <select id="assetTypeSelect" onchange="loadAssetData(this.value)" >
-                    <option value="all">SEMUA TIPE ASSET</option>
+                    <option value="">SEMUA TIPE ASSET</option>
                     </select>
                 </div>
                 <button onclick="openAddAssetModal()" class="btn-base btn-blue">
@@ -310,7 +310,7 @@
             <div class="rightbar-action-bar">
                 <div class="input-pendek">
                 <select id="viewAssetTypeSelect" onchange="loadAssetDataView(this.value)">
-                <option value="all">SEMUA TIPE ASSET</option>
+                <option value="">SEMUA TIPE ASSET</option>
                 </select>
                 </div>
                 <button onclick="openGlobalSearch()" class="btn-base btn-gold input-sedang">
