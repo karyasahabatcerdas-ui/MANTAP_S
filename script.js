@@ -928,9 +928,9 @@ async function loadJad() {
     //const iframe = document.getElementById('iframeGAS');
     //const urlGAS = APPSCRIPT_URL;
     const el = document.getElementById('filterType');
-    const sheetName= el.options[el.selectedIndex].text
+    const sheetName= el.options[el.selectedIndex].text;
     // 1. Ambil Nilai Filter dari UI GitHub
-    const fType = sheetName;
+    const fType = sheetName ? sheetName : "";
     const fState = document.getElementById('filterState')?.value || ""; 
     const sortBy = document.getElementById('sortJadwal')?.value || "";   
     const keyword = document.getElementById('cari_jadwal')?.value.toUpperCase() || "";
@@ -993,7 +993,7 @@ async function loadJad() {
         limitAheadb.setDate(now.getDate() + 30);
         rawData = rawData.filter(d => {
           const dDate = toDate(d[7]);
-          return dDate >= now && dDate <= limitAhead;
+          return dDate >= now && dDate <= limitAheadb;
         });
       }
         else if (sortBy === '1blnlalu') {
@@ -1001,7 +1001,7 @@ async function loadJad() {
         limitBackb.setDate(now.getDate() - 30);
         rawData = rawData.filter(d => {
           const dDate = toDate(d[7]);
-          return dDate >= now && dDate <= limitBack;
+          return dDate >= now && dDate <= limitBackb;
         });
       }
       // 5. RENDER KE TABEL/VIEW
