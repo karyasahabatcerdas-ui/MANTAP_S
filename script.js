@@ -930,7 +930,7 @@ async function loadJad() {
     const el = document.getElementById('filterType');
     const sheetName= el.options[el.selectedIndex].text;
     // 1. Ambil Nilai Filter dari UI GitHub
-    const fType = sheetName ? sheetName : "";
+    const fType = el.value ? sheetName : "";
     const fState = document.getElementById('filterState')?.value || ""; 
     const sortBy = document.getElementById('sortJadwal')?.value || "";   
     const keyword = document.getElementById('cari_jadwal')?.value.toUpperCase() || "";
