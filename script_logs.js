@@ -42,8 +42,8 @@ logs.forEach((log, index) => {
 
   html += `
     <tr>
-      <td style="font-size: 11px; color: #888; white-space: nowrap;">${log[1] || "-"}</td>
-      <td style="font-weight: bold; font-size: 13px;">${log[0] || "System"}</td>
+      <td style="font-size: 11px; color: #888; white-space: nowrap;">${log[0] || "-"}</td>
+      <td style="font-weight: bold; font-size: 13px;">${log[1] || "System"}</td>
       <td style="font-size: 12px; color: #444;">${log[2] || ""}</td>
     </tr>
   `;
