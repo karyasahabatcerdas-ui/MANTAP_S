@@ -32,18 +32,25 @@ async function loadAuditLogs() {
     }
 
     // 4. Render HTML
-    let html = "";
-    logs.forEach(log => {
-      html += `
-        <tr>
-          <td style="font-size: 11px; color: #888; white-space: nowrap;">${log.Timestamp || "-"}</td>
-          <td style="font-weight: bold; font-size: 13px;">${log.PIC || "System"}</td>
-          <td style="font-size: 12px; color: #444;">${log.Aksi || ""}</td>
-        </tr>
-      `;
-    });
-    
-    logContainer.innerHTML = html;
+    // Pastikan urutannya sesuai dengan kolom di Google Sheet kamu
+// Contoh: A=0 (PIC), B=1 (Timestamp), C=2 (Aksi)
+
+let html = "";
+logs.forEach((log, index) => {
+  // PENTING: Lewati baris pertama jika itu adalah judul/header (PIC, Timestamp, Aksi)
+  if (index === 0) return; 
+
+  html += `
+    <tr>
+      <td style="font-size: 11px; color: #888; white-space: nowrap;">${log[1] || "-"}</td>
+      <td style="font-weight: bold; font-size: 13px;">${log[0] || "System"}</td>
+      <td style="font-size: 12px; color: #444;">${log[2] || ""}</td>
+    </tr>
+  `;
+});
+
+logContainer.innerHTML = html;
+
     console.log("✅ Audit Logs berhasil dimuat.");
 
   } catch (err) {
