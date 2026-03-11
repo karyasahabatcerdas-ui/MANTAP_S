@@ -3180,6 +3180,7 @@ async function loadAssetData(sheetName_val) {
   if (!sheetName_val) {
     // 1. Jika value kosong, ambil SEMUA asset dari SEMUA sheet (Array 2D)
     data = Object.values(window.APP_STORE.assets).flat(1);
+    sheetName = sheetName_val; //lempar value selector sheetName
   } else {
     // 2. Jika ada value, cari nama sheet yang sesuai di Reference
     const sheetRef = getRef("Type_Asset").slice(1);
@@ -3192,10 +3193,14 @@ async function loadAssetData(sheetName_val) {
       data = []; // Jaga-jaga jika ID tidak ditemukan
     }
   }
+
+  console.table(data);
+
 try {
   // 3. Eksekusi pengecekan data
   if (!data || data.length === 0) {
     document.getElementById('assetBody').innerHTML = "<tr><td colspan='5' style='text-align:center;'>📭 Data Kosong</td></tr>";
+    
     return;
   }
 
@@ -3223,7 +3228,7 @@ try {
  * Penting: Pastikan struktur data yang dikirim dari server sesuai dengan yang diharapkan (misal: nama di index 0, kondisi di index 4, dll) agar render berjalan dengan benar.
  *==========================================================================
  */
-function renderAssetTableIncremental(sheetName, data) {
+function renderAssetTableIncremental(sheetPass, data) {
   const tbody = document.getElementById('assetBody');
   const masterCheck = document.getElementById('checkAllAsset');
   
@@ -3231,11 +3236,14 @@ function renderAssetTableIncremental(sheetName, data) {
   if (masterCheck) masterCheck.checked = false;
 
   const newDataLength = data.length - 1; 
+  // check dulu apakah sheetName kosong
+  let SheetRef = getRef("Type_Asset").slice(1);
 
   for (let i = 1; i < data.length; i++) {
     const rowData = data[i];
     const rowIdx = i - 1;
-    
+    const sheetName = sheetPass ? sheetPass : "";
+    if (!sheetName) {
     // 1. Ambil data dan paksa jadi huruf kecil + buang spasi ghaib
     const status = (rowData[4] || "").toLowerCase().trim();
     // 2. Mapping Warna (Definisikan 4 kondisimu di sini)
