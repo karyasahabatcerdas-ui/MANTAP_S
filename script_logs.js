@@ -75,7 +75,7 @@ logContainer.innerHTML = html;
  */
 async function backupLogSekarang() {
   // 1. AMBIL DATA UTUH DARI RAM (Termasuk Header)
-  const rawData = window.APP_STORE.maintenance["Logs"] || [];
+  const rawData = getMaint("Logs") || [];
   
   if (rawData.length <= 1) {
     return Swal.fire({ title: "Kosong!", text: "Belum ada log untuk di-backup, Señor.", icon: "info" });
@@ -137,7 +137,7 @@ async function backupLogSekarang() {
  */
 async function hapusLog() {
   // 1. AMBIL DATA LOGS DARI RAM
-  const rawData = window.APP_STORE.maintenance["Logs"] || [];
+  const rawData = getMaint("Logs") || [];
   if (rawData.length <= 1) return Swal.fire("Kosong!", "Logs sudah bersih, Señor.", "info");
 
   const result = await Swal.fire({

@@ -159,9 +159,9 @@ async function updateAssetData(sheetName, assetId, updatedArray) {
 
     if (res.status === "success") {
       // 3. UPDATE RAM LOKAL (PENTING: Biar data di browser langsung berubah tanpa refresh)
-      const rows = window.APP_STORE.assets[sheetName];
+      const rows = getAsset(sheetName);
       const index = rows.findIndex(r => r[0].toString() === assetId.toString());
-      if (index !== -1) window.APP_STORE.assets[sheetName][index] = updatedArray;
+      if (index !== -1) rows[index] = updatedArray;
 
       Swal.fire("Tersimpan!", "Data di Spreadsheet & GitHub sudah sinkron.", "success");
       return true;
@@ -179,7 +179,7 @@ async function tambahAset(sheetName, newRow) {
   const res = await kirimKeGAS("append", sheetName, null, newRow);
   if (res.status === "success") {
     // Sync RAM: Langsung push ke array sheet tersebut
-    window.APP_STORE.assets[sheetName].push(newRow);
+    getAsset(sheetName).push(newRow);
     console.log("✅ Unit Baru Masuk RAM & Server!");
   }
   return res;
@@ -190,7 +190,7 @@ async function hapusAset(sheetName, assetId) {
   const res = await kirimKeGAS("delete", sheetName, assetId);
   if (res.status === "success") {
     // Sync RAM: Filter keluar ID yang dihapus
-    window.APP_STORE.assets[sheetName] = window.APP_STORE.assets[sheetName].filter(
+    getAsset(sheetName) = getAsset(sheetName).filter(
       r => r[0].toString() !== assetId.toString()
     );
     console.log("🗑️ Unit Terhapus dari RAM & Server!");
@@ -284,7 +284,7 @@ function liveSearchRAM(keyword) {
   const daftarTipe = Object.keys(window.APP_STORE.assets);
 
   daftarTipe.forEach(tipe => {
-    const rows = window.APP_STORE.assets[tipe] || [];
+    const rows = getAsset(tipe) || [];
     
     // Mulai dari index 1 (Lompati Header)
     for (let i = 1; i < rows.length; i++) {
@@ -2786,7 +2786,7 @@ async function doBulkDeleteMaint() {
           payload: {
             type: "Maintenance", // Sesuaikan jika ada kategori spesifik
             selected: selected,
-            admin: window.loggedInUser || "Admin"
+            admin: loggedInUser || "Admin"
           }
         })
       });
@@ -3995,7 +3995,7 @@ async function deleteAssetPhoto() {
 
         if (res.success) { // Cek dari hasil fungsi removeSpecificAssetPhoto
           // UPDATE RAM LOKAL: Sangat penting biar slider gak error!
-          window.APP_STORE.assets[type][row - 1][5] = res.all.join(","); 
+         getAsset(type)[row - 1][5] = res.all.join(","); 
           
           assetImages = res.all;
           currentImgIdx = 0;
@@ -4058,7 +4058,7 @@ async function saveAssetEdit() {
     type: type,
     row: row,
     qrBase64: qrBlob ? qrBlob.base64 : null,
-    adminAktif: window.loggedInUser || "Admin",
+    adminAktif: loggedInUser || "Admin",
     allFiles: [] 
   };
 
@@ -4187,7 +4187,7 @@ async function doBulkDeleteAsset() {
             payload: {
               type: type,
               selected: selected,
-              admin: window.loggedInUser || "Admin"
+              admin: loggedInUser || "Admin"
             }
           })
         });
@@ -4283,7 +4283,7 @@ async function bulkUpdateQR() {
         action: "saveBulkQR_Optimized",
         payload: {
           bulkData: bulkData,
-          admin: window.loggedInUser || "Admin",
+          admin: loggedInUser || "Admin",
           type: type
         }
       };
@@ -4809,7 +4809,7 @@ async function loadProf() {
   //const urlGAS = APPSCRIPT_URL;
   
   // Pastikan variabel 'loggedInUser' tersedia (biasanya dari session/global)
-  if (!window.loggedInUser) {
+  if (!loggedInUser) {
     console.error("Username tidak ditemukan di sesi browser.");
     return;
   }
@@ -4976,7 +4976,7 @@ function uploadOwnPhoto(input) {
   const file =input.files[0];
   if (file) {
     // 1. Simpan file asli ke dalam array (untuk kebutuhan upload nanti)
-    window.Temp_Profile[0] = file; 
+    Temp_Profile[0] = file; 
 
     // 2. Buat URL sementara untuk pratinjau
     const pratinjauUrl = URL.createObjectURL(file);
@@ -5009,8 +5009,8 @@ async function preparePayload(rowValue, usernameValue) {
   };
 
   // Cek jika ada foto baru
-  if (window.Temp_Profile && window.Temp_Profile[1]) {
-    const fileInfo = await getBase64(window.Temp_Profile[1]);
+  if (Temp_Profile && Temp_Profile[1]) {
+    const fileInfo = await getBase64(Temp_Profile[1]);
     payload.photoData = fileInfo.base64;
     payload.mimeType = fileInfo.mimeType;
   }
@@ -5036,9 +5036,9 @@ function uploadPhotoFromAdmin(input) {
 
   if (file) {    
     // Pastikan variabelnya ada sebelum diisi
-    if (!window.Temp_Profile) window.Temp_Profile = [null, null];
+    if (!Temp_Profile) Temp_Profile = [null, null];
     
-    window.Temp_Profile[1] = file; // Simpan di indeks 1 sesuai kode Save Anda
+    Temp_Profile[1] = file; // Simpan di indeks 1 sesuai kode Save Anda
     
     // Preview
     document.getElementById("admin_edit_photo").src = URL.createObjectURL(file);
@@ -5104,7 +5104,7 @@ async function downloadCSV() {
     });
 
     // 1. AMBIL DATA DARI RAM (Termasuk Header)
-    const rawData = window.APP_STORE.app["Users"]; 
+    const rawData = APP_STORE.app["Users"]; 
 
     if (!rawData || rawData.length === 0) {
       throw new Error("Gudang RAM Kosong! Silakan Sinkron Data dulu.");
