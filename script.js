@@ -959,7 +959,7 @@ async function loadJad() {
           return statusSekarang === fState.toLowerCase().trim();
         });
       }
-      if (fIdJad) rawData = rawData.filter(d => String(d[7]) === fIdJad);
+      if (fIdJad) rawData = rawData.filter(d => String(d[10]) === fIdJad);
       if (keyword) rawData = rawData.filter(d => d.join(" ").toUpperCase().includes(keyword));
 
       const now = new Date();
