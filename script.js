@@ -1014,6 +1014,17 @@ async function loadJad() {
 }
 
 
+function getSelectedRowsMaint() {
+  let rows = [];
+  document.querySelectorAll('.userCheckMaint:checked').forEach(cb => rows.push(parseInt(cb.value)));
+  return rows;
+}
+
+function toggleSelectAllMaint() {
+    let master = document.getElementById('selectAllMaint');
+    document.querySelectorAll('.userCheckMaint').forEach(cb => cb.checked = master.checked);
+}
+
 /**================================================================================================================================
  * [FUNGSI: OPEN CUSTOM SCANNER]
  * Memanggil input file untuk scan QR, dengan penanda kategori 'SCAN' untuk logika khusus.
@@ -2092,20 +2103,15 @@ function renderKelolaIncremental(data) {
 
     // Susun isi baris: MaintID, Unit Aset, Plan, State, Aksi
     const rowHtml = `
-      <td style="padding:5px;">${d[0]}</td>
-      <td style="padding:5px;"><b>${d[1]}</b> - ${d[2]}<br><small>${d[3]}</small></td>
+      <td style="padding:5px;"><input type="checkbox" class="userCheckMaint" value="${i}"></td>
+      <td style="padding:5px;">${d[0]}<br><b>${d[1]}</b>- ${d[2]}<br><small>${d[3]}</small></td>
       <td style="padding:5px;">${planDate}<br><small>${d[10]}</small></td>
       <td style="padding: 5px; text-align: center; ">
         
           <button onclick="openMaintModal(${i})" style="background:${badgeColor}; color:white; border:none; padding:6px 8px; border-radius:4px; cursor:pointer;">
             <i class="fa-solid fa-edit"></i> 
             EDIT 
-          </button>
-          
-          <button onclick="delJad(${i})" style="background:#e74c3c; color:white; border:none; padding:6px 8px; border-radius:6px; cursor:pointer;">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-      
+          </button>      
       </td>
       `;
 
