@@ -5279,26 +5279,3 @@ async function saveAdminEdit() {
 function closeModal() {
   document.getElementById('editModal').style.display = 'none';
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

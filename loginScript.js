@@ -308,6 +308,7 @@ async function initAssetDropdowns() {
   }
 
   // Fungsi untuk memuat komponen HTML
+  /**
 async function loadComponent(elementId, filePath) {
     try {
         const response = await fetch(filePath);
@@ -317,9 +318,41 @@ async function loadComponent(elementId, filePath) {
         console.error('Gagal memuat komponen:', filePath, error);
     }
 }
+*/
+
+async function loadComponent(elementId, filePath) {
+    try {
+        const response = await fetch(filePath);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const html = await response.text();
+        const container = document.getElementById(elementId);
+        
+        if (container) {
+            container.innerHTML = html;
+            
+            // --- BAGIAN PENTING: Eksekusi Script ---
+            const scripts = container.querySelectorAll("script");
+            scripts.forEach(oldScript => {
+                const newScript = document.createElement("script");
+                // Copy atribut (src, type, dll)
+                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                // Copy isi script (inline script)
+                newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                // Pasang kembali ke DOM agar dijalankan browser
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+            });
+        }
+    } catch (error) {
+        console.error('Gagal memuat komponen:', filePath, error);
+    }
+}
+
 
 // Jalankan fungsi saat halaman dibuka
-document.addEventListener("DOMContentLoaded", () => {    
+/**
+document.addEventListener("DOMContentLoaded", () => {   
+    loadComponent('loginOverlay', 'loginOverlay.html'); 
     loadComponent('leftbar-placeholder', 'leftbar.html');
     loadComponent('rightbar-placeholder', 'rightbar.html');
     loadComponent('modalMaintenanceLog-placeholder', 'modalMaintenanceLog.html');    
@@ -331,6 +364,10 @@ document.addEventListener("DOMContentLoaded", () => {
     loadComponent('modalEditUser-placeholder','modalEditUser.html');
     loadComponent('modalGlobalSearch-placeholder', 'modalGlobalSearch.html');
 });
+*/
+
+
+
 
 /**
  * [FUNGSI AI: UNIVERSAL VOICE NOTIFICATION]
@@ -350,3 +387,79 @@ function speakSenor(pesan) {
     speechSynthesis.speak(msg);
   }
 }
+
+function checkSessionAndLogin() {
+  const savedUser = localStorage.getItem("userMaint");
+
+  if (savedUser) {
+    try {
+      const userObj = JSON.parse(savedUser);
+      loggedInUser = userObj.name;
+      userRole = userObj.role;
+
+      console.log("🔐 Sesi Ditemukan: Selamat Datang Kembali, " + loggedInUser);
+
+      // 1. Tampilkan Konten Utama, Sembunyikan Login
+      const loginOverlay = document.getElementById('loginOverlay');
+      const mainContent = document.getElementById('main-content');
+      
+      if (loginOverlay) loginOverlay.style.display = 'none';
+      if (mainContent) mainContent.style.display = 'flex';
+
+      // 2. Update UI Header & Admin Menu
+      const headerUser = document.getElementById('headerUser');
+      if (headerUser) headerUser.innerText = `${loggedInUser} (${userRole})`;
+
+      const adminArea = document.getElementById('adminMenuArea');
+      if (adminArea) {
+        adminArea.style.display = (userRole === 'admin') ? 'block' : 'none';
+      }
+
+      // 3. Jalankan Sinkronisasi Data (Wuzzz!)
+      syncDataGhoib(); 
+      showPage('history'); // Halaman default setelah login
+
+    } catch (e) {
+      console.error("Sesi Rusak, silakan login ulang.");
+      localStorage.removeItem("userMaint");
+      showLoginForm();
+    }
+  } else {
+    // Jika tidak ada sesi, pastikan Form Login muncul
+    console.log("👋 Tidak ada sesi. Silakan Login.");
+    showLoginForm();
+  }
+}
+
+// Fungsi pembantu jika butuh menampilkan form login manual
+function showLoginForm() {
+    const loginOverlay = document.getElementById('loginOverlay');
+    if (loginOverlay) loginOverlay.style.display = 'flex';
+    
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) mainContent.style.display = 'none';
+}
+
+
+document.addEventListener("DOMContentLoaded", async () => {   
+    // Tunggu SEMUA komponen selesai terpasang di layar
+    await Promise.all([
+        loadComponent('loginOverlay', 'loginOverlay.html'), 
+        loadComponent('leftbar-placeholder', 'leftbar.html'),
+        loadComponent('rightbar-placeholder', 'rightbar.html'),
+        loadComponent('modalMaintenanceLog-placeholder', 'modalMaintenanceLog.html'), // Gunakan KOMA (,)
+        loadComponent('modalMaint-placeholder', 'modalMaint.html'),
+        loadComponent('modalDetailHist-placeholder', 'modalDetailHist.html'),
+        loadComponent('modalAssetDetail-placeholder', 'modalAssetDetail.html'),
+        loadComponent('modalPhotoSlider-placeholder','modalPhotoSlider.html'), 
+        loadComponent('modalImport-placeholder','modalImport.html'),
+        loadComponent('modalEditUser-placeholder','modalEditUser.html'),
+        loadComponent('modalGlobalSearch-placeholder', 'modalGlobalSearch.html') // Terakhir tidak perlu koma
+    ]);
+
+    console.log("✅ Semua HTML terpasang, sekarang jalankan logika.");
+    
+    // Baru panggil fungsi yang butuh ID dari HTML di atas
+    loadCloudLogo(); 
+    checkSessionAndLogin(); 
+});
