@@ -45,7 +45,7 @@ async function syncDataGhoib() {
     // Isi Dropdown secara otomatis
     populateAllDropdowns();
 
-    Swal.fire({ title: "Sukses!", text: "Data Sinkron.", icon: "success", timer: 1500 });
+    //Swal.fire({ title: "Sukses!", text: "Data Sinkron.", icon: "success", timer: 1500 });
     console.log("✅ RAM Updated:", window.APP_STORE);
 
   } catch (err) {
@@ -2006,7 +2006,7 @@ async function saveLog(status) {
                 closeMaintenanceMode(); 
                 
                 // Refresh data RAM secara background (Opsional tapi bagus)
-                syncDataGhoib(); 
+                await syncDataGhoib(); 
                 
             } else {
                 throw new Error(result.message || "Gagal diproses server.");
