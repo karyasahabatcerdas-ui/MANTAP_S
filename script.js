@@ -3199,15 +3199,15 @@ async function loadAssetData(sheetName_val) {
       data = []; // Jaga-jaga jika ID tidak ditemukan
     }
   }
-  console.table(data);
+  
 try {
   // 3. Eksekusi pengecekan data
+  console.table(data);
   if (!data || data.length === 0) {
     const tbody = document.getElementById('assetBody');
-    if (tbody) tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>📭 Data Kosong</td></tr>";    
+    if (tbody) tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>📭 Data Kosong</td></tr>";    
     return;
   }
-
     const masterCheck = document.getElementById('checkAllAsset');
     // Reset checkbox master jika ada
     if (masterCheck) masterCheck.checked = false; 
@@ -3475,10 +3475,11 @@ async function loadAssetDataView(sheetName_val) {
       data = []; // Jaga-jaga jika ID tidak ditemukan
     }
   }
-console.table(data);
+
   try {  
+    console.table(data);
   // 3. Eksekusi pengecekan data
-    if (!data || data.length < 2) {
+    if (!data || data.length === 0) {
       const tbody = document.getElementById('viewAssetBody');
       if (tbody) tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>📭 Data Kosong</td></tr>";
       return;
