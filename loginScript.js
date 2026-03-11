@@ -102,66 +102,57 @@ let userRole = "";
  * [FUNGSI: LOGOUT & PEMBERSIHAN TOTAL]
  * Menambahkan pencatatan aktivitas ke Log Book di server.
  */
-function logout() {
-
+async function logout() {
+  // 1. KIRIM SINYAL KE SERVER (OPSIONAL UNTUK LOG)
   if (loggedInUser) {
-    //console.log("Mencatat logout untuk: " + loggedInUser);
-    // Kita gunakan google.script.run tanpa handler karena user sudah berpindah halaman
-    google.script.run.processLogout(loggedInUser);
+    fetch(APPSCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: "processLogout",
+        payload: { username: loggedInUser }
+      })
+    }).catch(err => console.log("Logout log failed, but continuing..."));
   }
 
-  var overlay = document.getElementById('loginOverlay');
+  // 2. BERSIHKAN LOCAL STORAGE (PENTING AGAR TIDAK AUTO-LOGIN)
+  localStorage.removeItem("userMaint");
+
+  // 3. RESET UI (Gunakan display: flex untuk overlay agar ke tengah)
+  const overlay = document.getElementById('loginOverlay');
   if (overlay) overlay.style.display = 'flex';
- 
-  var sidebar = document.getElementById('sidebar');
-  if (sidebar) sidebar.classList.add('collapsed');
- 
-  var pages = document.getElementsByClassName('page');
-  if (pages) {
-    for (var i = 0; i < pages.length; i++) {
-      pages[i].classList.add('hidden');
-      pages[i].style.display = 'none';
-    }
-  }
+  
+  const mainContent = document.getElementById('main-content');
+  if (mainContent) mainContent.style.display = 'none';
 
-  var adminArea = document.getElementById('adminMenuArea');
-  if (adminArea) {
-    adminArea.style.display = 'none';
-  }
-
-  // 1. Kosongkan isian Form Login
+  // 4. RESET DATA GLOBAL & FORM
   document.getElementById('user').value = "";
   document.getElementById('pass').value = "";
- 
-  // 2. Reset Status Global
   loggedInUser = "";
   userRole = "";
 
-  // 3. Bersihkan Sisa Foto di UI (Kembalikan ke inisial Guest)
-  var guestAvatar = "https://lh3.googleusercontent.com/d/13Q4RtDMmEMVvErifoZOa_yKiAACUpg7a=s1000";
-  var imgIds = ['user_profile_shared', 'set_display_photo', 'admin_edit_photo', "user_profile_mobile"];
-  imgIds.forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.src = guestAvatar;
-  });
-
-  // 4. Kosongkan Data Tabel (Cache Data Sensitif)
-  var tableIds = ['userListBody', 'histBody', 'jadwalBody', 'kelolaBody', 'logTableBody'];
-  tableIds.forEach(function(id) {
-    var el = document.getElementById(id);
+  // 5. BERSIHKAN DATA SENSITIF DARI TABEL
+  const tableIds = ['userListBody', 'histBody', 'jadwalBody', 'kelolaBody', 'logTableBody'];
+  tableIds.forEach(id => {
+    const el = document.getElementById(id);
     if (el) el.innerHTML = "";
   });
 
-  // 5. Bersihkan Cache daftar Type Asset
-  cachedAssetTypes = null; 
+  // 6. RESET AVATAR KE GUEST
+  const guestAvatar = "https://lh3.googleusercontent.com/d/13Q4RtDMmEMVvErifoZOa_yKiAACUpg7a=s1000";
+  ['user_profile_shared', 'set_display_photo', 'admin_edit_photo', "user_profile_mobile"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.src = guestAvatar;
+  });
 
- // console.log("🧹 Logout Success: Log dicatat & memori browser dibersihkan.");
+  console.log("🧹 Logout Sukses: Sesi dibersihkan.");
 }
+
 
 /**=========================================================
  * Mengisi SEMUA Dropdown ID Jadwal via Fetch (GitHub Mode)
  * ============================================================
  */
+/*
 async function initAllJadwalDropdowns() {
   const ids = ["filterJadwalLog", "jenis_id_jadwal", "maint_id_jadwal"];
   
@@ -212,7 +203,8 @@ async function initAllJadwalDropdowns() {
   }
 }
 
-
+*/
+/*
 async function initAssetDropdowns() {
   const urlGAS = APPSCRIPT_URL;
 
@@ -294,6 +286,7 @@ async function initAssetDropdowns() {
   }
 }
 
+*/
 /* ----- script lama------------------*/
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
