@@ -17,12 +17,12 @@
                     </button>
 
                     <!-- Filter Status -->
-                    <select id="filterStatusLog" onchange="applyHistoryFilter()" class="input-pendek">
+                    <select id="filterStatusLog" onchange="applyHistoryFilter()" >
                     <option value="">SEMUA STATUS</option>
                     </select>
 
                     <!-- Filter ID Jadwal Dinamis -->
-                    <select id="filterJadwalLog" onchange="applyHistoryFilter()" class="input-pendek">
+                    <select id="filterJadwalLog" onchange="applyHistoryFilter()" >
                     <option value="">SEMUA ID JADWAL</option>
                     </select>
                     
@@ -62,15 +62,15 @@
 
             <div class="rightbar-action-bar"> 
            
-                <select id="sortJadwal" onchange="loadJad()" class="input-pendek">
+                <select id="sortJadwal" onchange="loadJad()" >
                     <!--<option value="newest">MFILTER TANGGAL.</option> -->
                 </select>
 
-                <select id="filterType" onchange="loadJad()" class="input-pendek">
+                <select id="filterType" onchange="loadJad()" >
                     <option value="">SEMUA TIPE</option>
                 </select>
 
-                <select id="filterStateJadwal" onchange="loadJad()" class="input-pendek">
+                <select id="filterStateJadwal" onchange="loadJad()" >
                     <option value="">SEMUA STATUS</option>
                 </select>
 
@@ -85,13 +85,13 @@
                 <table id="tablelihatJadwalMain" class="tabel-main-content">
                 <thead>
                     <tr>
-                    <th style="width: 40px; min-width: 25px;">MAINT ID</th>
+                    <th style="width: 30px; min-width: 25px;">MAINT ID</th>
                     <th style="width: 40px; min-width: 25px;">UNIT ASET</th>
                     <th style="width: 40px; min-width: 25px;">PLAN DATE <br><small>ID JADWAL </th>
                     <!--
                     <th class="text-center" style="width: 40px; min-width: 35px;">STATE</th>
                     -->
-                    <th class="text-center" style="width: 100px; min-width: 50px;">AKSI</th>
+                    <th class="text-center" style="width: 80px; min-width: 50px;">AKSI</th>
                     </tr>
                 </thead>
                 <tbody id="jadwalBody">

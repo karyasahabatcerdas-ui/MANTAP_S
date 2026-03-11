@@ -658,7 +658,7 @@ function renderHistoryTable(data) {
       </td>
       <td style="padding:5px;min-width:100px ;vertical-align:middle;">
         <button onclick="openDetailLog('${row[0]}')" 
-                style="font-size:10px; height:40px; background: ${statusColor}; color:white; border:none; border-radius:8px; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                 background: ${statusColor}; color:white; border:none; border-radius:3px; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
           <span class="status-badge-indicator" > ${statusLabel} </span>
         </button>
       </td>
@@ -3288,11 +3288,13 @@ function renderAssetTableIncremental(sheetPass, data) {
     // B. PASTIKAN CLASS SAMA (Gunakan 'assetCheck' sesuai fungsi toggle kita)
     const rowHtml = `
       <td style="padding:5px; text-align:center;"><input type="checkbox" class="asetCheck" value="${i+1}"></td>
-      <td style="padding:5px; font-weight:bold;"> ${rowData[0]} <br>${rowData[2]}<br><span style="background:${badgeColor}; color:white;">${rowData[4]}</span></td>
+      <td style="padding:5px; font-weight:bold;"> ${rowData[0]} <br>${rowData[2]}<br></td>
       <td style="padding:5px;"> ${rowData[3]} </td>      
       <td style="padding:5px;">
-        <button onclick="openAssetDetail('${sheetName}', ${i+1})" style="background:#2980b9; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;">
-          <i class="fas fa-eye"></i> Detil
+        <button onclick="openAssetDetail('${sheetName}', ${i+1})" style="background:${badgeColor}; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;">
+          <i class="fas fa-eye"></i> 
+          Detil
+          <span style="background:${badgeColor}; color:white;">${rowData[4]}</span>
         </button>
       </td>`;
 
