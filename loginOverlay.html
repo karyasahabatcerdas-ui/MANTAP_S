@@ -1,0 +1,54 @@
+<!-- [UI BLOCK: HALAMAN LOGIN - CYBER STEALTH] -->
+<div id="loginOverlay" class="login-page-stealth">
+  
+  <!-- LOGO MELAYANG -->
+  <div class="logo-wrapper-neon">
+  <img id="appLogo" src="https://ui-avatars.com" alt="Logo" class="logo-floating"> 
+  </div>
+
+  <!-- KOTAK LOGIN DENGAN EFEK PELANGI -->
+  <div class="glass-box-neon">
+    
+    <!-- 1. DIV KHUSUS ISI (MENAMPUNG ANAK-ANAK AGAR DI ATAS) -->
+    <div class="form-content-wrapper">
+      <div class="ai-thinking-glow-neon"></div>
+      <h2 class="text-gradient-neon">MANTAP<sup>&reg;</sup></h2>
+      <p class="tagline-neon">
+        <b>M</b>aintenance a<b>N</b>d <b>T</b>echno <b>A</b>dvancing a<b>P</b>plicator
+      </p>
+
+      <form id="loginForm" onsubmit="event.preventDefault(); login();">
+        <div class="input-group-neon">
+          <i class="fas fa-user icon-input-neon"></i>
+          <input type="text" id="user" placeholder="Username" class="input-login-neon">
+        </div>
+
+        <div class="input-group-neon">
+          <i class="fas fa-lock icon-input-neon"></i>
+          <input type="password" id="pass" placeholder="Password" onkeyup="if(event.key === 'Enter') login()" autocomplete="off" class="input-login-neon">
+        </div>
+
+        <button type="button" id="btnLogin" onclick="login();" class="btn-login-neon">
+          <i class="fa fa-sign-in"></i> LOGIN SEKARANG
+        </button>
+
+        <!-- GARIS ZIGZAG PETIR -->
+        <div class="lightning-container">
+          <svg width="100%" height="30" viewBox="0 0 200 30" fill="none">
+            <path d="M0 15L40 15L60 5L80 25L100 5L120 25L140 5L160 15L200 15" stroke="url(#paint0_linear)" stroke-width="3" class="lightning-path" />
+            <defs>
+              <linearGradient id="paint0_linear" x1="0" y1="15" x2="200" y2="15" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#38bdf8" />
+                <stop offset="0.5" stop-color="#7a00ff" />
+                <stop offset="1" stop-color="#38bdf8" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        
+        <p class="copyright-neon">&copy; 2026 - PT. KARYA SAHABAT CERDAS</p>
+      </form>
+    </div> <!-- End form-content-wrapper -->
+
+  </div> <!-- End glass-box-neon -->
+</div>

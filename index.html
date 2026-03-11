@@ -39,6 +39,7 @@
     <link rel="stylesheet" href="modalPhotoSlider.css"> 
     <link rel="stylesheet" href="modalImport.css">
     <link rel="stylesheet" href="modalEditUser.css"> 
+    <link rel="stylesheet" href="loginOverlay.css">
     <style>
         .iframe-container {
             display: none; /* Sembunyikan iframe secara default */
@@ -67,9 +68,10 @@
   console.log("🔗 GAS URL Ready: " + APPSCRIPT_URL);
 </script>
 
+<main id="loginOverlay"></main>
+
 <main id="main-content" class="cmain-content">
     <div id="leftbar-placeholder"></div>
-
     <div class="inner-content">
     <!-- <h1>Selamat Datang di Portal Native</h1>
         <p>Konten ini bukan lagi di dalam Iframe.</p>   --> <!-- dihilangkan -->
@@ -86,7 +88,7 @@
 <div id="modalImport-placeholder"></div>
 <div id="modalEditUser-placeholder"></div>
 
-
+<script src="loginScript.js"></script>
 <script src="leftbar.js"></script>
 <script src="script_logs.js"></script>
 <script src="script_dataBase.js"></script>
@@ -96,9 +98,17 @@
 <script src="fungsiGASLokal.js"></script>
 <script src="script.js"></script> /* script terbaru */
 <!-- <script src="rightbar.js"></script> --><!-- rightbar.js sudah digabung ke dalam script.js untuk efisiensi -->
-
- <!--Konten utama di sini -->
-<!--IFRAME GAS UNTUK FUNGSI-FUNGSI KHUSUS YANG MEMBUTUHKAN IFRAME (SEPERTI SCANNER QR)-->
-
+<script src="floatHP.js"></script>
+<script src="logo.js"></script>
+<script>
+// EKSEKUSI SAAT SEMUA SIAP
+window.onload = function() {
+    // Jika ingin langsung login otomatis saat refresh (untuk dev):
+    login(); 
+    
+    // Atau pasang listener ke form login asli
+    console.log("🖥️ System Ready.");
+};
+</script>
 </body>
 </html>

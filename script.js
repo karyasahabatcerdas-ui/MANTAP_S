@@ -4956,6 +4956,94 @@ async function saveProf() {
 }
 
 
+// --- 2. HELPER FUNCTION (Letakkan di sini agar bisa diakses semua fungsi) ---
+const getBase64 = (file) => new Promise((resolve, reject) => {
+  if (!file) return reject("Tidak ada file untuk diproses");
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve({
+    // Kita ambil indeks [1] untuk membuang header "data:image/png;base64,"
+    base64: reader.result.split(',')[1], 
+    mimeType: file.type
+  });
+  reader.onerror = error => reject(error);
+});
+/**
+ * [FUNGSI: UPLOAD FOTO PROFIL MANDIRI] =============================================================================================================================================
+ * Memastikan opacity kembali ke 1 baik saat sukses maupun gagal.
+ */
+function uploadOwnPhoto(input) {
+  const file =input.files[0];
+  if (file) {
+    // 1. Simpan file asli ke dalam array (untuk kebutuhan upload nanti)
+    window.Temp_Profile[0] = file; 
+
+    // 2. Buat URL sementara untuk pratinjau
+    const pratinjauUrl = URL.createObjectURL(file);
+
+    // 3. Tampilkan langsung di elemen <img> yang memicu fungsi ini
+    // Catatan: Jika inputElemen adalah <input type="file">, 
+    // kita perlu mencari elemen <img> yang terkait.
+    document.getElementById("set_display_photo").src = pratinjauUrl;
+
+    //console.log("File tersimpan sementara -name :", file.name);
+    //console.log("File tersimpan sementara - temp profile :", Temp_Profile[0]);
+  }
+
+}
+
+// Fungsi Pembantu untuk Payload (Update/Add)
+async function preparePayload(rowValue, usernameValue) {
+  let payload = {
+    adminAktif: loggedInUser, // PIC yang bertanggung jawab
+    roleAktor: userRole,      // Peran PIC saat ini
+    row: rowValue,
+    username: usernameValue,
+    pass: document.getElementById('m_pass').value,
+    role: document.getElementById('m_role').value,
+    phone: document.getElementById('m_phone').value,
+    email: document.getElementById('m_email').value,
+    status: document.getElementById('m_status').value,
+    photoUrl: document.getElementById('admin_edit_photo').src,
+    photoData: null
+  };
+
+  // Cek jika ada foto baru
+  if (window.Temp_Profile && window.Temp_Profile[1]) {
+    const fileInfo = await getBase64(window.Temp_Profile[1]);
+    payload.photoData = fileInfo.base64;
+    payload.mimeType = fileInfo.mimeType;
+  }
+  return payload;
+}
+
+function uploadPhotoFromAdmin(input) {
+  const file = input.files[0];
+  
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+        Swal.fire({
+          title: "File Gendut!",
+          text: "File terlalu besar! Maksimal 2MB.", // Ini isi pesan 
+          icon: "warning",
+          confirmButtonText: "OK, Señor!",
+          width: '80%' // Biar pas di layar HP Sultan
+        });
+    //alert("File terlalu besar! Maksimal 2MB.");
+    input.value = "";
+    return;
+  }
+
+  if (file) {    
+    // Pastikan variabelnya ada sebelum diisi
+    if (!window.Temp_Profile) window.Temp_Profile = [null, null];
+    
+    window.Temp_Profile[1] = file; // Simpan di indeks 1 sesuai kode Save Anda
+    
+    // Preview
+    document.getElementById("admin_edit_photo").src = URL.createObjectURL(file);
+  }
+}
 
 
 /**
@@ -5183,7 +5271,14 @@ async function saveAdminEdit() {
   }
 }
 
-
+/**=============================================================================================
+ * [FUNGSI: SAVE ADMIN EDIT]
+ * SIMPAN USER SIAPAPUN KETIKA BERADA DI LOGIN ADMIN.
+ * =============================================================================================
+ */
+function closeModal() {
+  document.getElementById('editModal').style.display = 'none';
+}
 
 
 
