@@ -3256,7 +3256,7 @@ function renderAssetTableIncremental(sheetPass, data) {
     // cek jika sheetpass =""
     if (!sheetPass) {
       // ambil id dari Type_Asset
-      sheetVal = getRef("Type_Asset").slice(1)[i][0]
+      sheetVal = getRef("Type_Asset").slice(1)[i][0];
       sheetRow = data[i][0];
       if (sheetVal === sheetRow) {
         sheetName = getRef("Type_Asset").slice(1)[i][1];
