@@ -3237,6 +3237,8 @@ function renderAssetTableIncremental(sheetPass, data) {
   const tbody = document.getElementById('assetBody');
   const masterCheck = document.getElementById('checkAllAsset');
   let sheetName = ""; // Variabel untuk menyimpan nama sheet yang akan dipakai di render
+  let sheetVal = "";
+  let sheetRow = "";
   
   // A. RESET CHECKBOX HEADER (Penting agar tidak nyangkut saat ganti Tipe Aset)
   if (masterCheck) masterCheck.checked = false;
@@ -3254,8 +3256,8 @@ function renderAssetTableIncremental(sheetPass, data) {
     // cek jika sheetpass =""
     if (!sheetPass) {
       // ambil id dari Type_Asset
-      let sheetVal = getRef("Type_Asset").slice(1)[i][0]
-      let sheetRow = data[i][0];
+      sheetVal = getRef("Type_Asset").slice(1)[i][0]
+      sheetRow = data[i][0];
       if (sheetVal === sheetRow) {
         sheetName = getRef("Type_Asset").slice(1)[i][1];
       }
