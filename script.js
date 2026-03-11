@@ -2092,7 +2092,7 @@ function renderKelolaIncremental(data) {
 
     // Susun isi baris: MaintID, Unit Aset, Plan, State, Aksi
     const rowHtml = `
-      <td style="padding:5px;"><input type="checkbox" class="userCheckMaint" value="${i}"></td>
+      <td style="padding:5px;text-align: center;"><input type="checkbox" class="userCheckMaint" value="${i}"></td>
       <td style="padding:5px;">${d[0]}<br><b>${d[1]}</b>- ${d[2]}<br><small>${d[3]}</small></td>
       <td style="padding:5px;">${planDate}<br><small>${d[10]}</small></td>
       <td style="padding: 5px; text-align: center; ">
@@ -4524,7 +4524,7 @@ async function loadUserList() {
 
       html += `
         <tr data-role="${role}">
-          <td style="padding:5px;"><input type="checkbox" class="userCheck" value="${i + 1}"></td>
+          <td style="padding:5px;text-align: center;""><input type="checkbox" class="userCheck" value="${i + 1}"></td>
           <td style="padding:5px;">
             <b>${username}</b><br>
             <small style="color:#666;">${role.toUpperCase()}</small><br>
