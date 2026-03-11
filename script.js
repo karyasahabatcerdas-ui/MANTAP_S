@@ -3199,7 +3199,7 @@ async function loadAssetData(sheetName_val) {
       data = []; // Jaga-jaga jika ID tidak ditemukan
     }
   }
-  //console.table(data);
+  console.table(data);
 try {
   // 3. Eksekusi pengecekan data
   if (!data || data.length === 0) {
@@ -3475,7 +3475,7 @@ async function loadAssetDataView(sheetName_val) {
       data = []; // Jaga-jaga jika ID tidak ditemukan
     }
   }
-//console.table(data);
+console.table(data);
   try {  
   // 3. Eksekusi pengecekan data
     if (!data || data.length < 2) {
