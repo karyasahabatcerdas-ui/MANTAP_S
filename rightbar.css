@@ -100,28 +100,57 @@
   align-items: center;
 }
 */
+/*awl modif untuk tombol select, search supaya berdampingan */
 
-/* Timpa aturan width 100% khusus untuk elemen di dalam action bar */
-.rightbar-action-bar select, 
-.rightbar-action-bar .search-wrapper-neon,
-.rightbar-action-bar input {
-  width: auto !important; /* Biar flexbox yang mengatur lebarnya */
-  flex: 1 1 150px;       /* Tumbuh, Menyusut, dengan lebar dasar 150px */
-  min-width: fit-content; /* Jangan lebih kecil dari teks di dalamnya */
+/* 1. Pastikan Container Utama Bersih */
+.rightbar-action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px; /* Jarak antar komponen */
+  align-items: stretch; /* Biar tinggi select dan search sama rata */
+  width: 100%;
 }
 
-/* Khusus search wrapper agar tetap terlihat luas */
+/* 2. Atur Select agar tidak serakah ruang */
+.rightbar-action-bar select {
+  width: auto !important; /* Matikan width 100% global */
+  flex: 1 1 160px;       /* Lebar dasar 160px, bisa membesar */
+  min-width: 140px;      /* Batas aman agar teks tidak potong */
+  height: 42px;          /* Samakan tinggi dengan search bar */
+}
+
+/* 3. Atur Wrapper Search agar mau berdampingan */
 .rightbar-action-bar .search-wrapper-neon {
-  flex: 2 1 250px; 
   display: flex;
   align-items: center;
+  flex: 2 1 300px;       /* Beri bobot lebih besar (2), dasar 300px */
+  min-width: 200px;      /* Batas minimal di layar kecil */
+  background: var(--bg-input);
+  border: 1px solid var(--border-dim);
+  border-radius: 8px;
+  padding: 0 12px;       /* Padding kiri-kanan untuk icon */
+  height: 42px;          /* Samakan tinggi dengan select */
+  box-sizing: border-box;
 }
 
-/* Pastikan input di dalam search wrapper mengikuti lebar wrapper-nya */
+/* 4. Atur Input di dalam Wrapper (Kuncinya di sini!) */
 .rightbar-action-bar .search-wrapper-neon input {
-  width: 100% !important; 
+  flex: 1;               /* Ambil sisa ruang di dalam wrapper */
+  width: 100% !important;/* Paksa penuh tapi di dalam flex wrapper */
+  background: transparent !important; /* Biar ngikut warna wrapper */
+  border: none !important; /* Hilangkan border ganda */
+  padding: 6px 8px !important; 
+  box-shadow: none !important;
+  color: var(--text-bright);
 }
 
+/* 5. Icon Search agar manis */
+.rightbar-action-bar .icon-search {
+  margin-right: 8px;
+  color: var(--text-dim);
+}
+
+/** akhir modif terakhir----------------*/
 
 /* --- TABEL GAHAR (Clean & Solid) --- */
 .table-responsive-aset {
@@ -240,6 +269,8 @@ select option {
   background: var(--bg-card);
   color: var(--text-bright);
 }
+
+
 
 /* --- SEARCH WRAPPER (CONTAINER NYA) --- */
 .search-wrapper-neon {
