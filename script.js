@@ -2096,18 +2096,17 @@ function renderKelolaIncremental(data) {
       <td style="padding:5px;"><b>${d[1]}</b> - ${d[2]}<br><small>${d[3]}</small></td>
       <td style="padding:5px;">${planDate}<br><small>${d[10]}</small></td>
       <td style="padding: 10px 5px; text-align: center; vertical-align: middle;">
-        <div style="display: flex; gap: 5px; justify-content: center;">
-          <button onclick="openMaintModal(${i})" style="background:${badgeColor}; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; flex: 1; max-width: 60px;">
+        
+          <button onclick="openMaintModal(${i})" style="background:${badgeColor}; color:white; border:none; padding:6px 8px; border-radius:4px; cursor:pointer;">
             <i class="fa-solid fa-edit"></i> 
             EDIT
-            <span style="padding:3px 8px; border-radius:5px;">${state}
-            </span>
+            <span style="padding:3px 8px; border-radius:5px;">${state} </span>
           </button>
           
-          <button onclick="delJad(${i})" style="background:#e74c3c; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; flex: 1; max-width: 45px;">
+          <button onclick="delJad(${i})" style="background:#e74c3c; color:white; border:none; padding:6px 8px; border-radius:6px; cursor:pointer;">
             <i class="fa-solid fa-trash"></i>
           </button>
-        </div>
+      
       </td>
       `;
 
@@ -2396,7 +2395,7 @@ function renderJadwalViewIncremental(data) {
         <td style="padding:5px;">${d[7]}<br><small>${d[10]}</small></td> <!-- Plan Date -->
         <td style="padding:5px; text-align:center;">
           <!-- TOMBOL AKSI: Mengarah ke Mode Read-Only -->
-          <button onclick="openMaintDetailView(${i+1})"style="background:${badgeColor}; color:white; border:none; padding:6px; border-radius:4px; cursor:pointer;">
+          <button onclick="openMaintDetailView(${i+1})"style="background:${badgeColor}; color:white; border:none; padding:6px 8px; border-radius:4px; cursor:pointer;">
             <i class="fa-solid fa-search"></i>
           </button>
         </td>
