@@ -1014,17 +1014,6 @@ async function loadJad() {
 }
 
 
-function getSelectedRowsMaint() {
-  let rows = [];
-  document.querySelectorAll('.userCheckMaint:checked').forEach(cb => rows.push(parseInt(cb.value)));
-  return rows;
-}
-
-function toggleSelectAllMaint() {
-    let master = document.getElementById('selectAllMaint');
-    document.querySelectorAll('.userCheckMaint').forEach(cb => cb.checked = master.checked);
-}
-
 /**================================================================================================================================
  * [FUNGSI: OPEN CUSTOM SCANNER]
  * Memanggil input file untuk scan QR, dengan penanda kategori 'SCAN' untuk logika khusus.
@@ -2740,6 +2729,96 @@ async function exportToExcel() {
       Swal.fire("Gagal!", err.message, "error");
     }
   }
+}
+
+/**
+ * [FUNGSI CLIENT GITHUB: HAPUS JADWAL MASSAL]
+ * Menghapus banyak jadwal sekaligus dari Spreadsheet via Fetch POST
+ */
+async function doBulkDeleteMaint() {
+  const urlGAS = APPSCRIPT_URL;
+  const selected = getSelectedRowsMaint(); // Memanggil fungsi pembantu
+
+  // 1. Validasi
+  if (selected.length === 0) { 
+    Swal.fire({ title: "Pilih Data!", text: "Centang jadwal yang ingin dihapus.", icon: "warning", width: '80%' });
+    return; 
+  }
+ 
+  // 2. Konfirmasi
+  const konfirmasi = await Swal.fire({
+    title: "Hapus Massal?",
+    text: `Kamu akan menghapus ${selected.length} data maintenance. Lanjutkan?`,
+    icon: "warning", 
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    confirmButtonText: "Ya, Hapus!",
+    cancelButtonText: "Batal",
+    width: '80%'
+  });
+
+  if (konfirmasi.isConfirmed) { 
+    Swal.fire({
+      title: 'Sedang Menghapus...',
+      allowOutsideClick: false,
+      didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+      const response = await fetch(urlGAS, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: "deleteSelectedMaint",
+          payload: {
+            type: "Maintenance", // Sesuaikan jika ada kategori spesifik
+            selected: selected,
+            admin: window.loggedInUser || "Admin"
+          }
+        })
+      });
+      
+      const res = await response.json();
+
+      if (res.status === "success") {
+        await Swal.fire({ title: "Berhasil!", text: res.msg, icon: "success", width: '80%' });
+        
+        // Refresh data agar tampilan sinkron dengan database
+        if (typeof syncDataGhoib === 'function') await syncDataGhoib(); 
+        if (typeof loadJad === 'function') loadJad();
+        
+        // Reset checkbox master
+        const master = document.getElementById('selectAllMaint');
+        if (master) master.checked = false;
+
+      } else {
+        throw new Error(res.message || "Gagal menghapus.");
+      }
+
+    } catch (err) {
+      console.error("Error Delete:", err);
+      Swal.fire("Gagal!", err.toString(), "error", { width: '80%' });
+    }
+  }
+}
+
+function getSelectedRowsMaint() {
+  let rows = [];
+  // Mengambil semua checkbox yang dicentang
+  document.querySelectorAll('.userCheckMaint:checked').forEach(cb => {
+    const val = parseInt(cb.value);
+    if (!isNaN(val)) rows.push(val);
+  });
+  return rows;
+}
+
+function toggleSelectAllMaint() {
+  const master = document.getElementById('selectAllMaint');
+  if (!master) return;
+  
+  const checkboxes = document.querySelectorAll('.userCheckMaint');
+  checkboxes.forEach(cb => {
+    cb.checked = master.checked;
+  });
 }
 
 

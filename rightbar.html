@@ -113,7 +113,7 @@
                 <div class="rightbar-action-bar">
                 
                     <button onclick="openMaintModal()" class="btn-base btn-blue" >
-                        <i class="fa-solid fa-plus-circle"></i> EDIT
+                        <i class="fa-solid fa-plus-circle"></i> TAMBAH
                     </button>
 
                     <button onclick="exportToExcel()" class="btn-base btn-green" >
@@ -136,7 +136,7 @@
                 <thead>
                     <tr>
                     <th style="width: 25px; text-align: center;">
-                        <input type="checkbox" id="selectAllMaint" onclick="toggleSelectAll()">
+                        <input type="checkbox" id="selectAllMaint" onclick="toggleSelectAllMaint()">
                     </th>
                     <th style="width: 30px; min-width: 25px;">MAINT ID</th>
                     <th style="width: 30px; min-width: 25px;">UNIT ASET</th>
@@ -167,15 +167,15 @@
                 </button>
 
                 <button onclick="downloadCSV()" class="btn-base btn-green">
-                <i class="fa-solid fa-person-arrow-up-from-line fa-xl"></i> EXPORT CSV
+                <i class="fa-solid fa-person-arrow-up-from-line fa-xl"></i> EXPORT
                 </button>
 
                 <button onclick="doBulkAction('aktif')" class="btn-base btn-gold">
-                <i class="fa-solid fa-person-circle-check fa-xl"></i> AKTIFKAN
+                <i class="fa-solid fa-person-circle-check fa-xl"></i> AKTIF
                 </button>
 
                 <button onclick="doBulkAction('nonaktif')" class="btn-base btn-purple">
-                <i class="fa-solid fa-person-circle-xmark fa-xl"></i> NONAKTIFKAN
+                <i class="fa-solid fa-person-circle-xmark fa-xl"></i> DORMANT
                 </button>
 
                 <button onclick="doBulkDelete()" class="btn-base btn-red">
@@ -222,7 +222,7 @@
                     </select>
                 </div>
                 <button onclick="openAddAssetModal()" class="btn-base btn-blue">
-                <i class="fa fa-plus-circle"></i> ASET BARU
+                <i class="fa fa-plus-circle"></i> BARU
                 </button>
 
                 <button id="btnBulkQR" onclick="bulkUpdateQR()" class="btn-base btn-purple">
@@ -230,11 +230,11 @@
                 </button>
 
                 <button onclick="openGlobalSearch()" class="btn-base btn-gold">
-                <i class="fa-solid fa-search"></i> MASTER SEARCH
+                <i class="fa-solid fa-search"></i> SEARCH
                 </button>
 
                 <button id="btnBulkDelete" onclick="doBulkDeleteAsset()" class="btn-base btn-red">
-                <i class="fa-solid fa-trash-alt"></i> HAPUS TERPILIH
+                <i class="fa-solid fa-trash-alt"></i> HAPUS
                 </button>
             </div>
 
@@ -271,15 +271,15 @@
             <!-- Tombol Action dengan Efek Timbul 3D -->
             <div class="rightbar-action-bar" >
                 <button onclick="loadAuditLogs()" class="btn-base btn-blue">
-                <i class="fa-solid fa-arrows-rotate"></i> REFRESH LOG
+                <i class="fa-solid fa-arrows-rotate"></i> REFRESH
                 </button>
 
                 <button onclick="backupLogSekarang()" class="btn-base btn-gold">
-                <i class="fa-solid fa-box-archive"></i> BACKUP LOG
+                <i class="fa-solid fa-box-archive"></i> BACKUP
                 </button>
 
                 <button onclick="hapusLog()" class="btn-base btn-red">
-                <i class="fa-solid fa-eraser"></i> PURGE LOG
+                <i class="fa-solid fa-eraser"></i> PURGE
                 </button>
             </div>
 
@@ -317,7 +317,7 @@
                 </select>
                 </div>
                 <button onclick="openGlobalSearch()" class="btn-base btn-gold input-sedang">
-                 <i class="fa-solid fa-search"></i> MASTER SEARCH
+                 <i class="fa-solid fa-search"></i> SEARCH
                 </button>
             </div>
 
@@ -378,12 +378,12 @@
                     </div>
 
                     <div class="input-group-unit">
-                        <label class="label-neon">EMAIL ADDRESS</label>
+                        <label class="label-neon">EMAIL </label>
                         <input type="email" id="set_email" class="input-neon-biasa input-full">
                     </div>
 
                     <div class="input-group-unit">
-                        <label class="label-neon">NOMOR TELEPON</label>
+                        <label class="label-neon">TELEPON</label>
                         <input type="text" id="set_phone" class="input-neon-biasa input-full">
                     </div>
                     
