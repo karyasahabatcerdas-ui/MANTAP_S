@@ -3185,8 +3185,8 @@ async function loadAssetData(sheetName_val) {
 
     // Filter: Hanya simpan baris yang kolom pertamanya BUKAN 'ID_Asset'
      data = dataRaw.filter(row => row[0] !== 'ID_Asset');
-
     sheetName = sheetName_val; //lempar value selector sheetName
+
   } else {
     // 2. Jika ada value, cari nama sheet yang sesuai di Reference
     const sheetRef = getRef("Type_Asset").slice(1);
@@ -3199,13 +3199,12 @@ async function loadAssetData(sheetName_val) {
       data = []; // Jaga-jaga jika ID tidak ditemukan
     }
   }
-
   //console.table(data);
-
 try {
   // 3. Eksekusi pengecekan data
   if (!data || data.length === 0) {
-    document.getElementById('assetBody').innerHTML = "<tr><td colspan='5' style='text-align:center;'>📭 Data Kosong</td></tr>";    
+    const tbody = document.getElementById('assetBody');
+    if (tbody) tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>📭 Data Kosong</td></tr>";    
     return;
   }
 
@@ -3217,8 +3216,9 @@ try {
     renderAssetTableIncremental(sheetName, data);
 
   } catch (err) {
-    console.error("Gagal load data aset:", err);
-    document.getElementById('assetBody').innerHTML = "<tr><td colspan='5' style='text-align:center; color:red;'>⚠️ Gagal terhubung ke database aset.</td></tr>";
+    //console.error("Gagal load data aset:", err);
+    const tbody = document.getElementById('assetBody');
+    if (tbody) tbody.innerHTML  = "<tr><td colspan='4' style='text-align:center; color:red;'>⚠️ Gagal terhubung ke database aset.</td></tr>";
   }
 }
 
@@ -3240,12 +3240,12 @@ function renderAssetTableIncremental(sheetPass, data) {
   const typeRefs = getRef("Type_Asset").slice(1); 
   // A. RESET CHECKBOX HEADER (Penting agar tidak nyangkut saat ganti Tipe Aset)
   if (masterCheck) masterCheck.checked = false;
-  
- // if (sheetPass === "") {
+  // jika sheetPass  kosong artinya  data header suda dipotong, jadi nadk perlu dipotong lagi.
+ if (sheetPass !== "") {
     const newDataLength = data.length - 1;
-   //} else {
-   // const newDataLength = data.length;
- // }  
+  } else {
+   const newDataLength = data.length;
+ }  
 
   for (let i = 1; i < data.length; i++) {
     const rowData = data[i];
@@ -3263,7 +3263,6 @@ function renderAssetTableIncremental(sheetPass, data) {
     } else {
       sheetName = sheetPass;
     }
-
     // 1. Ambil data dan paksa jadi huruf kecil + buang spasi ghaib
     const status = (rowData[4] || "").toLowerCase().trim();
     // 2. Mapping Warna (Definisikan 4 kondisimu di sini)
@@ -3451,30 +3450,34 @@ function toggleSelectAset(master) {
  * Setiap baris memiliki tombol "Lihat Detail" yang memanggil fungsi openAssetDetailView dengan parameter sheetName dan row index untuk menampilkan detail aset di modal.
  * ==========================================================================
  */
-async function loadAssetDataView(val_sheetName) {
+async function loadAssetDataView(sheetName_val) {
+  let data; // Siapkan variabel penampung
+  let sheetName; // Variabel untuk nama sheet yang akan dipakai di render
   
-  if (!val_sheetName) return;
-  
-  //const iframe = document.getElementById('iframeGAS');
-  //const urlGAS = APPSCRIPT_URL;
+    if (!sheetName_val) {
+    // 1. Jika value kosong, ambil SEMUA asset dari SEMUA sheet (Array 2D)
+    // Mengambil data dan meratakannya
+    let dataRaw = Object.values(window.APP_STORE.assets).flat(1);
 
-  try {
-    // 1. PANGGIL SERVER (GET) - Menggunakan action yang sama dengan Kelola Aset
-    //const response = await fetch(`${urlGAS}?action=getSpecificAsset&sheetName=${encodeURIComponent(sheetName)}`);
-   // const data = await response.json();
-  
-  // 1. Ambil Gudang Referensi dari RAM
-  const dataRef = getRef("Type_Asset").slice(1);
-  // 2. Cari baris yang ID-nya (Kolom 0) cocok dengan 'val'
-  const baris = dataRef.find(row => row[0] === val_sheetName);
-  // 3. Ambil Nama Tipe dari Kolom 1
-  const sheetName = baris ? baris[1] : "TIDAK DITEMUKAN";
-
-
-
-    const data = getAsset(sheetName); 
-    console.log("Data aset untuk view:", data);
-    console.log('namasheet :', sheetName);
+    // Filter: Hanya simpan baris yang kolom pertamanya BUKAN 'ID_Asset'
+     data = dataRaw.filter(row => row[0] !== 'ID_Asset');
+    sheetName = sheetName_val; //lempar value selector sheetName
+    
+  } else {
+    // 2. Jika ada value, cari nama sheet yang sesuai di Reference
+    const sheetRef = getRef("Type_Asset").slice(1);
+    const sheetRow = sheetRef.find(row => row[0] === sheetName_val);
+    
+    if (sheetRow) {
+      sheetName = sheetRow[1];
+      data = getAsset(sheetName);
+    } else {
+      data = []; // Jaga-jaga jika ID tidak ditemukan
+    }
+  }
+//console.table(data);
+  try {  
+  // 3. Eksekusi pengecekan data
     if (!data || data.length < 2) {
       const tbody = document.getElementById('viewAssetBody');
       if (tbody) tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>📭 Data Kosong</td></tr>";
@@ -3485,7 +3488,7 @@ async function loadAssetDataView(val_sheetName) {
     renderAssetTableIncrementalView(sheetName, data);
 
   } catch (err) {
-    console.error("Gagal load data aset view:", err);
+    //console.error("Gagal load data aset view:", err);
     const tbody = document.getElementById('viewAssetBody');
     if (tbody) tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>⚠️ Gagal memuat data aset.</td></tr>";
   }
@@ -3502,24 +3505,54 @@ async function loadAssetDataView(val_sheetName) {
  * Penting: Pastikan struktur data yang dikirim dari server sesuai dengan yang diharapkan agar render berjalan dengan benar.
  *==========================================================================
  */
-function renderAssetTableIncrementalView(sheetName, data) {
+function renderAssetTableIncrementalView(sheetPass, data) {
   const tbody = document.getElementById('viewAssetBody');
   const existingRows = tbody.rows;
-  const newDataLength = data.length - 1;
+  let sheetName = ""; // Variabel untuk menyimpan nama sheet yang akan dipakai di render
+  const typeRefs = getRef("Type_Asset").slice(1); 
+    // jika sheetPass  kosong artinya  data header suda dipotong, jadi nadk perlu dipotong lagi.
+  if (sheetPass !== "") {
+      const newDataLength = data.length - 1;
+    } else {
+    const newDataLength = data.length;
+  }  
 
 
-
-  console.log("Data aset untuk view:", data);
-  console.log('namasheet :', sheetName);
   for (let i = 1; i < data.length; i++) {
     const rowData = data[i];
     const rowIdx = i - 1;
+       // cek jika sheetpass =""
+    // JIKA sheetPass kosong (Mode Gabungan/All Assets)
+    if (!sheetPass) {
+      // Ambil huruf pertama dari ID Asset (misal 'a' dari 'a.001')
+      const firstLetter = (rowData[0] || "").charAt(0).toLowerCase();
+      
+      // Cari di Type_Asset mana yang kodenya cocok
+      const match = typeRefs.find(ref => ref[0].toLowerCase() === firstLetter);
+      sheetName = match ? match[1] : "Unknown"; 
+    
+    } else {
+      sheetName = sheetPass;
+    }
+    // 1. Ambil data dan paksa jadi huruf kecil + buang spasi ghaib
+    const status = (rowData[4] || "").toLowerCase().trim();
+    // 2. Mapping Warna (Definisikan 4 kondisimu di sini)
+    const colors = {
+      "baik":      "#27ae60", // Hijau
+      "rusak":     "#e74c3c", // Merah (Saran: Rusak biasanya merah, bukan biru)
+      "treatment": "#f39c12", // Oranye
+      "baru":      "#2980b9"  // Biru
+    };
+    // 3. Tentukan warna (Default ke abu-abu jika status tidak dikenal)
+    let badgeColor = colors[status] || "#7f8c8d";
     // Template baris tanpa checkbox, tombol manggil openAssetDetailView
     const rowHtml = `
       <td>${rowData[0]}</td><td>${rowData[2]}</td><td>${rowData[3]}</td>
       <td>
-        <button onclick="openAssetDetailView('${sheetName}', ${i+1})" style="background:#7f8c8d; color:white; border:none; padding:5px; border-radius:3px; cursor:pointer;">
-          <i class="fas fa-search"></i> Lihat
+        <button onclick="openAssetDetailView('${sheetName}', ${i+1})" style="background:${badgeColor}; color:white; border:none; padding:5px; border-radius:3px; cursor:pointer;">
+          <i class="fas fa-search"></i> 
+          Lihat
+          <span style="background:${badgeColor}; color:white;">${rowData[4]}</span>
         </button>
       </td>`;
 
@@ -3615,11 +3648,6 @@ async function openAssetDetail(sheetName, row) {
 
   //const finalUrl = `${urlGAS}?${params.toString()}`;
   //console.log("Fetching Data (GET):", finalUrl);
-
-
-
-
-
 
   // Indikator loading pada input nama
   const inputNama = document.getElementById('as_nama');
