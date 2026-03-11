@@ -3177,6 +3177,7 @@ function renderAllTypeDropdowns(types) {
 async function loadAssetData(sheetName_val) {
   let data; // Siapkan variabel penampung
   let sheetName; // Variabel untuk nama sheet yang akan dipakai di render
+  const tbody = document.getElementById('assetBody');
 
   if (!sheetName_val) {
     // 1. Jika value kosong, ambil SEMUA asset dari SEMUA sheet (Array 2D)
@@ -3215,7 +3216,6 @@ try {
   console.table(data);
   console.log("Jumlah data yang diambil:", data.length);
   if (!data || data.length === 0) {
-    const tbody = document.getElementById('assetBody');
     if (tbody) tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>📭 Data Kosong</td></tr>";    
     return;
   }
@@ -3228,7 +3228,6 @@ try {
 
   } catch (err) {
     //console.error("Gagal load data aset:", err);
-    const tbody = document.getElementById('assetBody');
     if (tbody) tbody.innerHTML  = "<tr><td colspan='4' style='text-align:center; color:red;'>⚠️ Gagal terhubung ke database aset.</td></tr>";
   }
 }
@@ -3464,6 +3463,7 @@ function toggleSelectAset(master) {
 async function loadAssetDataView(sheetName_val) {
   let data; // Siapkan variabel penampung
   let sheetName; // Variabel untuk nama sheet yang akan dipakai di render
+  const tbody = document.getElementById('viewAssetBody');
   
     if (!sheetName_val) {
     // 1. Jika value kosong, ambil SEMUA asset dari SEMUA sheet (Array 2D)
@@ -3498,7 +3498,6 @@ async function loadAssetDataView(sheetName_val) {
     console.log("Jumlah data yang diambil untuk view:", data.length);
   // 3. Eksekusi pengecekan data
     if (!data || data.length === 0) {
-      const tbody = document.getElementById('viewAssetBody');
       if (tbody) tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>📭 Data Kosong</td></tr>";
       return;
     }
@@ -3508,7 +3507,6 @@ async function loadAssetDataView(sheetName_val) {
 
   } catch (err) {
     //console.error("Gagal load data aset view:", err);
-    const tbody = document.getElementById('viewAssetBody');
     if (tbody) tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>⚠️ Gagal memuat data aset.</td></tr>";
   }
 }
