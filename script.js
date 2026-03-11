@@ -3176,6 +3176,7 @@ function renderAllTypeDropdowns(types) {
  */
 async function loadAssetData(sheetName_val) {
   let data; // Siapkan variabel penampung
+  let sheetName; // Variabel untuk nama sheet yang akan dipakai di render
 
   if (!sheetName_val) {
     // 1. Jika value kosong, ambil SEMUA asset dari SEMUA sheet (Array 2D)
@@ -3187,7 +3188,7 @@ async function loadAssetData(sheetName_val) {
     const sheetRow = sheetRef.find(row => row[0] === sheetName_val);
     
     if (sheetRow) {
-      const sheetName = sheetRow[1];
+      sheetName = sheetRow[1];
       data = getAsset(sheetName);
     } else {
       data = []; // Jaga-jaga jika ID tidak ditemukan
