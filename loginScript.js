@@ -440,6 +440,47 @@ function showLoginForm() {
     if (mainContent) mainContent.style.display = 'none';
 }
 
+/**
+ * [FUNGSI: SYNC UI FOTO DENGAN FALLBACK AVATAR]
+ * Jika link foto kosong, otomatis menggunakan UI-Avatar.
+ */
+
+function syncProfileUI(newUrl, isSelf) {
+  var finalUrl = "";
+  var timestamp = "?t=" + Date.now();
+
+  // 1. Logika Keamanan URL
+  if (newUrl && newUrl.toString().startsWith("blob:")) {
+    // JIKA BLOB: Gunakan URL murni tanpa modifikasi apa pun
+    finalUrl = newUrl; 
+  } else if (newUrl && newUrl.toString().includes("http")) {
+    // JIKA HTTP (Drive/lh3): Bersihkan parameter lama dan tambah timestamp baru
+    finalUrl = newUrl.split('?')[0] + timestamp;
+  } else {
+    // JIKA KOSONG: Gunakan UI-Avatars
+    var targetName = isSelf ? loggedInUser : (document.getElementById('m_user') ? document.getElementById('m_user').value : "User");
+    finalUrl = "https://ui-avatars.com/api/?name=" + encodeURIComponent(targetName) + "&background=2980b9&color=fff";
+  }
+  
+  // 2. Daftar Target Update
+  var targets = ['admin_edit_photo']; 
+  if (isSelf) {
+    targets.push('user_profile_shared');
+    targets.push('user_profile_mobile')
+    targets.push('set_display_photo');
+  }
+
+  // 3. Eksekusi Perubahan ke DOM
+  targets.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.src = finalUrl;
+      el.style.opacity = "1"; // Kembalikan opacity ke normal
+    }
+  });
+
+  console.log("✅ UI Sync Executed. Final URL: " + finalUrl);
+}
 
 document.addEventListener("DOMContentLoaded", async () => {   
     // Tunggu SEMUA komponen selesai terpasang di layar
