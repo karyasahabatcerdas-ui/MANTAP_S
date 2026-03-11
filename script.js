@@ -5301,18 +5301,4 @@ function closeModal() {
 
 
 
-window.addEventListener('DOMContentLoaded', async (event) => {
-    // 1. Tampilkan loading (opsional)
-    console.log("🚀 Memulai sinkronisasi...");
-    
-    // 2. Sedot Data (Wajib ditunggu)
-    await syncDataGhoib(); 
-    
-    // 3. Isi semua Dropdown (Otomatis dari RAM)
-    populateAllDropdowns();
-    
-    // 4. Update UI lainnya (misal: tampilkan nama user login)
-    if (typeof loadProf === 'function') loadProf(); 
 
-    console.log("💎 System Ready, Señor!");
-});

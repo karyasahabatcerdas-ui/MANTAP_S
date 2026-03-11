@@ -23,55 +23,80 @@ Temp_Profile = [null,null];
 let loggedInUser = "";
 let userRole = "";
 
-  function login() {
-    var u = document.getElementById('user').value;
-    var p = document.getElementById('pass').value;
-    var btn = document.getElementById('btnLogin');
-    if (btn) btn.innerText = "Autentikasi...";  
-    google.script.run.withSuccessHandler(function(res) {
-      if (btn) btn.innerText = "Login";    
-      if(res.success) {
-        loggedInUser = u;
-        userRole = res.role.toLowerCase().trim();
-        // --- LOGIKA LEVEL PENGGUNA ---
-        var adminArea = document.getElementById('adminMenuArea');
-        if (userRole === 'admin') {
-          adminArea.style.setProperty('display', 'block', 'important');
-        } else {
-          adminArea.style.setProperty('display', 'none', 'important');
-        }
-          google.script.run.withSuccessHandler(function(url) {
-            if (url && url.includes("http")) {
-              syncProfileUI(url,true);
-            } else {
-              // Paksa gunakan format sukses Anda agar tidak ERR_NAME_NOT_RESOLVED
-              var fixAvatar = "https://ui-avatars.com/api/?name=" + encodeURIComponent(loggedInUser) + "/?" + "&background=2980b9&color=fff";
-              syncProfileUI(fixAvatar,true); 
-           }
-          }).getLatestPhotoUrl(u);
-
-        // UI Reset
-        document.getElementById('loginOverlay').style.display = 'none';
-        document.getElementById('sidebar').classList.remove('collapsed');
-        document.getElementById('headerUser').innerText = u + " (" + userRole + ")";
-        initAllJadwalDropdowns();
-        loadAssetTypes();
-        initHistoryDropdown;      
-        showPage('history');
-        //startAutoRefresh();
-      } else {
-        //alert(res.message || "Gagal Login!");
-        Swal.fire({
-          title: "Gagal Login",
-          text: "Gagal Login : " + res.message, // Ini isi pesan dari server-mu
-          icon: "warning",
-          confirmButtonText: "OK, Señor!",
-          width: '80%' // Biar pas di layar HP Sultan
-      
-        });
-      }
-    }).checkLogin(u, p);
+ async function login() {
+  const u = document.getElementById('user').value;
+  const p = document.getElementById('pass').value;
+  const btn = document.getElementById('btnLogin');
+  
+  if (!u || !p) {
+    Swal.fire({ title: "Ops!", text: "Isi Username & Password", icon: "error", width: '80%' });
+    return;
   }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = "Autentikasi...";
+  }
+
+  try {
+    const response = await fetch(APPSCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: "checkLogin",
+        payload: { username: u, password: p }
+      })
+    });
+
+    const res = await response.json();
+
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = "Login";
+    }
+
+    if (res.status === "success" && res.data.success) {
+      const dataUser = res.data;
+      loggedInUser = u;
+      userRole = dataUser.role.toLowerCase().trim();
+
+      // --- SIMPAN SESI (PENTING!) ---
+      localStorage.setItem("userMaint", JSON.stringify({ name: u, role: userRole }));
+
+      // --- LOGIKA UI LEVEL ---
+      const adminArea = document.getElementById('adminMenuArea');
+      if (adminArea) {
+        adminArea.style.display = (userRole === 'admin') ? 'block' : 'none';
+      }
+
+      // --- SYNC FOTO (Ambil dari dataUser jika ada, atau fetch ulang) ---
+      // Kita asumsikan fungsi getLatestPhotoUrl juga dipindah ke doPost nanti
+      const fixAvatar = `https://ui-avatars.com{encodeURIComponent(u)}&background=2980b9&color=fff`;
+      syncProfileUI(fixAvatar, true);
+
+      // UI Switch
+      document.getElementById('loginOverlay').style.display = 'none';
+      document.getElementById('main-content').style.display = 'flex'; // Munculkan konten utama
+      document.getElementById('headerUser').innerText = `${u} (${userRole})`;
+      
+      Swal.fire({ title: "Berhasil!", text: "Selamat Datang, " + u, icon: "success", timer: 1500, showConfirmButton: false });
+      
+      showPage('history');
+      syncDataGhoib(); // Sedot data setelah login sukses
+
+    } else {
+      throw new Error(res.message || res.data.message || "Gagal Login!");
+    }
+
+  } catch (err) {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = "Login";
+    }
+    console.error("Login Error:", err);
+    Swal.fire({ title: "Gagal Login", text: err.message, icon: "warning", width: '80%' });
+  }
+}
+
 
 /**
  * [FUNGSI: LOGOUT & PEMBERSIHAN TOTAL]

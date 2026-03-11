@@ -5,8 +5,8 @@
 .login-page-stealth {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
   background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  z-index: 99998; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: block; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 999999; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* --- GLASS BOX DENGAN EFEK PELANGI --- */

@@ -8,7 +8,7 @@
   height: 100vh;
   background: var(--bg-card);
   border-right: 1px solid var(--border-dim);
-  display: flex;
+  display: flex; /* KUNCI: Sembunyikan Leftbar saat login */
   flex-direction: column;
   flex-shrink: 0; /* Jangan biarkan dia gepeng */
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
