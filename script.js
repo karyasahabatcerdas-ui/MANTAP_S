@@ -3180,7 +3180,12 @@ async function loadAssetData(sheetName_val) {
 
   if (!sheetName_val) {
     // 1. Jika value kosong, ambil SEMUA asset dari SEMUA sheet (Array 2D)
-    data = Object.values(window.APP_STORE.assets).flat(1);
+    // Mengambil data dan meratakannya
+    let dataRaw = Object.values(window.APP_STORE.assets).flat(1);
+
+    // Filter: Hanya simpan baris yang kolom pertamanya BUKAN 'ID_Asset'
+     data = dataRaw.filter(row => row[0] !== 'ID_Asset');
+
     sheetName = sheetName_val; //lempar value selector sheetName
   } else {
     // 2. Jika ada value, cari nama sheet yang sesuai di Reference
@@ -3231,18 +3236,24 @@ try {
 function renderAssetTableIncremental(sheetPass, data) {
   const tbody = document.getElementById('assetBody');
   const masterCheck = document.getElementById('checkAllAsset');
+  let sheetName = ""; // Variabel untuk menyimpan nama sheet yang akan dipakai di render
   
   // A. RESET CHECKBOX HEADER (Penting agar tidak nyangkut saat ganti Tipe Aset)
   if (masterCheck) masterCheck.checked = false;
 
-  const newDataLength = data.length - 1; 
-  ;
+ // if (sheetPass === "") {
+    const newDataLength = data.length - 1;
+   //} else {
+   // const newDataLength = data.length;
+ // }
+  
 
   for (let i = 1; i < data.length; i++) {
     const rowData = data[i];
     const rowIdx = i - 1;
+    // cek jika sheetpass =""
     if (!sheetPass) {
-      // check dulu apakah sheetName kosong
+      // ambil id dari Type_Asset
       let sheetVal = getRef("Type_Asset").slice(1)[i][0]
       let sheetRow = data[i][0];
       if (sheetVal === sheetRow) {
