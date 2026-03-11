@@ -3199,8 +3199,7 @@ async function loadAssetData(sheetName_val) {
 try {
   // 3. Eksekusi pengecekan data
   if (!data || data.length === 0) {
-    document.getElementById('assetBody').innerHTML = "<tr><td colspan='5' style='text-align:center;'>📭 Data Kosong</td></tr>";
-    
+    document.getElementById('assetBody').innerHTML = "<tr><td colspan='5' style='text-align:center;'>📭 Data Kosong</td></tr>";    
     return;
   }
 
@@ -3236,14 +3235,22 @@ function renderAssetTableIncremental(sheetPass, data) {
   if (masterCheck) masterCheck.checked = false;
 
   const newDataLength = data.length - 1; 
-  // check dulu apakah sheetName kosong
-  let SheetRef = getRef("Type_Asset").slice(1);
+  ;
 
   for (let i = 1; i < data.length; i++) {
     const rowData = data[i];
     const rowIdx = i - 1;
-    const sheetName = sheetPass ? sheetPass : "";
-    if (!sheetName) {
+    if (!sheetPass) {
+      // check dulu apakah sheetName kosong
+      let sheetVal = getRef("Type_Asset").slice(1)[i][0]
+      let sheetRow = data[i][0];
+      if (sheetVal === sheetRow) {
+        sheetName = getRef("Type_Asset").slice(1)[i][1];
+      }
+    } else {
+      sheetName = sheetPass;
+    }
+
     // 1. Ambil data dan paksa jadi huruf kecil + buang spasi ghaib
     const status = (rowData[4] || "").toLowerCase().trim();
     // 2. Mapping Warna (Definisikan 4 kondisimu di sini)
