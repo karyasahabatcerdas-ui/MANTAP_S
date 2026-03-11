@@ -3200,7 +3200,7 @@ async function loadAssetData(sheetName_val) {
     }
   }
 
-  console.table(data);
+  //console.table(data);
 
 try {
   // 3. Eksekusi pengecekan data
@@ -3247,20 +3247,21 @@ function renderAssetTableIncremental(sheetPass, data) {
     const newDataLength = data.length - 1;
    //} else {
    // const newDataLength = data.length;
- // }
-  
+ // }  
 
   for (let i = 1; i < data.length; i++) {
     const rowData = data[i];
     const rowIdx = i - 1;
     // cek jika sheetpass =""
+    // JIKA sheetPass kosong (Mode Gabungan/All Assets)
     if (!sheetPass) {
-      // ambil id dari Type_Asset
-      sheetVal = getRef("Type_Asset").slice(1)[i][0];
-      sheetRow = data[i][0];
-      if (sheetVal === sheetRow) {
-        sheetName = getRef("Type_Asset").slice(1)[i][1];
-      }
+      // Ambil huruf pertama dari ID Asset (misal 'a' dari 'a.001')
+      const firstLetter = (rowData[0] || "").charAt(0).toLowerCase();
+      
+      // Cari di Type_Asset mana yang kodenya cocok
+      const match = typeRefs.find(ref => ref[0].toLowerCase() === firstLetter);
+      sheetName = match ? match[1] : "Unknown"; 
+    
     } else {
       sheetName = sheetPass;
     }
