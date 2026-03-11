@@ -11,48 +11,44 @@ window.APP_STORE = {
   lastSync: null
 };
 
-// --- 2. FUNGSI SEDOT DATA (READ) ---
+// --- 2. FUNGSI SEDOT DATA (READ) dengan ---
+//Fungsi ini akan mengecek Etag atau Last-Modified dari GitHub. 
+//Jika file di GitHub tidak berubah, ia tidak akan membuang kuota internet untuk download ulang.
 async function syncDataGhoib() {
+  const loginData = JSON.parse(localStorage.getItem("userMaint"));
+  if (!loginData) return;
+
+  const { name, sessionId } = loginData;
+  const GITHUB_JSON_URL = "https://raw.githubusercontent.com";
+
   try {
-    // Indikator Loading
-    Swal.fire({ 
-      title: 'Sinkronisasi Data...', 
-      text: 'Menyedot 22 Sheet dari Server...',
-      allowOutsideClick: false, 
-      didOpen: () => Swal.showLoading() 
-    });
+    console.log("🔄 Memeriksa pembaruan data...");
 
-    // Fetch ke doGet GAS
-    const response = await fetch(`${GAS_URL}?action=getInitialData`);
-    const res = await response.json();
+    // 1. Ambil data dari GITHUB (Bukan GAS agar Wuzzz!)
+    // Gunakan cache-control agar mendapatkan data paling fresh
+    const response = await fetch(GITHUB_JSON_URL, { cache: 'no-cache' });
+    const remoteData = await response.json();
 
-    if (res.status !== "success") throw new Error(res.message);
+    // 2. LOGIKA DIFERENSIASI (METODE DIRTY)
+    // Bandingkan data di RAM (window.APP_STORE) dengan data dari GitHub
+    if (window.APP_STORE && JSON.stringify(window.APP_STORE.assets) === JSON.stringify(remoteData.assets)) {
+      console.log("✅ Data sudah paling update. Lewati sinkronisasi.");
+      return; 
+    }
 
-    // BONGKAR GHOIB
-    const decodedString = atob(res.blob); 
-    const cleanData = JSON.parse(decodedString);
+    // 3. UPDATE RAM LOKAL (Hanya jika ada perbedaan)
+    window.APP_STORE = remoteData; 
+    console.log("🚀 RAM Updated: Data 22 Sheet Sinkron.");
 
-    // Masukkan ke RAM
-    window.APP_STORE.app = cleanData.app;
-    window.APP_STORE.assets = cleanData.assets;
-    window.APP_STORE.reference = cleanData.reference;
-    window.APP_STORE.maintenance = cleanData.maintenance;
-    window.APP_STORE.lastSync = cleanData.timestamp;
-    window.APP_STORE.key = res.key;
-
-    sessionStorage.setItem('DATA_KSC_GHOIB', res.blob);
-    
-    // Isi Dropdown secara otomatis
-    populateAllDropdowns();
-
-    //Swal.fire({ title: "Sukses!", text: "Data Sinkron.", icon: "success", timer: 1500 });
-    console.log("✅ RAM Updated:", window.APP_STORE);
+    // 4. TRIGGER RE-RENDER (Hanya tabel yang sedang dibuka)
+    if (typeof loadJad === 'function') loadJad();
+    if (typeof loadAssetData === 'function') loadAssetData();
 
   } catch (err) {
-    console.error("Gagal Sinkron:", err);
-    Swal.fire("Error", err.message, "error");
+    console.error("Gagal sinkron data GitHub:", err);
   }
 }
+
 
 // --- 3. FUNGSI KIRIM DATA (WRITE) ---
 async function kirimKeGAS(action, sheetName, id, dataRow = []) {
