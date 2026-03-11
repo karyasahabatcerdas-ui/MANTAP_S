@@ -3227,7 +3227,7 @@ try {
     renderAssetTableIncremental(sheetName, data);
 
   } catch (err) {
-    //console.error("Gagal load data aset:", err);
+    console.error("Gagal load data aset:", err);
     if (tbody) tbody.innerHTML  = "<tr><td colspan='4' style='text-align:center; color:red;'>⚠️ Gagal terhubung ke database aset.</td></tr>";
   }
 }
@@ -3251,11 +3251,11 @@ function renderAssetTableIncremental(sheetPass, data) {
   // A. RESET CHECKBOX HEADER (Penting agar tidak nyangkut saat ganti Tipe Aset)
   if (masterCheck) masterCheck.checked = false;
   // jika sheetPass  kosong artinya  data header suda dipotong, jadi nadk perlu dipotong lagi.
- if (sheetPass !== "") {
+// if (sheetPass !== "") {
     const newDataLength = data.length - 1;
-  } else {
-   const newDataLength = data.length;
- }  
+//  } else {
+ //  const newDataLength = data.length;
+// }  
 
   for (let i = 1; i < data.length; i++) {
     const rowData = data[i];
@@ -3498,6 +3498,7 @@ async function loadAssetDataView(sheetName_val) {
     console.log("Jumlah data yang diambil untuk view:", data.length);
   // 3. Eksekusi pengecekan data
     if (!data || data.length === 0) {
+
       if (tbody) tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>📭 Data Kosong</td></tr>";
       return;
     }
@@ -3506,7 +3507,7 @@ async function loadAssetDataView(sheetName_val) {
     renderAssetTableIncrementalView(sheetName, data);
 
   } catch (err) {
-    //console.error("Gagal load data aset view:", err);
+    console.error("Gagal load data aset view:", err);
     if (tbody) tbody.innerHTML = "<tr><td colspan='4' style='text-align:center; color:red;'>⚠️ Gagal memuat data aset.</td></tr>";
   }
 }
@@ -3528,11 +3529,11 @@ function renderAssetTableIncrementalView(sheetPass, data) {
   let sheetName = ""; // Variabel untuk menyimpan nama sheet yang akan dipakai di render
   const typeRefs = getRef("Type_Asset").slice(1); 
     // jika sheetPass  kosong artinya  data header suda dipotong, jadi nadk perlu dipotong lagi.
-  if (sheetPass !== "") {
+  //if (sheetPass !== "") {
       const newDataLength = data.length - 1;
-    } else {
-    const newDataLength = data.length;
-  }  
+   // } else {
+   // const newDataLength = data.length;
+ // }  
 
 
   for (let i = 1; i < data.length; i++) {
