@@ -3184,7 +3184,15 @@ async function loadAssetData(sheetName_val) {
     let dataRaw = Object.values(window.APP_STORE.assets).flat(1);
 
     // Filter: Hanya simpan baris yang kolom pertamanya BUKAN 'ID_Asset'
-     data = dataRaw.filter(row => row[0] !== 'ID_Asset');
+     //data = dataRaw.filter(row => row[0] !== 'ID_Asset');
+     data = dataRaw.filter((row, index) => {
+      // Jika ini baris pertama (index 0), JANGAN dihapus (return true)
+      if (index === 0) return true;
+      
+      // Untuk baris selanjutnya, hapus jika kolom pertamanya adalah 'ID_Asset'
+      return row[0] !== 'ID_Asset';
+    });
+
     sheetName = sheetName_val; //lempar value selector sheetName
 
   } else {
@@ -3199,16 +3207,19 @@ async function loadAssetData(sheetName_val) {
       data = []; // Jaga-jaga jika ID tidak ditemukan
     }
   }
-  
+   const masterCheck = document.getElementById('checkAllAsset');
+
+
 try {
   // 3. Eksekusi pengecekan data
   console.table(data);
+  console.log("Jumlah data yang diambil:", data.length);
   if (!data || data.length === 0) {
     const tbody = document.getElementById('assetBody');
     if (tbody) tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>📭 Data Kosong</td></tr>";    
     return;
   }
-    const masterCheck = document.getElementById('checkAllAsset');
+   
     // Reset checkbox master jika ada
     if (masterCheck) masterCheck.checked = false; 
 
@@ -3460,7 +3471,12 @@ async function loadAssetDataView(sheetName_val) {
     let dataRaw = Object.values(window.APP_STORE.assets).flat(1);
 
     // Filter: Hanya simpan baris yang kolom pertamanya BUKAN 'ID_Asset'
-     data = dataRaw.filter(row => row[0] !== 'ID_Asset');
+    data = dataRaw.filter((row, index) => {
+      // Jika ini baris pertama (index 0), JANGAN dihapus (return true)
+      if (index === 0) return true;      
+      // Untuk baris selanjutnya, hapus jika kolom pertamanya adalah 'ID_Asset'
+      return row[0] !== 'ID_Asset';
+    });
     sheetName = sheetName_val; //lempar value selector sheetName
     
   } else {
@@ -3476,8 +3492,10 @@ async function loadAssetDataView(sheetName_val) {
     }
   }
 
+
   try {  
     console.table(data);
+    console.log("Jumlah data yang diambil untuk view:", data.length);
   // 3. Eksekusi pengecekan data
     if (!data || data.length === 0) {
       const tbody = document.getElementById('viewAssetBody');
