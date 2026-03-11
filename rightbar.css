@@ -101,28 +101,25 @@
 }
 */
 
-.rightbar-action-bar {
+/* Timpa aturan width 100% khusus untuk elemen di dalam action bar */
+.rightbar-action-bar select, 
+.rightbar-action-bar .search-wrapper-neon,
+.rightbar-action-bar input {
+  width: auto !important; /* Biar flexbox yang mengatur lebarnya */
+  flex: 1 1 150px;       /* Tumbuh, Menyusut, dengan lebar dasar 150px */
+  min-width: fit-content; /* Jangan lebih kecil dari teks di dalamnya */
+}
+
+/* Khusus search wrapper agar tetap terlihat luas */
+.rightbar-action-bar .search-wrapper-neon {
+  flex: 2 1 250px; 
   display: flex;
-  flex-wrap: wrap; /* Izinkan pindah baris jika layar sempit */
-  gap: 10px;       /* Jarak antar komponen */
-  margin-bottom: 1.5rem;
   align-items: center;
-  width: 100%;
 }
 
-/* Mengatur semua anak elemen (select dan search wrapper) */
-.rightbar-action-bar > select, 
-.rightbar-action-bar > .search-wrapper-neon {
-  flex: 1 1 auto;      /* Tumbuh (grow) memenuhi sisa ruang, tapi bisa menyusut */
-  min-width: 150px;    /* Batas minimum lebar agar teks/isi tidak terpotong */
-  max-width: 100%;     /* Jangan melebihi container */
-  padding: 8px;        /* Beri ruang napas di dalam */
-  box-sizing: border-box;
-}
-
-/* Khusus Search Wrapper bisa kita buat lebih lebar dari select */
-.rightbar-action-bar > .search-wrapper-neon {
-  flex: 2 1 250px;     /* Lebih prioritas untuk melebar daripada dropdown */
+/* Pastikan input di dalam search wrapper mengikuti lebar wrapper-nya */
+.rightbar-action-bar .search-wrapper-neon input {
+  width: 100% !important; 
 }
 
 
