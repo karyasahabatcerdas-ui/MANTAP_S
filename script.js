@@ -624,17 +624,17 @@ function renderHistoryTable(data) {
     tr.style.borderBottom = "1px solid #eee";
 
     // --- LOGIKA STATUS WARNA SULTAN ---
-    let statusLabel = "🚀 START";
-    let statusColor = "#e67e22"; // Orange
+    let statusLabel = '<i class="fa-solid fa-play"></i> START';
+    let statusColor = "#2256e6d5"; // Orange
 
     // Cek Kolom E (Index 4) buat SELESAI
     if (row[4] && row[4] !== "" && row[4] !== "-") { 
-      statusLabel = "✅ SELESAI"; 
+      statusLabel = '<i class="fa-solid fa-square-check"></i> SELESAI'; 
       statusColor = "#27ae60"; // Hijau
     } 
     // Cek Kolom D (Index 3) buat PENDING
     else if (row[3] && row[3] !== "" && row[3] !== "-") { 
-      statusLabel = "⏳ PENDING"; 
+      statusLabel = '<i class="fa-solid fa-hourglass-start"></i> PENDING'; 
       statusColor = "#f39c12"; // Kuning
     }
 
