@@ -65,7 +65,7 @@ async function kirimKeGAS(action, sheetName, id, dataRow = []) {
     });
     
     const hasil = await response.json();
-    console.log("🚀 Respon GAS:", hasil);
+    //console.log("🚀 Respon GAS:", hasil);
     return hasil;
   } catch (err) {
     Swal.fire("Gagal Simpan", err.toString(), "error");
@@ -116,7 +116,7 @@ function populateAllDropdowns() {
       });
       
       el.innerHTML = options;
-      console.log(`✅ ID: ${id} terisi dari ${sheetName}`);
+      //.log(`✅ ID: ${id} terisi dari ${sheetName}`);
     }
   }
 }
@@ -180,7 +180,7 @@ async function tambahAset(sheetName, newRow) {
   if (res.status === "success") {
     // Sync RAM: Langsung push ke array sheet tersebut
     getAsset(sheetName).push(newRow);
-    console.log("✅ Unit Baru Masuk RAM & Server!");
+    //console.log("✅ Unit Baru Masuk RAM & Server!");
   }
   return res;
 }
@@ -247,7 +247,7 @@ function cariAssetGlobal(keyword) {
     }
   });
   
-  console.log("🔍 Hasil Pencarian:", hasil);
+  //console.log("🔍 Hasil Pencarian:", hasil);
   return hasil;
 }
 
@@ -1670,9 +1670,9 @@ function prepareMaintenanceLogic() {
     case (isUpdateMode && v1.startsWith("M-") && v2.startsWith("L-")):
       mode = 3;
       notif = "🔄 Update Jadwal & Kegiatan Lama";
-       console.log(isUpdateMode);
-        console.log(v1);
-        console.log(v2);
+       //console.log(isUpdateMode);
+        //console.log(v1);
+        //console.log(v2);
       // Data, Waktu, & Foto DIPERTAHANKAN (Tidak ada reset)
       break;
 
@@ -1680,9 +1680,9 @@ function prepareMaintenanceLogic() {
     case (isUpdateMode && v1.startsWith("M-")):
       mode = 2;
       notif = "📅 Ambil Jadwal & Kegiatan Baru";
-        console.log(isUpdateMode);
-        console.log(v1);
-        console.log(v2);
+        //console.log(isUpdateMode);
+        //console.log(v1);
+        //console.log(v2);
       applyPartialReset(); // Reset Waktu & Input Kerja, tapi simpan Maint_ID
       break;
 
@@ -1690,9 +1690,9 @@ function prepareMaintenanceLogic() {
     default:
       mode = 1;
       notif = "🆕 Buat Jadwal & Kegiatan Baru";
-      console.log(isUpdateMode);
-      console.log(v1);
-      console.log(v2);
+      //console.log(isUpdateMode);
+      //console.log(v1);
+      //console.log(v2);
       applyFullReset(); // Sapu bersih semua elemen UI & Metadata
       break;
   }
@@ -2424,8 +2424,8 @@ async function goMaint(rowIdx) {
 
   //data mentah 1 baris yang dipilih
   const data = historyJadwal[rowIdx];
-  console.log("Data rowIdx:", rowIdx);
-  console.log("Data yang akan dimuat ke Maintenance Log:", data);
+  //console.log("Data rowIdx:", rowIdx);
+  //console.log("Data yang akan dimuat ke Maintenance Log:", data);
 
   // 1. VALIDASI DATA AWAL
   if (!data || data.length === 0) {
@@ -2610,7 +2610,7 @@ async function loadMaintDetail(row) {
       if (typeof speakSenor === "function") speakSenor("Data ghoib Señor!");
       return;
     }
-    console.log(data);
+    //console.log(data);
     //await initAssetDropdowns();
     // Helper Fungsi untuk mengisi value elemen UI GitHub
     const setVal = (id, val) => {
@@ -3319,8 +3319,8 @@ async function loadAssetData(sheetName_val) {
 
 try {
   // 3. Eksekusi pengecekan data
-  console.table(data);
-  console.log("Jumlah data yang diambil:", data.length);
+  //console.table(data);
+  //console.log("Jumlah data yang diambil:", data.length);
   if (!data || data.length === 0) {
     if (tbody) tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>📭 Data Kosong</td></tr>";    
     return;
@@ -3478,7 +3478,7 @@ async function openAddAssetModal() {
   const type = baris ? baris[1] : "" ;
 
   //const type = document.getElementById('assetTypeSelect')?.value || "";
-  console.log("Type_Asset", type);
+  //console.log("Type_Asset", type);
   if (!type) {
     return Swal.fire({
       title: "Pilih Tipe!",
@@ -3602,8 +3602,8 @@ async function loadAssetDataView(sheetName_val) {
 
 
   try {  
-    console.table(data);
-    console.log("Jumlah data yang diambil untuk view:", data.length);
+    //console.table(data);
+    //console.log("Jumlah data yang diambil untuk view:", data.length);
   // 3. Eksekusi pengecekan data
     if (!data || data.length === 0) {
 
@@ -3733,8 +3733,8 @@ async function openAssetDetail(sheetName, row) {
   const btnTake = document.querySelector("button[onclick='takeAssetPhoto()']");
   const modal = document.getElementById('assetDetailModal');
 
-  console.log("nama sheet atau type_asset pada openDAssetDetail :", sheetName);
-  console.log("nama sheet atau row pada openDAssetDetail :", row);
+  //console.log("nama sheet atau type_asset pada openDAssetDetail :", sheetName);
+  //console.log("nama sheet atau row pada openDAssetDetail :", row);
 
   // Munculkan elemen yang mungkin tersembunyi
   if (btnSave) btnSave.style.display = "block";
@@ -3786,11 +3786,11 @@ async function openAssetDetail(sheetName, row) {
     //if (!response.ok) throw new Error(`HTTP Error! Status: ${response.status}`);
 
     const data = getAsset(sheetName)[row-1];
-    console.log("Data aset untuk view:", data);
-    console.log('namasheet :', sheetName);
+    //console.log("Data aset untuk view:", data);
+    //console.log('namasheet :', sheetName);
     //const data = await response.json();
-    console.log("table data di openassetdetai: ");
-    console.table(data);
+    //console.log("table data di openassetdetai: ");
+    //console.table(data);
 
     // Cek jika data kosong atau ada error dari server
     if (!data || data.length === 0 || data.error) {
@@ -4511,7 +4511,7 @@ async function loadUserList() {
     //const data = await response.json();
 
     const data = getApp("Users").slice(1);
-    console.table(data);  
+    //console.table(data);  
 
     // JIKA data ternyata masih String (akibat double stringify di server), 
     // maka kita paksa jadi Object/Array
@@ -4588,7 +4588,7 @@ async function openEditModal(row) {
     // 1. Ambil data user spesifik berdasarkan baris (row)
     const d = getApp("Users")[row];
     // Debugging data di console
-    console.table(d);
+    //console.table(d);
     // 1. TAMPILKAN MODAL DULU (Agar elemen di dalamnya "bangun")
     const modal = document.getElementById('editModal');
     if (modal) {
@@ -4816,7 +4816,7 @@ async function loadProf() {
 
   try {
     const d = getApp("Users").slice(1).find(row=>String(row[0]).trim().toLowerCase()===String(loggedInUser).trim().toLowerCase())
-    console.table(d);
+    //console.table(d);
     // Struktur: [User, Pass, Role, Phone, Email, Photo, Status, LastLogin, Attempts]
 
     // 2. Mapping Data ke Input Profil
