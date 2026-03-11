@@ -642,23 +642,23 @@ function renderHistoryTable(data) {
       <td style="padding:5px; vertical-align:middle;">
         <div style="font-weight:bold; color:#2c3e50; font-size:13px;">${row[0]}</div>
         <div style="font-size:10px; color:#95a5a6; margin-top:4px;">
-          <i class="far fa-clock"></i> ${row[2] || "-"}
+          <i class="fa-solid fa-clock"></i> ${row[2] || "-"}
         </div>
       </td>
       <td style="padding:5px; vertical-align:middle;">
         <div style="font-size:11px; margin-bottom:4px;">
-          <i class="fas fa-user-circle" style="color:#3498db;"></i> ${row[5] || "Unknown"}
+          <i class="fa-solid fa-user-circle" style="color:#3498db;"></i> ${row[5] || "Unknown"}
         </div>
         <div style="padding:5px; vertical-align:middle;font-size:11px; margin-bottom:4px;">
-          <i class="fas fa-tag" style="color:#9b59b6;"></i> ${row[6] || "-"}
+          <i class="fa-solid fa-tag" style="color:#9b59b6;"></i> ${row[6] || "-"}
         </div>
         <div style="padding:5px; font-size:10px; color:#7f8c8d;vertical-align:middle;">
-          <i class="fas fa-calendar-alt"></i> JDW: ${row[7] || "-"}
+          <i class="fa-solid fa-calendar-alt"></i> JDW: ${row[7] || "-"}
         </div>
       </td>
       <td style="padding:5px;min-width:100px ;vertical-align:middle;">
         <button onclick="openDetailLog('${row[0]}')" 
-                 background: ${statusColor}; color:white; border:none; border-radius:3px; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                style=" background: ${statusColor}; color:white; border:none; border-radius:5px; cursor:pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
           <span class="status-badge-indicator" > ${statusLabel} </span>
         </button>
       </td>
@@ -2096,19 +2096,16 @@ function renderKelolaIncremental(data) {
       <td style="padding:5px;"><b>${d[1]}</b> - ${d[2]}<br><small>${d[3]}</small></td>
       <td style="padding:5px;">${planDate}<br><small>${d[10]}</small></td>
       <td style="padding: 10px 5px; text-align: center; vertical-align: middle;">
-        <div style="margin-bottom: 8px;">
-          <span style="background:${badgeColor}; color:white; padding:3px 8px; border-radius:12px; font-size:12px; font-weight:bold; display: inline-block; min-width: 50px; text-align: center;">
-            ${state}
-          </span>
-        </div>
-
         <div style="display: flex; gap: 5px; justify-content: center;">
-          <button onclick="openMaintModal(${i})" style="background:#3498db; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; flex: 1; max-width: 60px;">
-            <i class="fas fa-edit"></i> EDIT
+          <button onclick="openMaintModal(${i})" style="background:${badgeColor}; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; flex: 1; max-width: 60px;">
+            <i class="fa-solid fa-edit"></i> 
+            EDIT
+            <span style="padding:3px 8px; border-radius:5px;">${state}
+            </span>
           </button>
           
           <button onclick="delJad(${i})" style="background:#e74c3c; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; flex: 1; max-width: 45px;">
-            <i class="fas fa-trash"></i>
+            <i class="fa-solid fa-trash"></i>
           </button>
         </div>
       </td>
@@ -2374,8 +2371,20 @@ function renderJadwalViewIncremental(data) {
      
     //let planDate = d[7] ? new Date(d[7]).toLocaleString('id-ID', {dateStyle:'short', timeStyle:'short'}) : "-";
 
-    let state = d[9] || "Open";
-    let color = (state === "Close") ? "#27ae60" : (state === "Pending") ? "#f39c12" : "#2980b9";
+    // Warna Badge Status (J)
+      // 1. Ambil data, bersihkan spasi, dan paksa ke huruf kecil
+      const state = (d[9] || "open").toLowerCase().trim();
+
+      // 2. Daftar warna sesuai status (Gak perlu if bertingkat)
+      const statusColors = {
+        "close":   "#27ae60", // Hijau
+        "pending": "#f39c12", // Oranye
+        "open":    "#2980b9", // Biru
+        "cancel":  "#e74c3c"  // Merah
+      };
+
+      // 3. Ambil warna, atau default ke abu-abu (#7f8c8d) jika tidak dikenal
+      let badgeColor = statusColors[state] || "#7f8c8d";
     
     // Di dalam loop render jadwal user (Lihat Jadwal)
     //      <tr style="border-bottom: 1px solid #eee;">
@@ -2387,8 +2396,8 @@ function renderJadwalViewIncremental(data) {
         <td style="padding:5px;">${d[7]}<br><small>${d[10]}</small></td> <!-- Plan Date -->
         <td style="padding:5px; text-align:center;">
           <!-- TOMBOL AKSI: Mengarah ke Mode Read-Only -->
-          <button onclick="openMaintDetailView(${i+1})"style="background:#7f8c8d; color:white; border:none; padding:6px; border-radius:4px; cursor:pointer;">
-            <i class="fas fa-search"></i>
+          <button onclick="openMaintDetailView(${i+1})"style="background:${badgeColor}; color:white; border:none; padding:6px; border-radius:4px; cursor:pointer;">
+            <i class="fa-solid fa-search"></i>
           </button>
         </td>
       `;
