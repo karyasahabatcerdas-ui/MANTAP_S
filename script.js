@@ -83,6 +83,7 @@ const DROPDOWN_MAP = {
   'filterStatusLog':    'Status_Maint',
   'filterJadwalLog':    'ID_Jadwal',
   'sortJadwal':         'Filter_Tgl',
+  'filterIdJadwal':     'ID_Jadwal',
   'filterType':         'Type_Asset',
   'filterStateJadwal':  'ID_Jadwal',
   'assetTypeSelect':    'Type_Asset',
@@ -931,7 +932,8 @@ async function loadJad() {
     const sheetName= el.options[el.selectedIndex].text;
     // 1. Ambil Nilai Filter dari UI GitHub
     const fType = el.value ? sheetName : "";
-    const fState = document.getElementById('filterState')?.value || ""; 
+    const fState = document.getElementById('filterStateJadwal')?.value || "";
+    const fIdJad = document.getElementById('filterIdJadwal')?.value || ""; 
     const sortBy = document.getElementById('sortJadwal')?.value || "";   
     const keyword = document.getElementById('cari_jadwal')?.value.toUpperCase() || "";
 
@@ -950,7 +952,14 @@ async function loadJad() {
 
       // 3. FILTERING (Logika tetap sama di Client)
       if (fType) rawData = rawData.filter(d => String(d[1])=== fType);
-      if (fState) rawData = rawData.filter(d => String(d[9]) === fState);
+      if (fState) {
+        rawData = rawData.filter(d => {
+          // Jika d[9] kosong/null/undefined, anggap sebagai "pending"
+          const statusSekarang = (d[9] || "pending").toString().toLowerCase().trim();
+          return statusSekarang === fState.toLowerCase().trim();
+        });
+      }
+      if (fIdJad) rawData = rawData.filter(d => String(d[7]) === fIdJad);
       if (keyword) rawData = rawData.filter(d => d.join(" ").toUpperCase().includes(keyword));
 
       const now = new Date();
@@ -966,44 +975,49 @@ async function loadJad() {
       };
 
       // 4. SORTING & RENTANG WAKTU
-      if (sortBy === 'terbaru') {
-        rawData.sort((a, b) => toDate(b[7]) - toDate(a[7]));
-      } 
-      else if (sortBy === 'terlama') {
-        rawData.sort((a, b) => toDate(a[7]) - toDate(b[7]));
-      } 
-      else if (sortBy === '2mgdepan') {
-        const limitAhead = new Date();
-        limitAhead.setDate(now.getDate() + 14);
-        rawData = rawData.filter(d => {
-          const dDate = toDate(d[7]);
-          return dDate >= now && dDate <= limitAhead;
-        });
-      } 
-      else if (sortBy === '2mglalu') {
-        const limitBack = new Date();
-        limitBack.setDate(now.getDate() - 14);
-        rawData = rawData.filter(d => {
-          const dDate = toDate(d[7]);
-          return dDate <= now && dDate >= limitBack;
-        });
-      }
-      else if (sortBy === '1blndepan') {
-        const limitAheadb = new Date();
-        limitAheadb.setDate(now.getDate() + 30);
-        rawData = rawData.filter(d => {
-          const dDate = toDate(d[7]);
-          return dDate >= now && dDate <= limitAheadb;
-        });
-      }
+        //const now = new Date(); // Pastikan ini ada di paling atas
+
+        if (sortBy === 'terbaru') {
+          rawData.sort((a, b) => toDate(b[7]) - toDate(a[7]));
+        } 
+        else if (sortBy === 'terlama') {
+          rawData.sort((a, b) => toDate(a[7]) - toDate(b[7]));
+        } 
+        else if (sortBy === '2mgdepan') {
+          const limitAhead = new Date();
+          limitAhead.setDate(now.getDate() + 14);
+          rawData = rawData.filter(d => {
+            const dDate = toDate(d[7]);
+            return dDate >= now && dDate <= limitAhead;
+          });
+        } 
+        else if (sortBy === '2mglalu') {
+          const limitBack = new Date();
+          limitBack.setDate(now.getDate() - 14);
+          rawData = rawData.filter(d => {
+            const dDate = toDate(d[7]);
+            // LOGIKA: Di antara 14 hari lalu sampai hari ini
+            return dDate <= now && dDate >= limitBack;
+          });
+        }
+        else if (sortBy === '1blndepan') {
+          const limitAhead = new Date();
+          limitAhead.setDate(now.getDate() + 30);
+          rawData = rawData.filter(d => {
+            const dDate = toDate(d[7]);
+            return dDate >= now && dDate <= limitAhead;
+          });
+        }
         else if (sortBy === '1blnlalu') {
-        const limitBackb = new Date();
-        limitBackb.setDate(now.getDate() - 30);
-        rawData = rawData.filter(d => {
-          const dDate = toDate(d[7]);
-          return dDate >= now && dDate <= limitBackb;
-        });
-      }
+          const limitBack = new Date();
+          limitBack.setDate(now.getDate() - 30);
+          rawData = rawData.filter(d => {
+            const dDate = toDate(d[7]);
+            // LOGIKA PERBAIKAN: Di antara 30 hari lalu sampai hari ini
+            return dDate <= now && dDate >= limitBack;
+          });
+        }
+
       // 5. RENDER KE TABEL/VIEW
       renderJadwalViewIncremental(rawData);
 
