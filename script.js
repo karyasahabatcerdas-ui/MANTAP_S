@@ -85,7 +85,7 @@ const DROPDOWN_MAP = {
   'sortJadwal':         'Filter_Tgl',
   'filterIdJadwal':     'ID_Jadwal',
   'filterType':         'Type_Asset',
-  'filterStateJadwal':  'ID_Jadwal',
+  'filterStateJadwal':  'Status_Maint',
   'assetTypeSelect':    'Type_Asset',
   'viewAssetTypeSelect':'Type_Asset',
   'jenis_id_jadwal':    'ID_Jadwal',
