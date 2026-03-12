@@ -203,9 +203,10 @@
     position: fixed !important;
     left: -260px; /* Sembunyi di luar layar kiri niar kelihatan light glownya makin besar minus makin ilang*/
     top: 0;
-    width: 260px !important; /* Lebar mantap untuk jari di HP */
+    width: 160px !important; /* Lebar mantap untuk jari di HP */
     height: 100vh;
     z-index: 999;
+    background-color: rgba(4, 6, 92, 0.678) !important;
     transition: left 0.4s ease;
     box-shadow: 10px 0 30px rgba(0,0,0,0.5);
   }
