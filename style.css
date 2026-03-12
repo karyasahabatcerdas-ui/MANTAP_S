@@ -154,33 +154,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* --- RESPONSIVE MOBILE OPTIMIZATION --- */
-@media (max-width: 600px) {
-    /* 1. Lebar Leftbar di HP lebih ramping */
-    .leftbar-container {
-        width: 140px; 
-    }
 
-    /* 2. Saat mengecil di HP, buat sangat minimalis (hanya ikon kecil) */
-    .leftbar-container.collapsed {
-        width: 60px;
-    }
-
-    /* 3. Atur Padding di Rightbar (Main Content) agar tidak sempit */
-    .inner-content {
-        padding: 15px !important;
-    }
-
-    /* 4. Kecilkan ukuran Profile Image agar tidak makan tempat di HP */
-    .profile-img-container {
-        width: 45px;
-        height: 45px;
-    }
-    .tambah-db{
-        flex-direction: column;
-        gap: 5px;
-    }
-}
   /* --- TOMBOL REFRESH NEON DI ANTARMUKA LOADHISTORY KEGIATAN MAINTENANCE --- */
 .btn-refresh-neon {
   background: linear-gradient(45deg, #00d2ff, #3a7bd5);
@@ -196,4 +170,3 @@ html {
   transform: scale(1.05);
   box-shadow: 0 0 20px rgba(0, 210, 255, 0.8);
 }
-

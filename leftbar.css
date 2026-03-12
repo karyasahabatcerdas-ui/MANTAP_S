@@ -283,22 +283,6 @@
 }
 
 
-
-
-
-
-
-
-
-
-/* --- MOBILE RESPONSIVE --- */
-/*
-@media (max-width: 600px) {
-  .leftbar-container { width: 11.25rem; }
-  .leftbar-container.collapsed { width: var(--leftbar-collapsed-width); }
-  .inner-content { padding: 0.938rem !important; }
-}
-*/
 /* --- CONTAINER PROFIL (HEADER) --- */
 .profile-wrapper {
   display: flex;
@@ -337,22 +321,44 @@
 }
 
 
+   /* Responsif Mobile Portrait */
+  @media (max-width: 768px) {
 
+  /* 2. Ubah Sidebar Menjadi Drawer Samping */
+  .sidebar-container {
+    position: fixed !important;
+    left: -260px; /* Sembunyi di luar layar kiri niar kelihatan light glownya makin besar minus makin ilang*/
+    top: 0;
+    width: 260px !important; /* Lebar mantap untuk jari di HP */
+    height: 100vh;
+    z-index: 999;
+    transition: left 0.4s ease;
+    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+  }
 
+  /* Munculkan Sidebar saat Active */
+  .sidebar-container.mobile-open {
+    left: 0 !important;
+    padding-bottom: 200px !important; /* Agar menu logout tidak tertutup jari, makin besar makin ke atas*/
+  }
 
+  /* 3. PERBAIKAN VISUAL: Paksa Teks Muncul di HP */
+  /* Meskipun di PC sedang mode '.collapsed' (ikon saja), 
+     di HP kita paksa teks 'span' dan judul 'h3' tetap muncul lebar. */
+  .sidebar-container.collapsed span { display: inline !important; }
+  .sidebar-container.collapsed h3 { display: block !important; }
+  
+  /* Paksa Foto Profil Atas Kembali Besar agar Tidak Kekecilan */
+  .sidebar-container.collapsed .profile-img-container {
+    width: 80px !important;
+    height: 80px !important;
+    margin: 15px auto !important;
+  }
 
+  /* 4. Sembunyikan Tombol Panah Atas (<<<) di HP */
+  /* Kita tidak butuh ini di HP karena sudah ada Floating Profile di bawah. */
+  .btn-ui-toggle { display: none !important; }
 
+}
 
-    /* Responsif Mobile Portrait */
-    @media (max-width: 600px) {
-      .leftbar-container {
-        width: 200px;
-      }
-
-    /* Munculkan Sidebar saat Active */
-    .leftbar-container .mobile-open {
-      left: 0 !important;
-      padding-bottom: 200px !important; /* Agar menu logout tidak tertutup jari, makin besar makin ke atas*/
-    }
-
-    }
+    

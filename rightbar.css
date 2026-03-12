@@ -539,7 +539,7 @@ select option {
 }
 
 /* Responsive */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     .form-grid-profile {
         grid-template-columns: 1fr; /* Jadi 1 kolom di HP */
     }
