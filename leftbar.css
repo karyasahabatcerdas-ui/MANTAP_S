@@ -3,38 +3,39 @@
    ========================================================================== */
 
 /* Style Default Leftbar (Besar) */
-
-/* --- CSS: MOBILE SWIPE STEALTH --- */
+/* --- CONTAINER UTAMA LEFTBAR --- */
 .leftbar-container {
-  position: fixed; /* Wajib: Agar melayang di atas konten */
+  position: fixed; /* Melayang di atas konten */
   top: 0;
-  left: -260px; /* Sembunyi total di kiri (sesuaikan lebar sidebar) */
+  left: -260px; /* Sembunyi total di kiri layar */
   width: 260px;
   height: 100vh;
-  background: var(--bg-card);
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: 3000; /* Di atas segalanya */
+  background: #0f172a; /* Warna Deep Blue kamu */
+  z-index: 100000; /* WAJIB: Di atas segalanya agar swipe lancar */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
-  visibility: visible !important; /* Pastikan tidak ter-hidden */
+  box-shadow: none;
+  border-right: 1px solid rgba(56, 189, 248, 0.1);
 }
 
-/* KETIKA AKTIF (SESUDAH SWIPE) */
+/* KETIKA SIDEBAR AKTIF (MUNCUL) */
 .leftbar-container.active {
-  transform: translateX(260px); /* Geser masuk ke layar */
-  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+  transform: translateX(260px); /* Meluncur masuk */
+  box-shadow: 10px 0 40px rgba(0, 0, 0, 0.6);
 }
 
-/* INDIKATOR GLOW TEPI (Garis Tipis di Pinggir Layar) */
+/* INDIKATOR GLOW TEPI (Lampu Biru Tipis di Pinggir) */
 .leftbar-container::after {
   content: "";
   position: absolute;
   top: 0; right: 0;
-  width: 3px; height: 100%;
+  width: 2px; height: 100%;
   background: linear-gradient(to bottom, transparent, #38bdf8, transparent);
   box-shadow: 0 0 10px #38bdf8;
-  opacity: 0.5;
+  opacity: 0.4;
 }
+
 
 /* AREA PEMICU SWIPE (Area Ghoib 30px di Kiri Layar) */
 .swipe-trigger-zone {
@@ -129,8 +130,8 @@
 
 /* KONDISI: Sedang Ganti Gembok / Re-Auth (Kuning) */
 .profile-img-container.sync-warning {
-  border-color: #eab308;
-  box-shadow: 0 0 20px rgba(234, 179, 8, 0.6);
+  border-color: #eab308 !important;
+  box-shadow: 0 0 20px rgba(234, 179, 8, 0.6) !important;
   animation: breathing-glow 1.5s ease-in-out infinite;
 }
 

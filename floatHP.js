@@ -18,9 +18,47 @@ function handleMobileToggle() {
 // Modifikasi fungsi showPage Anda sedikit:
 // Di dalam function showPage(id) { ... } tambahkan di baris akhir:
 // if (window.innerWidth <= 768) handleMobileToggle();
+let touchstartX = 0;
+let touchendX = 0;
+
+document.addEventListener('touchstart', e => {
+  // Hanya rekam start jika jempol mulai dari pinggir kiri (khusus buka)
+  touchstartX = e.changedTouches[0].screenX;
+}, {passive: true});
+
+document.addEventListener('touchend', e => {
+  touchendX = e.changedTouches[0].screenX;
+  handleSwipe();
+}, {passive: true});
+
+function handleSwipe() {
+  const sidebar = document.getElementById('leftbar'); // Pastikan ID sesuai
+  const diffX = touchendX - touchstartX;
+
+  if (Math.abs(diffX) > 80) { // Threshold 80px biar lebih responsif di HP
+    
+    if (diffX > 0 && touchstartX < 60) { 
+      // SWIPE KANAN (Buka)
+      sidebar.classList.add('active');
+      sidebar.classList.remove('collapsed'); // Pastikan lebar penuh
+      if (navigator.vibrate) navigator.vibrate(15);
+      createOverlay(); // Munculkan background gelap
+      console.log("➡️ Menu Terbuka");
+    } 
+    else if (diffX < 0 && sidebar.classList.contains('active')) {
+      // SWIPE KIRI (Tutup)
+      sidebar.classList.remove('active');
+      removeOverlay(); // Hapus background gelap
+      console.log("⬅️ Menu Tertutup");
+    }
+  }
+  // Reset koordinat agar tidak "nyangkut" untuk swipe berikutnya
+  touchstartX = 0;
+  touchendX = 0;
+}
 
 
-
+/**
 let touchStartX = 0;
 let touchEndX = 0;
 
@@ -91,3 +129,4 @@ function removeOverlay() {
     const ov = document.getElementById('side-ov');
     if (ov) ov.remove();
 }
+*/
