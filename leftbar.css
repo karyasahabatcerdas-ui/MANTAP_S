@@ -172,13 +172,13 @@
 }
 
 .btn-logout {
-  background: var(--admin-red) !important;
+  background: var(--neon-red) !important;
   color: var(--text-bright) !important;
   margin-top: auto; border: none;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.btn-logout:hover { background: var(--admin-red-hover) !important; }
+.btn-logout:hover { background: var(--neon-red-glow) !important; }
 
 /* --- [7. COLLAPSED ADJUSTMENTS] --- */
 .collapsed .leftbar-header-title, 
@@ -211,9 +211,9 @@
   /* 2. Ubah leftbar Menjadi Drawer Samping */
   .leftbar-container {
     position: fixed !important;
-    left: -118px; /* Sembunyi di luar layar kiri niar kelihatan light glownya makin besar minus makin ilang*/
+    left: -120px; /* Sembunyi di luar layar kiri niar kelihatan light glownya makin besar minus makin ilang*/
     top: 0;
-    width: 125px !important; /* Lebar mantap untuk jari di HP */
+    width: 130px !important; /* Lebar mantap untuk jari di HP */
     height: 100vh;
     z-index: 1000;
     /* Gunakan fallback jika color-mix tidak jalan di HP lama */
@@ -228,7 +228,7 @@
     width: 100% !important;           /* Area sentuh FULL ke kanan */
     justify-content: flex-start !important; /* PAKSA SEMUA KE KIRI */
     align-items: center !important;    /* Tengah secara vertikal */
-    padding: 12px 20px !important;    /* Beri jarak dari pinggir kiri */
+    padding: 12px 10px !important;    /* Beri jarak dari pinggir kiri */
     box-sizing: border-box;           /* Penting agar padding tidak merusak 100% */
     text-align: left !important;      /* Fallback untuk teks */
   }
