@@ -116,8 +116,25 @@
 .menu-group { display: flex; flex-direction: column; }
 .bottom-nav { margin-top: auto; }
 
+  /* leftbar Colors */
+  :root {
+  --leftbar-bg: #2c3e50;
+  --leftbar-hover: #34495e;
+  --text-color: #ecf0f1;
+  --accent-color: #3498db;
+  --admin-color: #e67e22;
+  --sys-color: #e74c3c;
+  --transition: 0.3s ease;
+    /* Aksentuasi Neon */
+  --neon-blue: #38bdf8;
+  --neon-border: #1e293b;
+  --text-main: #f8fafc;
+  --text-dim: #94a3b8;
+  --text-readonly: #64748b;
+  }
+
 .menu-item {
-  color: var(--text-standby);
+  color: var(--neon-blue);
   font-weight: 500;
   padding: 14px 20px;
   cursor: pointer;
@@ -205,10 +222,11 @@
     top: 0;
     width: 160px !important; /* Lebar mantap untuk jari di HP */
     height: 100vh;
-    z-index: 999;
-    background-color: rgba(4, 6, 92, 0.678) !important;
+    z-index: 1000;
+    background-color: var(--leftbar-bg) !important;
     transition: left 0.4s ease;
     box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+    align-items: left;
   }
 
   /* Munculkan Sidebar saat Active */
