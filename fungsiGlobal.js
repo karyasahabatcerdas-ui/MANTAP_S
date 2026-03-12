@@ -212,7 +212,7 @@ async function panggilGAS(action, payload = {}) {
 }
 
 async function syncDataGhoib() {
-  const GITHUB_URL = "https://raw.githubusercontent.com" + new Date().getTime();
+  const GITHUB_URL =`${GITHUB_BASE}?t=${new Date().getTime()}`; 
 
   try {
     const response = await fetch(GITHUB_URL, { cache: 'no-cache' });
