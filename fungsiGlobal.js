@@ -27,43 +27,39 @@ window._LOCKED_BLOB = "";
  //
 // B. Fungsi Buka Gembok (Sudah Pakai XOR)
 function bukaGembokSakti(unlockCode) {
-  // 1. Ambil data mentah (Pastikan isinya string XOR dari GitHub)
-  const gembokRaw = window._LOCKED_BLOB; 
-  if (!gembokRaw) return false;
+  if (!window._LOCKED_BLOB) return false;
 
   try {
-    // 2. MESIN XOR: Terjemahkan Coretan Ghaib ke Teks Terbaca
+    // LAPIS 1: Bongkar Base64 Pembungkus (atob)
+    // Karena window._LOCKED_BLOB isinya "HEoDK...", kita ubah jadi string biner
+    const binaryString = atob(window._LOCKED_BLOB); 
+    
+    // LAPIS 2: Jalankan Mesin XOR (Membuka Gembok)
     let hasilXOR = "";
-    for (let i = 0; i < gembokRaw.length; i++) {
-      const charCode = gembokRaw.charCodeAt(i) ^ unlockCode.charCodeAt(i % unlockCode.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      const charCode = binaryString.charCodeAt(i) ^ unlockCode.charCodeAt(i % unlockCode.length);
       hasilXOR += String.fromCharCode(charCode);
     }
 
-    // 3. PARSE TAHAP 1: Hasil XOR biasanya: {"status":"success","blob":"eyJ..."}
+    // LAPIS 3: Cek hasil XOR. Harusnya sekarang jadi JSON: {"status":"success","blob":"..."}
     const tahap1 = JSON.parse(hasilXOR);
-    let dataFinal;
-
-    if (tahap1.blob) {
-       // 4. BONGKAR BLOB DALAM: Ini adalah "Daging" datanya
-       const decodedDaging = atob(tahap1.blob);
-       dataFinal = JSON.parse(decodedDaging);
-    } else {
-       dataFinal = tahap1;
-    }
-
-    // 5. SIMPAN KE RAM (Gunakan window.APP_STORE_BLOB sebagai standar helper)
-    window.APP_STORE_BLOB = btoa(JSON.stringify(dataFinal));
     
-    console.log("🔓 KONFIRMASI: Gembok Terbuka & Lapis Data Dibongkar!");
-    return true;
-
+    // LAPIS 4: Ambil "Daging" Data (Blob asli dari GAS)
+    if (tahap1.blob) {
+       const decodedDaging = atob(tahap1.blob);
+       // Simpan hasil akhir ke RAM Helper
+       window.APP_STORE_BLOB = btoa(decodedDaging);
+       console.log("🔓 KONFIRMASI: Gembok Terbuka & Data Siap!");
+       return true;
+    }
+    
+    return false;
   } catch (e) {
     console.error("❌ Gagal bongkar lapis data:", e);
-    // Jika gagal, tampilkan sedikit potongan data untuk debug
-    console.log("Cek Data Awal:", gembokRaw.substring(0, 20));
     return false;
   }
 }
+
 
 
 
