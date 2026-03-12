@@ -186,9 +186,7 @@ async function checkSessionAndLogin() {
 
       const adminArea = document.getElementById('adminMenuArea');
       if (adminArea) {
-        adminArea.style.display = (userRole === 'admin') ? 'inline-block' : 'none';
-        console.log("userrole : ",userRole.toLowerCase());
-        console.log("admin view blok : ",adminArea.style.display);
+        adminArea.style.display = (userRole === 'admin') ? 'inline-flex' : 'none';
       }
 
       // 3. Jalankan Sinkronisasi Data (Wuzzz!)

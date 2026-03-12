@@ -226,17 +226,20 @@
     /* --- PERBAIKAN DI SINI --- */
     display: flex;
     flex-direction: column; /* Menyusun menu ke bawah */
-    align-items: flex-start !important; /* Dorong semua item ke sisi kiri kontainer */
-    padding-left: 15px; /* Beri sedikit jarak dari pinggir layar agar tidak menempel */
+    /*align-items: flex-start !important;*/ /* Dorong semua item ke sisi kiri kontainer */
+    align-items: stretch !important; /* PENTING: Mengatur anak agar memenuhi lebar */
+    padding-left: 25px; /* Beri sedikit jarak dari pinggir layar agar tidak menempel */
  
   }
 
     /* Pastikan item menu di dalamnya juga ikut rata kiri */
-  .leftbar-container .menu-item {
-    width: 100%; /* Agar area klik selebar drawer */
-    justify-content: flex-start !important; /* Ikon dan teks rapat kiri */
-    text-align: left !important;
-  }
+.leftbar-container .menu-item {
+    display: flex !important; /* Pastikan dia flex */
+    width: 100% !important;   /* Paksa lebar penuh */
+    box-sizing: border-box;   /* Agar padding tidak merusak lebar 100% */
+    padding: 12px 20px;       /* Beri ruang sentuh yang enak buat jempol */
+    margin: 0;                /* Hilangkan margin jika ada */
+}
 
   /* Munculkan leftbar saat Active */
   .leftbar-container.mobile-open {
@@ -260,6 +263,11 @@
   /* 4. Sembunyikan Tombol Panah Atas (<<<) di HP */
   /* Kita tidak butuh ini di HP karena sudah ada Floating Profile di bawah. */
   .btn-ui-toggle { display: none !important; }
+
+  .leftbar-header-title{
+    font-size: 0.5rem;
+
+  }
 
 }
 
