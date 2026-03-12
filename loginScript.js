@@ -189,7 +189,8 @@ async function checkSessionAndLogin() {
 
       // 3. Jalankan Sinkronisasi Data (Wuzzz!)
       //await syncDataGhoib(); 
-      //await showPage('history'); // Halaman default setelah login
+      await showPage('history'); // Halaman default setelah login
+      loadProf();
 
     } catch (e) {
       console.error("Sesi Rusak, silakan login ulang.");
