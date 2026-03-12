@@ -1,170 +1,26 @@
-// --- 1. KONFIGURASI & GUDANG DATA ---
-//const GAS_URL = "https://script.google.com/macros/s/AKfycbwwJVU-AHjjg3Lhj_zDIVtDCfTWV114zbQMve87e6b6Rh_FQRzuwyVoiGZzd__slPbb/exec";
-const GAS_URL = APPSCRIPT_URL; // Gunakan URL yang dibentuk dari APPSCRIPT_ID di index.html
-
-window.APP_STORE = {
-  app: {},
-  assets: {},
-  reference: {},
-  maintenance: {},
-  key: null,
-  lastSync: null
-};
-
-// --- 2. FUNGSI SEDOT DATA (READ) dengan ---
-//Fungsi ini akan mengecek Etag atau Last-Modified dari GitHub. 
-//Jika file di GitHub tidak berubah, ia tidak akan membuang kuota internet untuk download ulang.
-async function syncDataGhoib() {
-  const loginData = JSON.parse(localStorage.getItem("userMaint"));
-  if (!loginData) return;
-
-  const { name, sessionId } = loginData;
-  // FORMATNYA: https://raw.githubusercontent.com[USER]/[REPO]/[BRANCH]/[NAMA_FILE]
-const GITHUB_JSON_URL = "https://raw.githubusercontent.com/karyasahabatcerdas-ui/MANTAP_S/main/mainframe_data.json";
+//==================[FUNGSI -FUNGSI UNTUK ASSET]=================================//
 
 
-  try {
-    console.log("🔄 Memeriksa pembaruan data...");
 
-    // 1. Ambil data dari GITHUB (Bukan GAS agar Wuzzz!)
-    // Gunakan cache-control agar mendapatkan data paling fresh
-    const response = await fetch(GITHUB_JSON_URL, { cache: 'no-cache' });
-    const remoteData = await response.json();
-
-    // 2. LOGIKA DIFERENSIASI (METODE DIRTY)
-    // Bandingkan data di RAM (window.APP_STORE) dengan data dari GitHub
-    if (window.APP_STORE && JSON.stringify(window.APP_STORE.assets) === JSON.stringify(remoteData.assets)) {
-      console.log("✅ Data sudah paling update. Lewati sinkronisasi.");
-      return; 
-    }
-
-    // 3. UPDATE RAM LOKAL (Hanya jika ada perbedaan)
-    window.APP_STORE = remoteData; 
-    console.log("🚀 RAM Updated: Data 22 Sheet Sinkron.");
-
-    // 4. TRIGGER RE-RENDER (Hanya tabel yang sedang dibuka)
-    if (typeof loadJad === 'function') loadJad();
-    if (typeof loadAssetData === 'function') loadAssetData();
-
-  } catch (err) {
-    console.error("Gagal sinkron data GitHub:", err);
-  }
-}
-
-
-// --- 3. FUNGSI KIRIM DATA (WRITE) ---
-async function kirimKeGAS(action, sheetName, id, dataRow = []) {
-  const payload = { action, sheetName, id, data: dataRow };
-
-  try {
-    const response = await fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify(payload) 
-    });
-    
-    const hasil = await response.json();
-    //console.log("🚀 Respon GAS:", hasil);
-    return hasil;
-  } catch (err) {
-    Swal.fire("Gagal Simpan", err.toString(), "error");
-  }
-}
-
-// --- 4. HELPER (PENGAMBIL DATA RAM) ---
-const getAsset = (name) => window.APP_STORE.assets[name] || [];
-const getRef   = (name) => window.APP_STORE.reference[name] || [];
-const getMaint = (name) => window.APP_STORE.maintenance[name] || [];
-const getApp = (name) => window.APP_STORE.app[name] || [];
-
-//------mapping untuk dropdown
-const DROPDOWN_MAP = {
-  'filterStatusLog':    'Status_Maint',
-  'filterJadwalLog':    'ID_Jadwal',
-  'sortJadwal':         'Filter_Tgl',
-  'filterIdJadwal':     'ID_Jadwal',
-  'filterType':         'Type_Asset',
-  'filterStateJadwal':  'Status_Maint',
-  'assetTypeSelect':    'Type_Asset',
-  'viewAssetTypeSelect':'Type_Asset',
-  'jenis_id_jadwal':    'ID_Jadwal',
-  'm_state':            'Status_Maint',
-  'maint_id_jadwal':    'ID_Jadwal',
-  'as_status':          'Status_Asset',
-  'm_status':           'Status_Maint'
-};
-function populateAllDropdowns() {
-  for (let id in DROPDOWN_MAP) {
-    const el = document.getElementById(id);
-    if (!el) continue; // Lewati kalau ID tidak ada di halaman ini
-
-    const sheetName = DROPDOWN_MAP[id];
-    const data = getRef(sheetName); // Ambil dari RAM
-
-    if (data && data.length > 0) {
-      let options = `<option value="">-- Pilih ${sheetName.replace('_', ' ')} --</option>`;
-      
-      // Lompati Header (Index 0)
-      data.slice(1).forEach(row => {
-        const val = row[0]; // Isian ID (Sistem)
-        const lab = row[1] || row[0]; // Isian Text (Tampilan), kover kalau B kosong
-        
-        if (val !== undefined && val !== "") {
-          options += `<option value="${val}">${lab}</option>`;
-        }
-      });
-      
-      el.innerHTML = options;
-      //.log(`✅ ID: ${id} terisi dari ${sheetName}`);
-    }
-  }
-}
-
-/*
-// --- 5. OTOMATISASI UI ---
-function populateAllDropdowns() {
-  const mapRef = {
-    'maint_id_jadwal': 'ID_Jadwal',
-    'assetTypeSelect': 'Type_Asset',
-    'statusMaintSelect': 'Status_Maint',
-    'statusAssetSelect': 'Status_Asset'
-  };
-
-  for (let id in mapRef) {
-    const el = document.getElementById(id);
-    if (!el) continue;
-    
-    const data = getRef(mapRef[id]);
-    let options = `<option value="">-- Pilih ${mapRef[id]} --</option>`;
-    
-    data.slice(1).forEach(row => {
-      options += `<option value="${row[0]}">${row[0]}</option>`;
-    });
-    el.innerHTML = options;
-  }
-}
-  */
-
-/**
- * FUNGSI SIMPAN: Kirim perubahan dari Form ke GAS
- */
 async function updateAssetData(sheetName, assetId, updatedArray) {
   try {
-    // 1. Indikator Loading
     Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-    // 2. Tembak ke doPost GAS (Pakai fungsi kirimKeGAS yang kita buat di awal)
-    const res = await kirimKeGAS("update", sheetName, assetId, updatedArray);
+    // Gunakan panggilGAS dengan payload objek
+    const res = await panggilGAS("update", {
+      sheetName: sheetName,
+      id: assetId,
+      data: updatedArray
+    });
 
-    if (res.status === "success") {
-      // 3. UPDATE RAM LOKAL (PENTING: Biar data di browser langsung berubah tanpa refresh)
-      const rows = getAsset(sheetName);
-      const index = rows.findIndex(r => r[0].toString() === assetId.toString());
-      if (index !== -1) rows[index] = updatedArray;
-
-      Swal.fire("Tersimpan!", "Data di Spreadsheet & GitHub sudah sinkron.", "success");
+    if (res && res.status === "success") {
+      // 3. SINKRONISASI DATA (Tarik data terbaru dari GitHub)
+      await syncDataGhoib(); 
+      
+      Swal.fire("Tersimpan!", "Data Aset & GitHub berhasil disinkronkan.", "success");
       return true;
     } else {
-      throw new Error(res.msg);
+      throw new Error(res ? res.message : "Gagal terhubung ke server");
     }
   } catch (err) {
     Swal.fire("Gagal Simpan", err.message, "error");
@@ -173,54 +29,35 @@ async function updateAssetData(sheetName, assetId, updatedArray) {
 }
 
 
+
 async function tambahAset(sheetName, newRow) {
-  const res = await kirimKeGAS("append", sheetName, null, newRow);
-  if (res.status === "success") {
-    // Sync RAM: Langsung push ke array sheet tersebut
-    getAsset(sheetName).push(newRow);
-    //console.log("✅ Unit Baru Masuk RAM & Server!");
+  // Panggil kurir panggilGAS
+  const res = await panggilGAS("append", {
+    sheetName: sheetName,
+    data: newRow
+  });
+
+  if (res && res.status === "success") {
+    // Tarik data terbaru agar unit baru muncul di tabel
+    await syncDataGhoib();
+    Swal.fire("Berhasil!", "Unit baru telah terdaftar.", "success");
   }
   return res;
 }
-
 
 async function hapusAset(sheetName, assetId) {
-  const res = await kirimKeGAS("delete", sheetName, assetId);
-  if (res.status === "success") {
-    // Sync RAM: Filter keluar ID yang dihapus
-    getAsset(sheetName) = getAsset(sheetName).filter(
-      r => r[0].toString() !== assetId.toString()
-    );
-    console.log("🗑️ Unit Terhapus dari RAM & Server!");
+  const res = await panggilGAS("delete", {
+    sheetName: sheetName,
+    id: assetId
+  });
+
+  if (res && res.status === "success") {
+    // Tarik data terbaru agar baris di tabel hilang
+    await syncDataGhoib();
+    console.log("🗑️ Unit Terhapus dari Server & GitHub.");
   }
   return res;
 }
-
-
-/**
- * JEMBATAN SERVER: Namanya sama ama di GAS biar gak pusing
- * Cara pakai: const jam = await getServerTime();
- */
-async function getServerTime(dateform = null) {
-  try {
-    // 1. Kalau ada parameter (Mode Formatter), kita olah di lokal aja biar cepet
-    if (dateform) {
-      const targetDate = new Date(dateform);
-      const pad = (n) => n.toString().padStart(2, '0');
-      return `${pad(targetDate.getDate())}/${pad(targetDate.getMonth()+1)}/${targetDate.getFullYear()} ${pad(targetDate.getHours())}:${pad(targetDate.getMinutes())}:${pad(targetDate.getSeconds())}`;
-    }
-
-    // 2. Kalau GAK ADA parameter (Mode Real-time), baru nembak ke Google
-    const resp = await fetch(`${GAS_URL}?action=getServerTime`);
-    const res = await resp.json();
-    return res.time;
-
-  } catch (err) {
-    console.error("Gagal ambil jam server, pakai jam lokal:", err);
-    return new Date().toLocaleString('id-ID'); // Fallback biar gak error
-  }
-}
-
 
 
 /* ----- script inisialisasi berakhir disini------------------*/
@@ -267,9 +104,6 @@ async function openGlobalSearch() {
   // LOGIKA BARU: Kita tidak pakai FETCH lagi di sini. 
   // Kita akan biarkan fungsi 'input' (onkeyup) yang menyisir RAM nanti.
 }
-
-
-
 
 function liveSearchRAM(keyword) {
   const tbody = document.getElementById('globalResultBody');
@@ -364,8 +198,6 @@ async function navigateAsset() {
       // 2. Ambil data baris tersebut (Ingat: Index = Baris - 1)
       const data = gudangAsset[row - 1];
 
-
-
       if (!data || data.length === 0) return alert("Data aset gagal diambil!");
       
       document.getElementById('m_as_id').value = data[0];   
@@ -375,7 +207,7 @@ async function navigateAsset() {
       
       closeGlobalSearch();
     } catch (err) {
-      console.error("Error fetch asset:", err);
+      console.error("Error ambil asset:", err);
     }
     return; 
   }
@@ -1446,38 +1278,6 @@ function resetTempPhotos() {
   console.log("📸 Photo buffers cleared.");
 }
 
-/**
- * [FUNGSI CLIENT GITHUB: AMBIL TANGGAL SERVER]
- * Mengambil string waktu dari doGet(?action=getServerTime)
- */
-async function getMMDDYY() {
-  //const iframe = document.getElementById('iframeGAS');
-  const urlGAS = APPSCRIPT_URL;
-
-  try {
-    // 1. Fetch ke server
-    const response = await fetch(`${urlGAS}?action=getServerTime`);
-    const fullTime = await response.json(); // Hasilnya: "19/02/2024 14:30:05"
-
-    // 2. Bedah string menjadi "190224"
-    const parts = fullTime.split(' ')[0].split('/'); 
-    const dd = parts[0];
-    const mm = parts[1];
-    const yy = parts[2].slice(-2); 
-
-    return dd + mm + yy; 
-
-  } catch (err) {
-    console.error("Gagal ambil waktu server, menggunakan waktu lokal:", err);
-    // Fallback: Waktu Lokal jika internet gangguan
-    const d = new Date();
-    const dd = d.getDate().toString().padStart(2, '0');
-    const mm = (d.getMonth() + 1).toString().padStart(2, '0');
-    const yy = d.getFullYear().toString().slice(-2);
-    return dd + mm + yy;
-  }
-}
-
 
 /**==============================
  * [FUNGSI CLIENT: START MAINTENANCE MODE]
@@ -1915,13 +1715,11 @@ async function saveLog(status) {
     const btnPending = document.getElementById('btnLogPending');
     const modal = document.getElementById('modalMaintenanceLog');
     const piljadwal = document.getElementById('jenis_id_jadwal');
-    const urlGAS = APPSCRIPT_URL;
 
-    // --- VALIDASI (Tetap Sama Seperti Kodemu) ---
-    let pil_err = (piljadwal.value === '');
+    // --- 1. VALIDASI (Tetap Sama) ---
     let pesanError = "";
     if (!note) pesanError += "<li>Catatan Kerja wajib diisi!</li>";
-    if (pil_err) pesanError += "<li>Pilihan Jadwal wajib dipilih!</li>";
+    if (piljadwal.value === '') pesanError += "<li>Pilihan Jadwal wajib dipilih!</li>";
     if (tempPhotos.PB.length === 0) pesanError += "<li>Foto BEFORE (PB) Kosong!</li>";
     if (tempPhotos.PO.length === 0) pesanError += "<li>Foto ON WORK (PO) Kosong!</li>";
     if (tempPhotos.PA.length === 0) pesanError += "<li>Foto AFTER (PA) Kosong!</li>";
@@ -1937,6 +1735,7 @@ async function saveLog(status) {
         return; 
     }
 
+    // --- 2. KONFIRMASI ---
     const konfirmasi = await Swal.fire({
         title: `Set status ${status}?`,
         text: "Kirim data dan foto ke server?",
@@ -1946,9 +1745,8 @@ async function saveLog(status) {
         width: '80%'
     });
 
-
     if (konfirmasi.isConfirmed) {
-        // Kunci UI agar tidak double click
+        // Kunci UI
         modal.style.pointerEvents = "none"; 
         btnSelesai.disabled = true;
         btnPending.disabled = true;
@@ -1963,9 +1761,8 @@ async function saveLog(status) {
             didOpen: () => { Swal.showLoading(); }
         });
 
-        // --- PREPARE PAYLOAD ---
-        const bodyPayload = {
-            action: "processMaintLogEnterprise", 
+        // --- 3. PREPARE PAYLOAD (Disesuaikan untuk panggilGAS) ---
+        const payloadData = {
             payload: {
                 logKegId : document.getElementById("log_keg_id").value,
                 maintId  : document.getElementById('maint_id').value,
@@ -1977,48 +1774,44 @@ async function saveLog(status) {
                 lokasi   : document.getElementById('log_ui_lokasi').innerText,
                 asJadwal : document.getElementById('jenis_id_jadwal').value, 
                 petugas  : loggedInUser,
-                note     : (document.getElementById('log_pekerjaan').placeholder || "") + " " + document.getElementById('log_pekerjaan').value.trim()
+                note     : (document.getElementById('log_pekerjaan').placeholder || "") + " " + note
             },
             photoData: tempPhotos 
         };
 
-        // --- EKSEKUSI FETCH POST (VERSI FIX) ---
+        // --- 4. EKSEKUSI VIA panggilGAS ---
         try {
-            const response = await fetch(GAS_URL, { // Gunakan GAS_URL yang konsisten
-                method: 'POST',
-                // HAPUS mode: 'no-cors' agar bisa baca JSON hasil Response GAS
-                body: JSON.stringify(bodyPayload)
-            });
+            // Kita kirim action "processMaintLogEnterprise" dan objek payloadData
+            const result = await panggilGAS("processMaintLogEnterprise", payloadData);
 
-            const result = await response.json(); // Sekarang bisa baca status: "success"
-
-            if (result.status === "success") {
+            if (result && result.status === "success") {
                 await Swal.fire({
                     title: "¡Misión Cumplida!",
-                    text: result.msg, // Pesan sukses dari GAS (ID Log & ID Maint)
+                    text: result.data || "Data berhasil disimpan!", 
                     icon: "success",
                     width: '80%'
                 });
 
+                // Reset & Close
                 isSuccessSave = true; 
-                closeMaintenanceMode(); 
+                if (typeof closeMaintenanceMode === 'function') closeMaintenanceMode(); 
                 
-                // Refresh data RAM secara background (Opsional tapi bagus)
+                // Segera tarik data terbaru dari GitHub karena server sudah push ke sana
                 await syncDataGhoib(); 
                 
             } else {
-                throw new Error(result.message || "Gagal diproses server.");
+                throw new Error(result ? result.message : "Gagal diproses server.");
             }
 
         } catch (err) {
+            console.error("SaveLog Error:", err);
             await Swal.fire({
                 title: "Gagal!",
-                text: "Error: " + err.toString(),
+                text: err.message,
                 icon: "error",
                 width: '80%'
             });
         } finally {
-            // Kembalikan UI
             modal.style.pointerEvents = "auto";
             btnSelesai.disabled = false;
             btnPending.disabled = false;
@@ -2027,6 +1820,7 @@ async function saveLog(status) {
         }
     }
 }
+
 
 /**======================================================================================================
  * [FUNGSI CLIENT GITHUB: LOAD TABEL KELOLA JADWAL]
@@ -2229,8 +2023,7 @@ async function openMaintModal(row = "") {
  * Menjamin Fullscreen Tetap Aktif & Notifikasi Elegan
  */
 async function saveMaintData() { 
-    
-    // 1. PENGAMBILAN DATA
+    // 1. PENGAMBILAN DATA (DOM)
     const row = document.getElementById('maintRowIdx').value || "";             
     const asId = document.getElementById('m_as_id').value || "";                
     const mId = document.getElementById('m_id').value || "";                    
@@ -2247,7 +2040,7 @@ async function saveMaintData() {
     const btn = document.getElementById('btnCreateMaint'); 
 
     if (!asId || !mPlan) {
-      speakSenor("Señor, data belum lengkap!");
+      if (typeof speakSenor === 'function') speakSenor("Señor, data belum lengkap!");
       return Swal.fire({ title: "Warning", text: "Isi Aset & Plan Date!", icon: "warning", background: "#1e293b", color: "#fff" });
     }
 
@@ -2273,62 +2066,53 @@ async function saveMaintData() {
       allowOutsideClick: false
     });
 
-    
-try {
+    try {
+        if(btn) { btn.disabled = true; btn.innerHTML = 'TEMBAK...'; }
 
-  if(btn) { btn.disabled = true; btn.innerHTML = 'TEMBAK...'; }
-// 4. PREPARE PAYLOAD
-    const payload = {
-      action: "saveMaintData",
-      data: [mId, mType, asId, mNama, "", "", user, mPlan, "", mstate, mIDjad, mShift, mOther, mlokasi],
-      row: row // Nomor baris dari input hidden
-    };
+        // 4. EKSEKUSI VIA panggilGAS (Interceptor Otomatis)
+        // Kita bungkus data dan row ke dalam payload
+        const res = await panggilGAS("saveMaintData", {
+            data: [mId, mType, asId, mNama, "", "", user, mPlan, "", mstate, mIDjad, mShift, mOther, mlokasi],
+            row: row 
+        });
 
-    // 5. EKSEKUSI FETCH (Tanpa no-cors agar bisa baca error duplikat)
-    const response = await fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
+        if (res && res.status === "success") {
+            if (typeof speakSenor === 'function') speakSenor("Misión Cumplida, Señor!");
+            
+            await Swal.fire({ 
+                title: "BERHASIL!", 
+                text: res.data || "Jadwal berhasil diperbarui", 
+                icon: "success", 
+                timer: 2000, 
+                background: "#0f172a", color: "#fff" 
+            });
 
-    const res = await response.json();
+            // 5. SYNC GITHUB & RAM: Sangat penting agar tabel langsung update
+            await syncDataGhoib(); 
 
-    if (res.status === "success") {
-      speakSenor("Misión Cumplida, Señor!");
-      await Swal.fire({ 
-        title: "BERHASIL!", 
-        text: res.msg, 
-        icon: "success", 
-        timer: 2000, 
-        background: "#0f172a", color: "#fff" 
-      });
+            if (typeof closeMaintModal === 'function') closeMaintModal();
+            if (typeof loadJad === 'function') loadJad();
 
-      // SYNC RAM LOKAL: Biar tabel jadwal langsung update "Wuzzz"
-      await syncDataGhoib(); 
+        } else {
+            throw new Error(res ? res.message : "Gagal menyimpan jadwal");
+        }
 
-      closeMaintModal();
-      if (typeof loadJad === 'function') loadJad();
-
-    } else {
-      // Menangkap pesan "Duplikat!" atau "Error" dari GAS
-      throw new Error(res.message);
+    } catch (err) {
+        if (typeof speakSenor === 'function') speakSenor("Gagal tembak, Señor!");
+        Swal.fire({ 
+            title: "API Error", 
+            text: err.message, 
+            icon: "error", 
+            background: "#0f172a", color: "#fff" 
+        });
+    } finally {
+        if(btn) { 
+            btn.disabled = false; 
+            btn.innerHTML = (document.getElementById('maintRowIdx').value === "") ? 'CREATE' : 'UPDATE'; 
+        }
     }
-
-  } catch (err) {
-    speakSenor("Gagal tembak, Señor!");
-    Swal.fire({ 
-      title: "API Error", 
-      text: err.message, 
-      icon: "error", 
-      background: "#0f172a", color: "#fff" 
-    });
-  } finally {
-    const btn = document.getElementById('btnCreateMaint');
-    if(btn) { 
-      btn.disabled = false; 
-      btn.innerHTML = (document.getElementById('maintRowIdx').value === "") ? 'CREATE' : 'UPDATE'; 
-    }
-  }
 }
+
 
 /**===========================================================================
  * [FUNGSI: TUTUP MODAL MAINTENANCE]
@@ -2494,8 +2278,7 @@ async function goMaint(rowIdx) {
   }
 }
 
-
-/** MENGHAPUS JADWAL DAN MENAMBAHKANNYA DALAM CATATAN LOG (VERSI 11) */
+/** MENGHAPUS JADWAL DAN MENAMBAHKANNYA DALAM CATATAN LOG (VERSI 11 - PANGGIL GAS) */
 async function delJad(row) {
   // 1. KONFIRMASI DULU
   const result = await Swal.fire({
@@ -2507,7 +2290,7 @@ async function delJad(row) {
     cancelButtonColor: "#3085d6",
     confirmButtonText: "Ya, Hapus!",
     cancelButtonText: "Batal",
-    width: '80%' // Pas buat HP Sultan
+    width: '80%' 
   });
 
   if (!result.isConfirmed) return;
@@ -2516,43 +2299,53 @@ async function delJad(row) {
   Swal.fire({
     title: 'Menghapus Data...',
     didOpen: () => { Swal.showLoading(); },
-    allowOutsideClick: false
+    allowOutsideClick: false,
+    background: "#0f172a",
+    color: "#fff"
   });
 
   try {
-    // 3. SUSUN PAYLOAD
-    const payload = {
-      action: "deleteRowData",
-      sheetName: 'Maintenance',
-      row: row+1,
-      user: typeof loggedInUser !== 'undefined' ? loggedInUser : "Admin"
-    };
-
-    // 4. TEMBAK FETCH
-    const response = await fetch(APPSCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
+    // 3. EKSEKUSI VIA panggilGAS
+    // Payload disesuaikan dengan kebutuhan router doPost
+    const res = await panggilGAS("delete", { 
+      sheetName: 'maintenance', // Pastikan nama sheet sesuai di GS (case-sensitive)
+      id: row + 1 // Jika 'row' adalah index array, +1 untuk baris spreadsheet (asumsi tanpa header di data)
     });
 
-    const resText = await response.text();
+    if (res && res.status === "success") {
+      // 4. BERHASIL & SYNC GITHUB
+      await Swal.fire({
+        title: "Terhapus!",
+        text: res.data || "Baris berhasil dihapus",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+        background: "#0f172a",
+        color: "#fff"
+      });
 
-    // 5. BERHASIL
-    await Swal.fire({
-      title: "Terhapus!",
-      text: resText,
-      icon: "success",
-      timer: 1500,
-      showConfirmButton: false
-    });
+      // Tarik data terbaru dari GitHub agar tabel terupdate
+      await syncDataGhoib();
 
-    // Refresh tabel jadwal
-    if (typeof loadKel === 'function') loadKel();
+      // Refresh tampilan tabel kelola
+      if (typeof loadKel === 'function') loadKel();
+      
+    } else {
+      throw new Error(res ? res.message : "Gagal menghapus data");
+    }
 
   } catch (err) {
     console.error("Gagal hapus:", err);
-    Swal.fire("Gagal", "Error: " + err.message, "error");
+    Swal.fire({
+      title: "Gagal",
+      text: err.message,
+      icon: "error",
+      background: "#0f172a",
+      color: "#fff"
+    });
   }
 }
+
 
 /**==================================================================
  * [FUNGSI UI: LIHAT JADWAL - MODE LOCK]=
@@ -2748,16 +2541,21 @@ async function exportToExcel() {
  * Menghapus banyak jadwal sekaligus dari Spreadsheet via Fetch POST
  */
 async function doBulkDeleteMaint() {
-  const urlGAS = APPSCRIPT_URL;
-  const selected = getSelectedRowsMaint(); // Memanggil fungsi pembantu
+  const selected = getSelectedRowsMaint(); // Memanggil fungsi pembantu (userCheckMaint)
 
-  // 1. Validasi
+  // 1. Validasi Pilihan
   if (selected.length === 0) { 
-    Swal.fire({ title: "Pilih Data!", text: "Centang jadwal yang ingin dihapus.", icon: "warning", width: '80%' });
+    Swal.fire({ 
+      title: "Pilih Data!", 
+      text: "Centang jadwal yang ingin dihapus.", 
+      icon: "warning", 
+      width: '80%',
+      background: "#0f172a", color: "#fff"
+    });
     return; 
   }
  
-  // 2. Konfirmasi
+  // 2. Konfirmasi Hapus Massal
   const konfirmasi = await Swal.fire({
     title: "Hapus Massal?",
     text: `Kamu akan menghapus ${selected.length} data maintenance. Lanjutkan?`,
@@ -2766,52 +2564,63 @@ async function doBulkDeleteMaint() {
     confirmButtonColor: "#d33",
     confirmButtonText: "Ya, Hapus!",
     cancelButtonText: "Batal",
-    width: '80%'
+    width: '80%',
+    background: "#0f172a", color: "#fff"
   });
 
   if (konfirmasi.isConfirmed) { 
     Swal.fire({
       title: 'Sedang Menghapus...',
+      text: 'Membersihkan database, mohon tunggu...',
       allowOutsideClick: false,
-      didOpen: () => { Swal.showLoading(); }
+      didOpen: () => { Swal.showLoading(); },
+      background: "#0f172a", color: "#fff"
     });
 
     try {
-      const response = await fetch(urlGAS, {
-        method: 'POST',
-        body: JSON.stringify({
-          action: "deleteSelectedMaint",
-          payload: {
-            type: "Maintenance", // Sesuaikan jika ada kategori spesifik
-            selected: selected,
-            admin: loggedInUser || "Admin"
-          }
-        })
+      // 3. EKSEKUSI VIA panggilGAS (Otomatis kirim sessionId & username)
+      const res = await panggilGAS("deleteSelectedMaint", {
+        type: "Maintenance", 
+        selected: selected
       });
-      
-      const res = await response.json();
 
-      if (res.status === "success") {
-        await Swal.fire({ title: "Berhasil!", text: res.msg, icon: "success", width: '80%' });
+      if (res && res.status === "success") {
+        // res.data.msg berasal dari return object di GS deleteSelectedMaint
+        await Swal.fire({ 
+          title: "Berhasil!", 
+          text: res.data.msg || "Data berhasil dihapus.", 
+          icon: "success", 
+          width: '80%',
+          background: "#0f172a", color: "#fff"
+        });
         
-        // Refresh data agar tampilan sinkron dengan database
-        if (typeof syncDataGhoib === 'function') await syncDataGhoib(); 
+        // 4. SINKRONISASI GITHUB & UI
+        await syncDataGhoib(); 
+        
         if (typeof loadJad === 'function') loadJad();
+        if (typeof loadKel === 'function') loadKel();
         
-        // Reset checkbox master
+        // Reset checkbox master agar tidak nyangkut
         const master = document.getElementById('selectAllMaint');
         if (master) master.checked = false;
 
       } else {
-        throw new Error(res.message || "Gagal menghapus.");
+        throw new Error(res ? res.message : "Gagal menghapus di server.");
       }
 
     } catch (err) {
-      console.error("Error Delete:", err);
-      Swal.fire("Gagal!", err.toString(), "error", { width: '80%' });
+      console.error("Error Bulk Delete:", err);
+      Swal.fire({
+        title: "Gagal!", 
+        text: err.toString(), 
+        icon: "error", 
+        width: '80%',
+        background: "#0f172a", color: "#fff"
+      });
     }
   }
 }
+
 
 function getSelectedRowsMaint() {
   let rows = [];
@@ -2938,8 +2747,8 @@ async function processImport() {
   const finalPayload = dataToImport.filter(item => item.status === "OK");
 
   if (finalPayload.length === 0) {
-    speakSenor("Waduh Señor, tidak ada data valid yang bisa disuntikkan.");
-    return Swal.fire({ title: "Data Kosong!", icon: "warning" });
+    if (typeof speakSenor === 'function') speakSenor("Waduh Señor, tidak ada data valid yang bisa disuntikkan.");
+    return Swal.fire({ title: "Data Kosong!", text: "Pastikan status data adalah OK", icon: "warning", background: "#0f172a", color: "#fff" });
   }
 
   const btn = document.getElementById('btnConfirmImport');
@@ -2947,55 +2756,65 @@ async function processImport() {
   const progArea = document.getElementById('importProgress');
   
   // 2. UI LOADING
-  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sinking...'; }
+  if (btn) { 
+    btn.disabled = true; 
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sinking...'; 
+  }
   if (progArea) progArea.style.display = "block";
+  if (bar) bar.style.width = "50%"; // Indikator awal proses
   
   Swal.fire({
     title: 'Sinking Data...',
     text: `Menyuntikkan ${finalPayload.length} jadwal baru, Señor.`,
     allowOutsideClick: false,
+    background: "#0f172a",
+    color: "#fff",
     didOpen: () => { Swal.showLoading(); }
   });
 
-  // 3. TRANSMISI KE SERVER (FETCH POST)
+  // 3. EKSEKUSI VIA panggilGAS (Otomatis kirim sessionId & username)
   try {
-    const response = await fetch(GAS_URL, {
-      method: 'POST',
-      // JANGAN pakai no-cors agar bisa baca response JSON
-      body: JSON.stringify({
-        action: 'processImportBulk',
-        payload: finalPayload, // Data sudah lengkap dengan Type & Nama dari RAM
+    // Kita bungkus finalPayload ke dalam objek payload sesuai standar panggilGAS
+    const res = await panggilGAS("processImportBulk", {
+        payload: finalPayload,
         user: loggedInUser
-      })
     });
 
-    const result = await response.json(); // Sekarang bisa baca status: "success"
-
-    if (result.status === "success") {
+    if (res && res.status === "success") {
       if (bar) bar.style.width = "100%";
-      speakSenor("Misión Cumplida! Data sudah mendarat di database, aman Señor!");
+      if (typeof speakSenor === 'function') speakSenor("Misión Cumplida! Data sudah mendarat di database, aman Señor!");
 
       await Swal.fire({
         title: "Import Berhasil!",
-        text: result.msg,
+        text: res.data || "Data berhasil disinkronkan.",
         icon: "success",
-        width: '80%'
+        width: '80%',
+        background: "#0f172a",
+        color: "#fff"
       });
       
-      // 4. UPDATE RAM LOKAL (Agar jadwal baru langsung muncul di tabel)
+      // 4. UPDATE RAM LOKAL & GITHUB
+      // Sangat krusial agar 22 sheet di GitHub diperbarui dengan data impor baru
       await syncDataGhoib(); 
       
-      closeImportModal(); 
+      if (typeof closeImportModal === 'function') closeImportModal(); 
 
     } else {
-      throw new Error(result.message || "Gagal diproses server.");
+      throw new Error(res ? res.message : "Gagal diproses server.");
     }
 
   } catch (err) {
     if (bar) bar.style.width = "0%";
     console.error("Error Import:", err);
-    speakSenor("Gagal Señor, server sedang kewalahan.");
-    Swal.fire({ title: "Server Error!", text: err.toString(), icon: "error" });
+    if (typeof speakSenor === 'function') speakSenor("Gagal Señor, server sedang kewalahan.");
+    
+    Swal.fire({ 
+        title: "Server Error!", 
+        text: err.toString(), 
+        icon: "error",
+        background: "#0f172a",
+        color: "#fff"
+    });
 
     if(btn) {
       btn.disabled = false;
@@ -3003,6 +2822,7 @@ async function processImport() {
     }
   }
 }
+
 
 /**
  * [FUNGSI UI: RENDER PREVIEW - VERSI INTELLIGENT RAM]
@@ -3469,83 +3289,73 @@ async function updateQRCode(type, id) {
 
 
 async function openAddAssetModal() {
-  //value bantu
-  const val_type = document.getElementById('assetTypeSelect')?.value || "";
-  const dataRef = getRef("Type_Asset");
-  const baris = dataRef.find(row => row[1] === val_type);
-  const type = baris ? baris[1] : "" ;
+  // 1. Ambil Tipe Aset yang dipilih
+  const type = document.getElementById('assetTypeSelect')?.value || "";
 
-  //const type = document.getElementById('assetTypeSelect')?.value || "";
-  //console.log("Type_Asset", type);
   if (!type) {
     return Swal.fire({
       title: "Pilih Tipe!",
       text: "Pilih Tipe Aset dulu bos!",
       icon: "warning",
-      width: '80%'
+      width: '80%',
+      background: "#0f172a", color: "#fff"
     });
   }
-
-  // a. KUNCI GALERI (Tambahan Kunci)
-  const gallery = document.getElementById('as_gallery_box');
-  if (gallery) {
-    gallery.style.opacity = "0.4"; // Bikin redup
-    gallery.style.pointerEvents = "none"; // Matikan klik
-  }
-
-  // Tampilkan Loading sebentar karena kita akan "nanya" ID ke server
-  Swal.fire({
-    title: 'Mengambil ID...',
-    allowOutsideClick: false,
-    didOpen: () => { Swal.showLoading(); }
-  });
 
   try {
-    const urlGAS = APPSCRIPT_URL;
-    const params = new URLSearchParams({
-      action: 'getNextAssetId',
-      type: type
-    });
+    // 2. LOGIKA HITUNG ID DARI RAM (window.APP_STORE)
+    // Ambil data sheet sesuai tipe (misal: 'a', 'b', dst)
+    const sheetData = window.APP_STORE.assets[type];
+    let nextId = "";
 
-    const response = await fetch(`${urlGAS}?${params.toString()}`);
-    if (!response.ok) throw new Error("Gagal terhubung ke server.");
-    
-    const nextId = await response.text(); // Mengambil ID baru (misal: "ELC-001")
+    if (sheetData && sheetData.length > 1) {
+      // Ambil baris terakhir, kolom pertama (ID_Asset)
+      const lastRow = sheetData[sheetData.length - 1];
+      const lastId = lastRow[0].toString(); // Contoh: "a.055"
+      
+      // Pecah ID: "a.055" -> ["a", "055"]
+      const parts = lastId.split('.');
+      const prefix = parts[0];
+      const lastNum = parseInt(parts[1]); // Jadi 55
+      
+      // Tambah 1 dan kembalikan format 3 digit: "a.056"
+      const nextNum = (lastNum + 1).toString().padStart(3, '0');
+      nextId = `${prefix}.${nextNum}`;
+    } else {
+      // Jika sheet masih kosong (hanya header), mulai dari 001
+      nextId = `${type}.001`;
+    }
 
-    Swal.close(); // Tutup loading
-
-    // 1. Reset Penanda Baris (Kosong = Tambah Baru)
+    // 3. RESET FORM
     document.getElementById('assetRowIdx').value = ""; 
+    window.assetImages = [];    
+    window.currentImgIdx = 0;   
     
-    // 2. RESET TOTAL CACHE GAMBAR
-    assetImages = [];    
-    currentImgIdx = 0;   
-    
-    // 3. Kembalikan Tampilan Slider ke Placeholder
     const imgEl = document.getElementById('currAssetImg');
     if (imgEl) {
-      imgEl.src = "https://lh3.googleusercontent.com/d/0"; // Placeholder standar
+      imgEl.src = "https://lh3.googleusercontent.com"; 
       imgEl.style.opacity = "1";
     }
     
-    // 5. Reset Input Lainnya & Isi ID Otomatis
+    // 4. ISI DATA OTOMATIS
     document.getElementById('as_type').value = type;
-    document.getElementById('as_id').value = nextId; // ID dari server mendarat di sini
+    document.getElementById('as_id').value = nextId;
     document.getElementById('as_nama').value = "";
     document.getElementById('as_lokasi').value = "";
     document.getElementById('as_status').value = "Baik";    
 
-    // Update QR Code (Fungsi lokal Anda)
+    // 5. UPDATE QR & TAMPILKAN MODAL
     if (typeof updateQRCode === 'function') updateQRCode(type, nextId);
-
-    // Buka Modal
     document.getElementById('assetDetailModal').style.display = 'flex';
 
+    console.log("✅ ID Baru Berhasil Dihitung dari RAM: " + nextId);
+
   } catch (err) {
-    console.error("Gagal ambil ID:", err);
-    Swal.fire("Error", "Gagal mengambil ID otomatis dari server: " + err.message, "error");
+    console.error("Gagal hitung ID di RAM:", err);
+    Swal.fire("Error", "Gagal menghitung ID otomatis.", "error");
   }
 }
+
 
 
 /** =========================================================================
@@ -3923,92 +3733,6 @@ function takeAssetPhoto() {
 
 
 /**=========================================================================
- * [FUNGSI CLIENT GITHUB: HAPUS FOTO ASET]
- * Menghapus foto sementara di memori browser atau permanen di Google Drive via Fetch POST
- * ==========================================================================
- */
-async function deleteAssetPhoto() {
-  //const iframe = document.getElementById('iframeGAS');
-  const urlGAS = APPSCRIPT_URL;
-
-  // 1. VALIDASI AWAL
-  if (assetImages.length === 0) {
-    Swal.fire({ title: "Kosong!", text: "Tidak ada foto untuk dihapus!", icon: "warning", width: '80%' });
-    return;
-  }
-
-  // 2. KONFIRMASI GAHAR
-  const confirmHapus = await Swal.fire({
-    title: "Hapus Foto",
-    text: "Foto ini akan dihapus dari daftar?",
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonColor: "#d33",
-    confirmButtonText: "Ya, Hapus",
-    cancelButtonText: "Batal",
-    width: '80%'
-  });
-
-  if (!confirmHapus.isConfirmed) return;
-
-  const currentUrl = assetImages[currentImgIdx];
-
-  // --- JALUR A: FOTO BARU (BLOB / LOKAL GITHUB) ---
-  if (currentUrl.startsWith("blob:") || currentUrl.startsWith("data:")) {
-    // Hapus dari laci temp_Asset_Files
-    const offset = assetImages.length - temp_Asset_Files.length;
-    temp_Asset_Files.splice(currentImgIdx - offset, 1);
-    assetImages.splice(currentImgIdx, 1);
-    
-    currentImgIdx = 0;
-    updateImageSlider();
-    
-    Swal.fire({ title: "Sukses", text: "Pratinjau foto lokal dihapus", icon: "success", width: '80%' });
-  } 
-  
-  // --- JALUR B: FOTO LAMA (PERMANEN DI DRIVE) ---
-  else {
-    const row = document.getElementById('assetRowIdx').value;
-    const type = document.getElementById('as_type').value;
-
-    Swal.fire({ title: 'Menghapus...', text: 'Sik, lagi dibusek di Drive...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-
-    try {
-      const bodyPayload = {
-        action: "removeSpecificAssetPhoto",
-        payload: {
-          type: type,
-          row: row,
-          photoUrl: currentUrl
-        }
-      };
-
-      // Gunakan mode 'no-cors' untuk POST besar, atau CORS standar untuk membaca 'res.all'
-        const response = await fetch(urlGAS, {
-          method: 'POST',
-          body: JSON.stringify(bodyPayload)
-        });
-      
-        const res = await response.json();
-
-        if (res.success) { // Cek dari hasil fungsi removeSpecificAssetPhoto
-          // UPDATE RAM LOKAL: Sangat penting biar slider gak error!
-         getAsset(type)[row - 1][5] = res.all.join(","); 
-          
-          assetImages = res.all;
-          currentImgIdx = 0;
-          updateImageSlider();
-          Swal.fire({ title: "Sukses", text: "Foto berhasil dimusnahkan!", icon: "success", width: '80%' });
-        }
-    } catch (err) {
-      console.error("Gagal hapus foto Drive:", err);
-      Swal.fire({ title: "Gagal!", text: "Error server saat menghapus foto.", icon: "error", width: '80%' });
-    }
-  }
-}
-
-
-/**=========================================================================
  * [FUNGSI CLIENT GITHUB: SAVE ASSET EDIT & QR]
  * Mengirim data aset, QR Code, dan foto massal via Fetch POST
  * =========================================================================
@@ -4018,12 +3742,10 @@ async function saveAssetEdit() {
   const type = document.getElementById('as_type').value;
   const row = document.getElementById('assetRowIdx').value;
   const btn = document.getElementById('btnSaveAsset');
-  //const iframe = document.getElementById('iframeGAS');
-  const urlGAS = APPSCRIPT_URL;
 
   // 1. VALIDASI INPUT
   if (!asId) { 
-    await Swal.fire({title: "Input Kosong!", text: "ID Aset tidak boleh kosong!", icon: "warning", width: '80%' });
+    await Swal.fire({ title: "Input Kosong!", text: "ID Aset tidak boleh kosong!", icon: "warning", width: '80%', background: "#0f172a", color: "#fff" });
     return; 
   }
 
@@ -4032,129 +3754,127 @@ async function saveAssetEdit() {
     btn.disabled = true;
     btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Menyiapkan QR...";
   }
-  //const qrBlob = await generateCustomQR(type+"-"+asId); 
-  // 1. Panggil fungsi generator (hasilnya string)
-    const qrTeksMurni = await generateCustomQR(type + "-" + asId); 
-    // 2. Bungkus ke dalam objek agar "menyamar" jadi hasil fungsi lama
-    const qrBlob = {
-      base64: qrTeksMurni,
-      mimeType: "image/png"
-    };
 
-  // 3. SUSUN DATA UNTUK SPREADSHEET (Kolom A-E)
-  const userData = [
+  // Generate QR Teks
+  const qrTeksMurni = await generateCustomQR(type + "-" + asId); 
+  const qrBlob = {
+    base64: qrTeksMurni,
+    mimeType: "image/png"
+  };
+
+  // 3. SUSUN DATA DASAR (Akan diolah server ke Spreadsheet)
+  const dataArray = [
     asId, 
-    "", // Akan diisi link QR oleh server
+    "", // Link QR (diisi server)
     document.getElementById('as_nama').value,
     document.getElementById('as_lokasi').value,
     document.getElementById('as_status').value
   ];
 
-  // 4. SUSUN PAYLOAD LOGIKA SERVER
-  let payload = {
+  // 4. SUSUN PAYLOAD UTAMA
+  let assetPayload = {
     asId: asId,
     type: type,
     row: row,
     qrBase64: qrBlob ? qrBlob.base64 : null,
-    adminAktif: loggedInUser || "Admin",
     allFiles: [] 
   };
 
   // 5. PROSES FOTO DARI LACI (temp_Asset_Files)
-  if (temp_Asset_Files && temp_Asset_Files.length > 0) {
+  if (window.temp_Asset_Files && window.temp_Asset_Files.length > 0) {
     if (btn) btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Memproses Foto...";
     try {
-      const filePromises = temp_Asset_Files.map(file => getBase64(file));
-      payload.allFiles = await Promise.all(filePromises);
+      const filePromises = window.temp_Asset_Files.map(file => getBase64(file));
+      assetPayload.allFiles = await Promise.all(filePromises);
     } catch (e) {
       if (btn) {
         btn.disabled = false;
         btn.innerHTML = "SIMPAN PERUBAHAN";
       }
-      await Swal.fire({ title: "Gagal Memproses Foto", text: e.toString(), icon: "error", width: '80%' });
+      await Swal.fire({ title: "Gagal Memproses Foto", text: e.toString(), icon: "error", width: '80%', background: "#0f172a", color: "#fff" });
       return;
     }
   }
 
-
-    // 6. TRANSMISI KE SERVER (POST)
-  if (btn) btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Mengunggah ke Drive...";
+  // 6. TRANSMISI VIA panggilGAS (Interceptor Sakti)
+  if (btn) btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Mengunggah...";
 
   try {
-    const bodyPayload = {
-      action: "saveAssetEnterpriseWithQR",
-      payload: payload,
-      userData: userData
-    };
-
-    // --- PERBAIKAN DI SINI: Lepas no-cors agar bisa baca respon ASLI ---
-    const response = await fetch(urlGAS, {
-      method: 'POST',
-      body: JSON.stringify(bodyPayload)
+    // panggilGAS otomatis menyelipkan 'userData' (username & sessionId)
+    const res = await panggilGAS("saveAssetEnterpriseWithQR", {
+      payload: assetPayload,
+      userData: dataArray // Kita kirim dataArray sebagai userData tambahan untuk di-inject ke sheet
     });
 
-    const result = await response.json(); // Ambil jawaban asli dari GAS
-
-    if (result.status === "success") {
+    if (res && res.status === "success") {
       await Swal.fire({
         title: "Sukses",
-        text: result.msg, // Pesan sukses asli dari server (L-000x dsb)
+        text: res.data.msg || "Aset berhasil disimpan!",
         icon: "success",
-        width: '80%'
+        width: '80%',
+        background: "#0f172a", color: "#fff"
       });
 
-      // --- LOGIKA RAM-FIRST: Update gudang lokal biar gak usah nunggu loading ---
+      // SYNC GITHUB & RAM
       await syncDataGhoib(); 
 
-      temp_Asset_Files = []; 
+      window.temp_Asset_Files = []; 
       if (btn) {
         btn.disabled = false;
         btn.innerHTML = "SIMPAN PERUBAHAN";
       }
-      closeAssetModal();
       
-      // Karena RAM sudah update, tabel otomatis fresh
+      if (typeof closeAssetModal === 'function') closeAssetModal();
       if (typeof loadAssetData === 'function') loadAssetData(type); 
 
     } else {
-      // Jika status dari GAS adalah "error"
-      throw new Error(result.message || "Gagal diproses server.");
+      throw new Error(res ? res.message : "Gagal diproses server.");
     }
 
   } catch (err) {
+    console.error("Save Asset Error:", err);
     await Swal.fire({
       title: "Gagal",
-      text: "Gagal Mengirim ke Server: " + err.message,
+      text: err.message,
       icon: "error",
-      width: '80%'
+      width: '80%',
+      background: "#0f172a", color: "#fff"
     });
     if (btn) {
       btn.disabled = false;
       btn.innerHTML = "SIMPAN PERUBAHAN";
     }
   }
-
 }
+
 
 /**
  * [FUNGSI CLIENT GITHUB: HAPUS ASET MASSAL]
  * Menghapus banyak aset sekaligus dari Spreadsheet & Drive via Fetch POST
  */
 async function doBulkDeleteAsset() {
-  const type = document.getElementById('assetTypeSelect').value; 
-  //const iframe = document.getElementById('iframeGAS');
-  const urlGAS = APPSCRIPT_URL;
+  const type = document.getElementById('assetTypeSelect')?.value; 
   
+  // 1. AMBIL PILIHAN (Checkbox .asetCheck)
   let selected = [];
-  document.querySelectorAll('.asetCheck:checked').forEach(cb => selected.push(parseInt(cb.value)));
+  document.querySelectorAll('.asetCheck:checked').forEach(cb => {
+    const val = parseInt(cb.value);
+    if (!isNaN(val)) selected.push(val);
+  });
 
-  // 1. VALIDASI PILIHAN
+  // 2. VALIDASI PILIHAN
   if (selected.length === 0) { 
-    Swal.fire({ title: "Pilih Dulu!", text: "Pilih aset yang ingin dihapus!", icon: "warning", width: '80%' });
+    Swal.fire({ 
+      title: "Pilih Dulu!", 
+      text: "Pilih aset yang ingin dihapus!", 
+      icon: "warning", 
+      width: '80%',
+      background: "#0f172a", color: "#fff"
+    });
     return; 
   }
  
-  // 2. KONFIRMASI GAHAR
+  // 3. KONFIRMASI GAHAR
   const konfirmasi = await Swal.fire({
     title: "Hapus Asset!",
     text: `⚠️ HAPUS ${selected.length} ASET? \n\nFolder foto dan QR di Drive juga akan dihapus.`,
@@ -4163,89 +3883,104 @@ async function doBulkDeleteAsset() {
     confirmButtonColor: "#d33",
     confirmButtonText: "Ya, Hapus!",
     cancelButtonText: "Batal",
-    width: '80%'
+    width: '80%',
+    background: "#0f172a", color: "#fff"
   });
 
   if (konfirmasi.isConfirmed) { 
-      // 3. TAMPILKAN LOADING
       Swal.fire({
         title: 'Memproses Penghapusan...',
-        text: 'Sedang membersihkan database dan Drive, mohon tunggu...',
+        text: 'Membersihkan database dan Drive, mohon tunggu...',
         allowOutsideClick: false,
-        showConfirmButton: false,
+        background: "#0f172a", color: "#fff",
         didOpen: () => { Swal.showLoading(); }
       });
 
-      // 4. TRANSMISI KE SERVER (VERSI RAM-SYNC)
+      // 4. EKSEKUSI VIA panggilGAS (Interceptor Otomatis)
       try {
-        const response = await fetch(urlGAS, {
-          method: 'POST',
-          body: JSON.stringify({
-            action: "deleteSelectedAssets",
-            payload: {
-              type: type,
-              selected: selected,
-              admin: loggedInUser || "Admin"
-            }
-          })
+        const res = await panggilGAS("deleteSelectedAssets", {
+          type: type,
+          selected: selected
         });
-        
-        const res = await response.json(); // Menggunakan JSON agar lebih standar
 
-        if (res.status === "success") {
-          await Swal.fire({ title: "Terhapus!", text: res.msg, icon: "success", width: '80%' });
+        if (res && res.status === "success") {
+          await Swal.fire({ 
+            title: "Terhapus!", 
+            text: res.data.msg || "Aset berhasil dibersihkan.", 
+            icon: "success", 
+            width: '80%',
+            background: "#0f172a", color: "#fff"
+          });
           
-          // UPDATE RAM LOKAL: Biar "Wuzzz" seketika!
+          // 5. SYNC GITHUB & RE-RENDER
+          // Sangat krusial agar RAM lokal langsung bersih mengikuti data terbaru di GitHub
           await syncDataGhoib(); 
           
           if (typeof loadAssetData === 'function') loadAssetData(type);
+          
+          // Reset checkbox master
+          const master = document.getElementById('checkAllAsset');
+          if (master) master.checked = false;
+
         } else {
-          throw new Error(res.message);
+          throw new Error(res ? res.message : "Gagal menghapus di server.");
         }
 
-      }  catch (err) {
+      } catch (err) {
         console.error("Gagal hapus massal:", err);
-        Swal.fire("Gagal!", "Server Error: " + err.toString(), "error");
+        Swal.fire({
+          title: "Gagal!", 
+          text: err.message, 
+          icon: "error", 
+          width: '80%',
+          background: "#0f172a", color: "#fff"
+        });
       }
-  } // <--- Penutup if (konfirmasi.isConfirmed)
-} // <--- Penutup fungsi doBulkDeleteAsset
-
+  }
+}
 
 
 async function bulkUpdateQR() {
-  const type = document.getElementById('assetTypeSelect').value;
-  const urlGAS = APPSCRIPT_URL;
+  const type = document.getElementById('assetTypeSelect')?.value;
   let selected = [];
   
   // 1. AMBIL ASET YANG DICENTANG
   document.querySelectorAll('.asetCheck:checked').forEach(cb => {
     const row = cb.closest('tr');
+    // Ambil ID Asset dari kolom kedua (index 1)
+    const asId = row.cells[1].innerText.split('\n')[0].trim(); 
     selected.push({
       rowIdx: cb.value,
-      asId: row.cells[1].innerText.trim() 
+      asId: asId
     });
   });
 
   if (selected.length === 0) {
-    return Swal.fire({ title: "Pilih aset dulu!", icon: "info", width: '80%' });
+    return Swal.fire({ 
+      title: "Pilih aset dulu!", 
+      icon: "info", 
+      width: '80%',
+      background: "#0f172a", color: "#fff"
+    });
   }
 
-  // 2. KONFIRMASI GAHAR
+  // 2. KONFIRMASI
   const konfirmasi = await Swal.fire({
     title: "Update QR Massal",
     text: `Proses ${selected.length} aset sekaligus?`,
     icon: "warning",
     showCancelButton: true,
     confirmButtonText: "Ya, Proses",
-    width: '80%'
+    width: '80%',
+    background: "#0f172a", color: "#fff"
   });
 
-  // --- SEMUA PROSES HARUS DI DALAM IF INI ---
   if (konfirmasi.isConfirmed) {
     Swal.fire({
       title: 'Menyiapkan Data...',
-      html: '<b id="progress-text">Konversi QR: 0%</b>',
+      html: '<b id="progress-text" style="color:#3498db;">Konversi QR: 0%</b>',
       allowOutsideClick: false,
+      background: "#0f172a", color: "#fff",
       didOpen: () => { Swal.showLoading(); }
     });
 
@@ -4253,62 +3988,54 @@ async function bulkUpdateQR() {
       const progEl = document.getElementById('progress-text');
       if (progEl) progEl.innerText = "Memulai Konversi Paralel...";
 
-      // 1. PROSES SEMUA QR SEKALIGUS (PARALEL)
+      // 3. PROSES SEMUA QR SEKALIGUS (PARALEL)
       const promises = selected.map(async (item, index) => {
         const code = type + "-" + item.asId;
         
-        // Panggil mesin lokal (Custom QR dengan teks)
+        // Panggil mesin lokal (Custom QR)
         const fullImageBase64 = await generateCustomQR(code);
 
-        // Update progress UI
+        // Update progress UI secara real-time
         const progressVal = Math.round(((index + 1) / selected.length) * 100);
         if (progEl) progEl.innerText = `Konversi QR: ${progressVal}% (${index + 1}/${selected.length})`;
 
         return {
           asId: item.asId,
           row: item.rowIdx,
-          qrBase64: fullImageBase64.split(',')[1] 
+          qrBase64: fullImageBase64.split(',')[1] // Ambil data murni base64
         };
       });
 
-      // 2. TUNGGU SEMUA SELESAI
       const bulkData = await Promise.all(promises);
 
-      // 3. KIRIM BORONGAN KE SERVER
+      // 4. EKSEKUSI VIA panggilGAS (Interceptor Otomatis)
       if (progEl) progEl.innerText = "Mengirim ke Database (Server)...";
 
-      const bodyPayload = {
-        action: "saveBulkQR_Optimized",
-        payload: {
-          bulkData: bulkData,
-          admin: loggedInUser || "Admin",
-          type: type
-        }
-      };
-
-      const response = await fetch(urlGAS, {
-        method: 'POST',
-        body: JSON.stringify(bodyPayload)
+      const res = await panggilGAS("saveBulkQR_Optimized", {
+        bulkData: bulkData,
+        type: type
       });
-      
-      const res = await response.json(); 
 
-      if (res.status === "success") {
+      if (res && res.status === "success") {
         await Swal.fire({ 
           title: "Misión Cumplida!", 
-          text: res.msg, 
+          text: res.data.msg || "QR Berhasil Diperbarui.", 
           icon: "success", 
-          width: '80%' 
+          width: '80%',
+          background: "#0f172a", color: "#fff"
         });
         
-        // UPDATE RAM LOKAL
+        // 5. SINKRONISASI GITHUB & UI
         await syncDataGhoib(); 
         
-        if (typeof loadAssetData === 'function') {
-          loadAssetData(type);
-        }
+        if (typeof loadAssetData === 'function') loadAssetData(type);
+        
+        // Reset checkbox master
+        const master = document.getElementById('checkAllAsset');
+        if (master) master.checked = false;
+
       } else {
-        throw new Error(res.message || "Gagal simpan di server");
+        throw new Error(res ? res.message : "Gagal simpan di server");
       }
 
     } catch (err) {
@@ -4316,19 +4043,16 @@ async function bulkUpdateQR() {
       Swal.fire({ 
         title: "Error", 
         text: "Gagal memproses QR: " + err.toString(), 
-        icon: "error" 
+        icon: "error",
+        background: "#0f172a", color: "#fff"
       });
     }
-  } // <--- Penutup if (konfirmasi.isConfirmed)
-} // <--- Penutup fungsi bulkUpdateQR
+  }
+}
 
 
 /**=========================================================================
- * HELPER: GENERATE QR BASE64 (Safe for CORS)
- * dengan logo dan tulisan
- * ==========================================================================
- */
-/**
+ * HELPER: GENERATE QR BASE64 (Safe for CORS)**
  * [FUNGSI CLIENT: GENERATOR QR CUSTOM + LOGO PT-KSC]
  * Menghasilkan Base64 murni untuk dikirim ke GAS
  */
@@ -4687,8 +4411,8 @@ function openAddUserModal() {
  * Mengubah status Aktif/Non-Aktif banyak user sekaligus lewat RAM & API
  */
 async function doBulkAction(status) {
-  // 1. AMBIL DAFTAR BARIS YANG DICENTANG (Hasil dari getSelectedRows)
-  const selectedRows = getSelectedRows(); // Contoh: [2, 5, 10]
+  // 1. AMBIL DAFTAR BARIS (Contoh: [2, 5, 10])
+  const selectedRows = getSelectedRows(); 
   
   if (selectedRows.length === 0) {
     return Swal.fire({ 
@@ -4699,7 +4423,7 @@ async function doBulkAction(status) {
     });
   }
 
-  // 2. KONFIRMASI TINDAKAN
+  // 2. KONFIRMASI
   const confirm = await Swal.fire({
     title: `${status === "aktif" ? "Aktifkan" : "Non-aktifkan"} User`,
     text: `Ubah status ${selectedRows.length} user sekaligus?`,
@@ -4712,68 +4436,61 @@ async function doBulkAction(status) {
 
   if (!confirm.isConfirmed) return;
 
-  // 3. TAMPILKAN LOADING
+  // 3. UI LOADING
   Swal.fire({ 
     title: 'Processing...', 
-    text: 'Sabar Señor, nuju diupdate...',
+    text: 'Menyinkronkan status ke database...',
     allowOutsideClick: false, 
     didOpen: () => { Swal.showLoading(); },
     background: "#0f172a", color: "#fff"
   });
 
   try {
-    // 4. LOGIKA PARALEL (WUZ!): Tembak semua baris sekaligus
-    const promises = selectedRows.map(async (rowIdx) => {
+    // 4. SIAPKAN DATA BORONGAN
+    // Kita buat daftar data yang mau diupdate agar server cuma kerja SEKALI
+    const bulkPayload = selectedRows.map(rowIdx => {
+      // Ambil data asli dari RAM (Users ada di window.APP_STORE.assets.Users atau .app.Users)
+      // Pastikan path-nya benar sesuai struktur APP_STORE kamu
+      let rowData = [...window.APP_STORE.assets["Users"][rowIdx - 1]]; 
       
-      // A. Ambil data baris utuh dari RAM (Index = Baris - 1)
-      // Kita pakai spread operator [...] agar tidak merusak data RAM asli sebelum sukses
-      let rowData = [...window.APP_STORE.app["Users"][rowIdx - 1]]; 
+      // Ubah Status di Kolom G (Index 6)
+      rowData[6] = (status === "aktif") ? "Aktif" : "Nonaktif";
       
-      // B. Ubah Status di Kolom G (Index 6)
-      rowData[6] = (status === "aktif") ? "Aktif" : "Non-Aktif";
-
-      // C. Tembak fungsi 'update' generik di GAS
-      const resp = await fetch(APPSCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify({
-          action: "update",
-          sheetName: "Users",
-          id: rowIdx,      // Nomor baris di Spreadsheet
-          data: rowData    // Array 1 baris utuh yang sudah diupdate statusnya
-        })
-      });
-      return resp.json();
+      return {
+        id: rowIdx,
+        data: rowData
+      };
     });
 
-    // 5. TUNGGU SEMUA "PELURU" SAMPAI KE SERVER
-    const results = await Promise.all(promises);
+    // 5. TEMBAK SEKALI SAAT (MENGGUNAKAN panggilGAS)
+    // Gunakan action baru "bulkUpdateUsers" agar server memprosesnya efisien
+    const res = await panggilGAS("bulkUpdateUsers", {
+      sheetName: "Users",
+      updates: bulkPayload
+    });
 
-    // 6. VALIDASI HASIL AKHIR
-    const isAllSuccess = results.every(res => res.status === "success");
-
-    if (isAllSuccess) {
-      speakSenor("Misión Cumplida! Status user diperbarui.");
+    if (res && res.status === "success") {
+      if (typeof speakSenor === 'function') speakSenor("Misión Cumplida! Status user diperbarui.");
       
       await Swal.fire({ 
         title: "Berhasil!", 
-        text: `${selectedRows.length} User telah di-${status}.`, 
+        text: `${selectedRows.length} User telah diperbarui.`, 
         icon: "success",
         background: "#0f172a", color: "#fff" 
       });
       
-      // 7. UPDATE RAM LOKAL: Sedot data terbaru biar tabel langsung sinkron
+      // 6. SYNC DATA DARI GITHUB
       await syncDataGhoib(); 
       
-      // Refresh tampilan tabel jika fungsinya tersedia
       if (typeof loadUserList === 'function') loadUserList();
 
     } else {
-      throw new Error("Waduh, ada beberapa data yang gagal diupdate di server.");
+      throw new Error(res ? res.message : "Gagal update massal.");
     }
 
   } catch (err) {
     console.error("Bulk Action Error:", err);
-    speakSenor("Gagal Señor, server sedang kewalahan.");
+    if (typeof speakSenor === 'function') speakSenor("Gagal Señor, server sedang kewalahan.");
     Swal.fire({ 
       title: "Error!", 
       text: err.message, 
@@ -4782,6 +4499,7 @@ async function doBulkAction(status) {
     });
   }
 }
+
 
 
 function getSelectedRows() {
@@ -5033,48 +4751,6 @@ function uploadPhotoFromAdmin(input) {
 }
 
 
-/**
- * [FUNGSI: EKSPOR DATA KE CSV]
- * Mengunduh daftar pengguna dalam format CSV melalui browser.
- */
-async function downloadCSV() {
-  try {
-    // 1. Indikator Loading (Opsional pakai Swal)
-    Swal.fire({ title: 'Menyiapkan CSV...', didOpen: () => Swal.showLoading(), allowOutsideClick: false });
-
-    // 2. Tembak URL Deployment dengan parameter action
-    const response = await fetch(`${APPSCRIPT_URL}?action=exportUsersToCSV`);
-    
-    if (!response.ok) throw new Error("Gagal terhubung ke server Google.");
-    
-    const csvData = await response.text(); // Ambil teks CSV langsung
-
-    if (csvData.startsWith("Error")) throw new Error(csvData);
-
-    // 3. Proses Pembuatan File (Blob)
-    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    
-    // 4. Trigger Download Otomatis
-    const link = document.createElement("a");
-    const tgl = new Date().toLocaleDateString().replace(/\//g, '-');
-    
-    link.href = url;
-    link.download = `Data_User_MANTAP_${tgl}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    
-    // 5. Bersihkan Sampah
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-
-    Swal.fire({ title: "Berhasil!", text: "Data berhasil diunduh.", icon: "success", timer: 2000 });
-
-  } catch (err) {
-    console.error("Download Error:", err);
-    Swal.fire("Gagal Download", err.message, "error");
-  }
-}
 
 /**
  * [FUNGSI CLIENT: EKSPOR USER KE CSV - VERSI RAM WUZ!]
@@ -5143,18 +4819,15 @@ async function saveAdminEdit() {
   const rowIdx = document.getElementById('m_row_idx').value;
   const username = document.getElementById('m_user').value;
   const displayPhoto = document.getElementById('admin_edit_photo');
-  const urlGAS = APPSCRIPT_URL;
 
   // 1. VALIDASI AWAL
   if (!username) return Swal.fire("Peringatan", "Username harus diisi!", "warning");
-  if (!urlGAS) return Swal.fire("Error", "URL Server GAS tidak ditemukan!", "error");
 
   // 2. UI FEEDBACK & LOADING
   const btn = document.getElementById('saveprofilmodal');
   const preview = document.getElementById('admin_edit_photo');
   const imgSidebar = document.getElementById('user_profile_shared');
   
-  // Tentukan apakah admin sedang mengedit dirinya sendiri (Self-Edit)
   const isSelf = (username.toLowerCase() === (typeof loggedInUser !== 'undefined' ? loggedInUser.toLowerCase() : ""));
 
   if (btn) {
@@ -5165,7 +4838,7 @@ async function saveAdminEdit() {
   if (isSelf && imgSidebar) imgSidebar.style.opacity = "0.3";
 
   try {
-    // 3. SUSUN PAYLOAD UNIVERSAL
+    // 3. SUSUN PAYLOAD (Payload intinya saja)
     let payload = {
       adminAktif: typeof loggedInUser !== 'undefined' ? loggedInUser : "System", 
       row:      rowIdx, 
@@ -5176,65 +4849,49 @@ async function saveAdminEdit() {
       email:    document.getElementById('m_email').value,
       status:   document.getElementById('m_status').value,
       attempts: document.getElementById('m_attempts').value || 0,
-      // Jika foto masih bawaan (Avatar) atau Blob baru, kirim kosong (akan diisi photoData)
       photoUrl: (displayPhoto.src.includes("blob:") || displayPhoto.src.includes("ui-avatars.com")) ? "" : displayPhoto.src.split('?')[0],
       photoData: null,
       mimeType: "image/png",
       fileName: "Profile_" + username
     };
 
-    // 4. PROSES FOTO BARU (Jika Ada di Laci Temp_Profile[1])
-    if (Temp_Profile && Temp_Profile[1]) {
-      const fileInfo = await getBase64(Temp_Profile[1]);
+    // 4. PROSES FOTO BARU
+    if (window.Temp_Profile && window.Temp_Profile[1]) {
+      const fileInfo = await getBase64(window.Temp_Profile[1]);
       payload.photoData = fileInfo.base64;
       payload.mimeType = fileInfo.mimeType;
     }
 
-    // 5. TRANSMISI KE SERVER (FETCH POST)
-    const response = await fetch(urlGAS, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "universalUpdateUser",
-        payload: payload
-      })
-    });
+    // 5. EKSEKUSI VIA panggilGAS (Interceptor Otomatis)
+    const res = await panggilGAS("universalUpdateUser", payload);
 
-    const res = await response.json(); 
-
-    // --- SUCCESS HANDLER ---
-    if (res.status === "success") {
+    if (res && res.status === "success") {
       await Swal.fire({
         title: "¡Misión Cumplida!",
-        text: res.message || "Data user berhasil diperbarui.",
+        text: res.data || "Data user berhasil diperbarui.",
         icon: "success",
         confirmButtonText: "OK, Señor!",
         width: '80%',
         background: "#0f172a", color: "#fff"
       });
 
-      // PENTING: Update seluruh Gudang RAM agar semua UI sinkron seketika
+      // 6. SYNC DATA GITHUB & RAM
       await syncDataGhoib(); 
 
-      // Bersihkan Laci Foto
-      if (Temp_Profile) Temp_Profile[1] = null; 
-      
-      // Tutup modal edit (Pastikan fungsi closeModal() kamu sudah ada)
+      if (window.Temp_Profile) window.Temp_Profile[1] = null; 
       if (typeof closeModal === 'function') closeModal(); 
-      
-      // Render ulang tabel user dari data RAM terbaru
       if (typeof loadUserList === 'function') loadUserList(); 
       
-      // Jika mengedit diri sendiri, sinkronkan Foto Profil di Sidebar/Header
+      // Sinkronkan Foto Profil di Sidebar jika Edit Diri Sendiri
       if (isSelf) {
-        // Cari data terbaru di RAM yang barusan di-sync
         const userBaru = findUserByName(username); 
         if (userBaru.status === "success") {
-          const urlTerbaru = userBaru.data[5]; // Ambil Kolom F (Photo URL)
+          const urlTerbaru = userBaru.data[5]; 
           if (typeof syncProfileUI === 'function') syncProfileUI(urlTerbaru, true);
         }
       }
     } else {
-      throw new Error(res.message || "Gagal diproses server.");
+      throw new Error(res ? res.message : "Gagal diproses server.");
     }
 
   } catch (err) {
@@ -5248,7 +4905,6 @@ async function saveAdminEdit() {
       background: "#0f172a", color: "#fff"
     });
   } finally {
-    // Kembalikan Tampilan UI
     if (preview) preview.style.opacity = "1";
     if (imgSidebar) imgSidebar.style.opacity = "1";
     if (btn) {
@@ -5257,6 +4913,7 @@ async function saveAdminEdit() {
     }
   }
 }
+
 
 /**=============================================================================================
  * [FUNGSI: SAVE ADMIN EDIT]

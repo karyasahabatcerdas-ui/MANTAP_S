@@ -1,28 +1,3 @@
-// Variabel Global
-// Simpan URL Iframe GAS untuk referensi di fungsi lain (opsional, tergantung kebutuhan navigasi)
-const urlGAS = APPSCRIPT_URL;
-
-let cachedAssetTypes = null; 
-currentCategory = '';  // deteksi kamera QR atau QR
-html5QrCode = null; // Instance Html5Qrcode untuk scan file QR
-currentMaintData = null; // { maint_id, as_id, nama_aset, lokasi, jenis_jadwal }
-tempPhotos = { PB: [], PO: [], PA: [], PC: [] }; // Menyimpan foto sementara sebelum submit
-update_man_status = false; // Menandakan apakah sedang dalam mode UPDATE (Pending) atau INPUT Baru
-let isSuccessSave = false; // Status global untuk menandai apakah log berhasil disimpan atau pending
-let allHistoryData = []; //variabel global untuk menyimpan data log history mentah dari server
-let activeRowData = []; // Global variable
-let dataToImport = []; // Memory penampung sementara
-let lastValidatedData = []; 
-let assetImages = [];
-let currentImgIdx = 0;
-let temp_Asset_Files = []; 
-const mAX_IMG = 5;
-Temp_Profile = [null,null]; 
-
-
-let loggedInUser = "";
-let userRole = "";
-
  async function login() {
   const u = document.getElementById('user').value;
   const p = document.getElementById('pass').value;

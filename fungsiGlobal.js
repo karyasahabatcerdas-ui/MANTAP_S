@@ -1,3 +1,216 @@
+// --- 1. KONFIGURASI & GUDANG DATA ---
+//const GAS_URL = "https://script.google.com/macros/s/AKfycbwwJVU-AHjjg3Lhj_zDIVtDCfTWV114zbQMve87e6b6Rh_FQRzuwyVoiGZzd__slPbb/exec";
+const GAS_URL = APPSCRIPT_URL; // Gunakan URL yang dibentuk dari APPSCRIPT_ID di index.html
+
+window.APP_STORE = {
+  app: {},
+  assets: {},
+  reference: {},
+  maintenance: {},
+  key: null,
+  lastSync: null
+};
+
+// --- 4. HELPER (PENGAMBIL DATA RAM) ---
+const getAsset = (name) => window.APP_STORE.assets[name] || [];
+const getRef   = (name) => window.APP_STORE.reference[name] || [];
+const getMaint = (name) => window.APP_STORE.maintenance[name] || [];
+const getApp = (name) => window.APP_STORE.app[name] || [];
+
+//------mapping untuk dropdown
+const DROPDOWN_MAP = {
+  'filterStatusLog':    'Status_Maint',
+  'filterJadwalLog':    'ID_Jadwal',
+  'sortJadwal':         'Filter_Tgl',
+  'filterIdJadwal':     'ID_Jadwal',
+  'filterType':         'Type_Asset',
+  'filterStateJadwal':  'Status_Maint',
+  'assetTypeSelect':    'Type_Asset',
+  'viewAssetTypeSelect':'Type_Asset',
+  'jenis_id_jadwal':    'ID_Jadwal',
+  'm_state':            'Status_Maint',
+  'maint_id_jadwal':    'ID_Jadwal',
+  'as_status':          'Status_Asset',
+  'm_status':           'Status_Maint'
+};
+
+// Variabel Global
+const urlGAS = APPSCRIPT_URL;
+let cachedAssetTypes = null; 
+currentCategory = '';  // deteksi kamera QR atau QR
+html5QrCode = null; // Instance Html5Qrcode untuk scan file QR
+currentMaintData = null; // { maint_id, as_id, nama_aset, lokasi, jenis_jadwal }
+tempPhotos = { PB: [], PO: [], PA: [], PC: [] }; // Menyimpan foto sementara sebelum submit
+update_man_status = false; // Menandakan apakah mode UPDATE (Pending) atau INPUT 
+let isSuccessSave = false; // Status global apakah log berhasil di simpan atau pending
+let allHistoryData = []; //variabel global menyimpan history mentah dari server
+let activeRowData = []; // Global variable
+let dataToImport = []; // Memory penampung sementara
+let lastValidatedData = []; 
+let assetImages = [];
+let currentImgIdx = 0;
+let temp_Asset_Files = []; 
+const mAX_IMG = 5;
+let Temp_Profile = [null,null]; 
+let loggedInUser = "";
+let userRole = "";
+
+
+
+async function panggilGAS(action, payload = {}) {
+  const loginData = JSON.parse(localStorage.getItem("userMaint")) || {};
+  
+  // Bungkus paket dengan Identitas User & SessionID
+  const paketLengkap = {
+    action: action,
+    payload: payload,
+    userData: {
+      username: loginData.name || "Guest",
+      sessionId: loginData.sessionId || "NoSession"
+    }
+  };
+
+  try {
+    const response = await fetch(APPSCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(paketLengkap)
+    });
+    
+    const res = await response.json();
+
+    // Jika Satpam Server mendeteksi Sesi Expired / Login di HP lain
+    if (res.message === "SESI_EXPIRED") {
+      await Swal.fire("Sesi Berakhir", "Akun login di perangkat lain!", "error");
+      logout(); 
+      return null;
+    }
+
+    return res; 
+  } catch (err) {
+    console.error("Gagal kontak server:", err);
+    return { status: "error", message: err.toString() };
+  }
+}
+
+
+
+// --- 2. FUNGSI SEDOT DATA (READ) dengan ---
+//Fungsi ini akan mengecek Etag atau Last-Modified dari GitHub. 
+//Jika file di GitHub tidak berubah, ia tidak akan membuang kuota internet untuk download ulang.
+async function syncDataGhoib() {
+  const loginData = JSON.parse(localStorage.getItem("userMaint"));
+  if (!loginData) return;
+
+  // URL yang sudah kamu koreksi tadi (dengan tanda / setelah .com)
+  const GITHUB_JSON_URL = "https://raw.githubusercontent.com" + new Date().getTime();
+
+  try {
+    const response = await fetch(GITHUB_JSON_URL, { cache: 'no-cache' });
+    if (!response.ok) throw new Error("File GitHub belum tersedia.");
+    
+    const remoteData = await response.json();
+
+    // Logika Diferensiasi (Hanya update jika data di GitHub berbeda dengan RAM)
+    if (window.APP_STORE && JSON.stringify(window.APP_STORE.assets) === JSON.stringify(remoteData.assets)) {
+      console.log("✅ Data sudah paling update. Skip.");
+      return; 
+    }
+
+    window.APP_STORE = remoteData; 
+    console.log("🚀 RAM Updated dari GitHub.");
+
+    // Re-render tabel yang aktif
+    if (typeof loadJad === 'function') loadJad();
+    if (typeof loadAssetData === 'function') loadAssetData();
+
+  } catch (err) {
+    console.error("Gagal sinkron data GitHub:", err);
+    // FALLBACK: Jika GitHub gagal, bisa panggil panggilGAS("getInitialData") di sini
+  }
+}
+
+
+/*
+// --- 3. FUNGSI KIRIM DATA (WRITE) ---
+async function kirimKeGAS(action, sheetName, id, dataRow = []) {
+  const payload = { action, sheetName, id, data: dataRow };
+
+  try {
+    const response = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify(payload) 
+    });
+    
+    const hasil = await response.json();
+    //console.log("🚀 Respon GAS:", hasil);
+    return hasil;
+  } catch (err) {
+    Swal.fire("Gagal Simpan", err.toString(), "error");
+  }
+}
+*/
+
+
+function populateAllDropdowns() {
+  for (let id in DROPDOWN_MAP) {
+    const el = document.getElementById(id);
+    if (!el) continue; // Lewati kalau ID tidak ada di halaman ini
+
+    const sheetName = DROPDOWN_MAP[id];
+    const data = getRef(sheetName); // Ambil dari RAM
+
+    if (data && data.length > 0) {
+      let options = `<option value="">-- Pilih ${sheetName.replace('_', ' ')} --</option>`;
+      
+      // Lompati Header (Index 0)
+      data.slice(1).forEach(row => {
+        const val = row[0]; // Isian ID (Sistem)
+        const lab = row[1] || row[0]; // Isian Text (Tampilan), kover kalau B kosong
+        
+        if (val !== undefined && val !== "") {
+          options += `<option value="${val}">${lab}</option>`;
+        }
+      });
+      
+      el.innerHTML = options;
+      //.log(`✅ ID: ${id} terisi dari ${sheetName}`);
+    }
+  }
+}
+
+/*
+// --- 5. OTOMATISASI UI ---
+function populateAllDropdowns() {
+  const mapRef = {
+    'maint_id_jadwal': 'ID_Jadwal',
+    'assetTypeSelect': 'Type_Asset',
+    'statusMaintSelect': 'Status_Maint',
+    'statusAssetSelect': 'Status_Asset'
+  };
+
+  for (let id in mapRef) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    
+    const data = getRef(mapRef[id]);
+    let options = `<option value="">-- Pilih ${mapRef[id]} --</option>`;
+    
+    data.slice(1).forEach(row => {
+      options += `<option value="${row[0]}">${row[0]}</option>`;
+    });
+    el.innerHTML = options;
+  }
+}
+  */
+
+/**
+ * FUNGSI BERIKUT PERLU PEMANFAATAN LEBIH LUAS
+ */
+
+
+
+
+
 /**
  * MEGA SEARCH RAM: Sikat 1-5 Keyword di 22 Sheet
  * @param {string} targetSheet - Nama sheet (isi "ALL" untuk cari di semua asset)
@@ -94,38 +307,68 @@ function miniSearch(dataArray, ...keywords) {
 }
 
 
-// MESIN PUSAT UNTUK KIRIM DATA KE SERVER
-async function panggilGAS(action, payload = {}) {
-    const loginData = JSON.parse(localStorage.getItem("userMaint")) || {};
-    
-    // OTOMATIS: Tempelkan identitas user di setiap paket
-    const paketLengkap = {
-        action: action,
-        payload: payload,
-        userData: {
-            username: loginData.name || "Guest",
-            sessionId: loginData.sessionId || "NoSession"
-        }
-    };
-
-    try {
-        const response = await fetch(APPSCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify(paketLengkap)
-        });
-        
-        const res = await response.json();
-
-        // VALIDASI OTOMATIS: Jika Satpam Server menolak Sesi
-        if (res.message === "SESI_EXPIRED") {
-            Swal.fire("Sesi Berakhir", "Akun login di perangkat lain!", "error");
-            logout(); // Langsung tendang ke halaman login
-            return null;
-        }
-
-        return res; // Kembalikan hasil sukses ke fungsi yang manggil
-    } catch (err) {
-        console.error("Gagal kontak server:", err);
-        return { status: "error", message: err.toString() };
+/**
+ * JEMBATAN SERVER: Namanya sama ama di GAS biar gak pusing
+ * Cara pakai: const jam = await getServerTime();
+ * JEMBATAN SERVER: Sinkronisasi Waktu
+ */
+async function getServerTime(dateform = null) {
+  try {
+    // 1. Mode Formatter (Lokal): Jika ada tanggal masuk, format jadi DD/MM/YYYY HH:mm:ss
+    if (dateform) {
+      const targetDate = new Date(dateform);
+      const pad = (n) => n.toString().padStart(2, '0');
+      return `${pad(targetDate.getDate())}/${pad(targetDate.getMonth()+1)}/${targetDate.getFullYear()} ${pad(targetDate.getHours())}:${pad(targetDate.getMinutes())}:${pad(targetDate.getSeconds())}`;
     }
+
+    // 2. Mode Real-time (Server): Panggil via GET (doGet)
+    // Sesuai kode doGet kamu sebelumnya, action-nya adalah "getTime"
+    const resp = await fetch(`${APPSCRIPT_URL}?action=getTime`);
+    const res = await resp.json();
+    
+    if (res.status === "success") {
+      return res.time;
+    } else {
+      throw new Error(res.message);
+    }
+
+  } catch (err) {
+    console.warn("Gagal ambil jam server, pakai jam lokal:", err);
+    // Fallback: Format jam lokal agar mirip format server kamu
+    const now = new Date();
+    const pad = (n) => n.toString().padStart(2, '0');
+    return `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()} ${pad(now.getHours())}:${now.getMinutes()}:${now.getSeconds()}`;
+  }
+}
+
+/**
+ * [FUNGSI CLIENT GITHUB: AMBIL TANGGAL SERVER]
+ * Mengambil string waktu dari doGet(?action=getServerTime)
+ */
+async function getMMDDYY() {
+  //const iframe = document.getElementById('iframeGAS');
+  const urlGAS = APPSCRIPT_URL;
+
+  try {
+    // 1. Fetch ke server
+    const response = await fetch(`${urlGAS}?action=getServerTime`);
+    const fullTime = await response.json(); // Hasilnya: "19/02/2024 14:30:05"
+
+    // 2. Bedah string menjadi "190224"
+    const parts = fullTime.split(' ')[0].split('/'); 
+    const dd = parts[0];
+    const mm = parts[1];
+    const yy = parts[2].slice(-2); 
+
+    return dd + mm + yy; 
+
+  } catch (err) {
+    console.error("Gagal ambil waktu server, menggunakan waktu lokal:", err);
+    // Fallback: Waktu Lokal jika internet gangguan
+    const d = new Date();
+    const dd = d.getDate().toString().padStart(2, '0');
+    const mm = (d.getMonth() + 1).toString().padStart(2, '0');
+    const yy = d.getFullYear().toString().slice(-2);
+    return dd + mm + yy;
+  }
 }
