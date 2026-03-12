@@ -48,6 +48,7 @@
       document.getElementById('loginOverlay').style.display = 'none';
       document.getElementById('main-content').style.display = 'flex';
       document.getElementById('headerUser').innerText = `${u} (${userRole})`;
+      checkSessionAndLogin();
 
       // Jalankan fungsi awal
       //await syncDataGhoib();
