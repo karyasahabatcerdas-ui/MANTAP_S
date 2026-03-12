@@ -325,3 +325,38 @@
 }
 
 
+/* --- RESPONSIVE DESKTOP (Layar > 1024px) --- */
+@media (min-width: 1024px) {
+  .leftbar-container {
+    position: relative; /* Balik jadi statis, bukan melayang */
+    left: 0 !important;   /* Paksa muncul di kiri */
+    transform: none !important; /* Matikan efek geser */
+    min-width: 260px;    /* Lebar tetap */
+    visibility: visible;
+    box-shadow: none;
+  }
+
+  /* Sembunyikan garis glow tepi di desktop agar lebih bersih */
+  .leftbar-container::after {
+    display: none;
+  }
+
+  /* Matikan area ghaib swipe di desktop agar tidak ganggu mouse */
+  .swipe-trigger-zone {
+    display: none;
+  }
+}
+
+/* --- MOBILE & TABLET (Layar < 1024px) --- */
+@media (max-width: 1023px) {
+  .leftbar-container {
+    position: fixed;
+    left: -260px;
+    z-index: 99999;
+  }
+  
+  /* Saat aktif di HP baru muncul */
+  .leftbar-container.active {
+    transform: translateX(260px);
+  }
+}
