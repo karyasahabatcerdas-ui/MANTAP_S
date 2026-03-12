@@ -116,23 +116,6 @@
 .menu-group { display: flex; flex-direction: column; }
 .bottom-nav { margin-top: auto; }
 
-  /* leftbar Colors */
-  :root {
-  --leftbar-bg: #2c3e50;
-  --leftbar-hover: #34495e;
-  --text-color: #ecf0f1;
-  --accent-color: #3498db;
-  --admin-color: #e67e22;
-  --sys-color: #e74c3c;
-  --transition: 0.3s ease;
-    /* Aksentuasi Neon */
-  --neon-blue: #38bdf8;
-  --neon-border: #1e293b;
-  --text-main: #f8fafc;
-  --text-dim: #94a3b8;
-  --text-readonly: #64748b;
-  }
-
 .menu-item {
   color: var(--neon-blue);
   font-weight: 500;
@@ -143,20 +126,23 @@
   gap: 12px;
   transition: all 0.2s ease;
   border-left: 3px solid transparent;
+  
 }
 
 .menu-item:hover {
-  background: rgba(56, 146, 248, 0.267);
+  background: rgba(56, 75, 248, 0.329);
   /*color: var(--text-bright);*/
   border-left: 3px solid var(--neon-blue);
   color: var(--neon-blue); opacity: 0.7;
+  opacity: 1; filter: drop-shadow(0 0 5px var(--neon-blue));
 }
 
 .menu-item.active {
   background: rgba(56, 189, 248, 0.1);
   color: var(--neon-blue);
   border-left: 3px solid var(--neon-blue);
-  font-weight: bold;
+  font-weight: 900;
+  opacity: 1; filter: drop-shadow(0 0 5px var(--neon-blue));
 }
 
 .menu-item i {
