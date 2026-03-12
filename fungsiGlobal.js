@@ -207,7 +207,10 @@ async function populateAllDropdowns() {
 
   for (let id in DROPDOWN_MAP) {
     const el = document.getElementById(id);
-    if (!el) continue; 
+    if (!el) {
+      console.warn(`⚠️ Elemen dengan ID '${id}' tidak ditemukan di DOM. Skip dropdown ini.`);
+      continue; 
+    }
 
     const sheetName = DROPDOWN_MAP[id];
     // Ambil data dari gudang RAM kita
