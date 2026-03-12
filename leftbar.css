@@ -17,7 +17,7 @@
   padding: 0 !important;
   margin: 0;
   transition: width var(--transition-speed) ease;
-  width: 260px; /* Lebar default saat terbuka */
+  width: 200px; /* Lebar default saat terbuka */
 }
 
 
@@ -211,9 +211,9 @@
   /* 2. Ubah leftbar Menjadi Drawer Samping */
   .leftbar-container {
     position: fixed !important;
-    left: -160px; /* Sembunyi di luar layar kiri niar kelihatan light glownya makin besar minus makin ilang*/
+    left: -138px; /* Sembunyi di luar layar kiri niar kelihatan light glownya makin besar minus makin ilang*/
     top: 0;
-    width: 160px !important; /* Lebar mantap untuk jari di HP */
+    width: 130px !important; /* Lebar mantap untuk jari di HP */
     height: 100vh;
     z-index: 1000;
     /*background-color: var(--bg-main) !important;*/
