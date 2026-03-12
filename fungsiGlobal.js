@@ -92,6 +92,92 @@ const getApp = (name) => window.APP_STORE.app[name] || [];
 
 */
 
+
+
+// Variabel Global
+const urlGAS = APPSCRIPT_URL;
+let cachedAssetTypes = null; 
+currentCategory = '';  // deteksi kamera QR atau QR
+html5QrCode = null; // Instance Html5Qrcode untuk scan file QR
+currentMaintData = null; // { maint_id, as_id, nama_aset, lokasi, jenis_jadwal }
+tempPhotos = { PB: [], PO: [], PA: [], PC: [] }; // Menyimpan foto sementara sebelum submit
+update_man_status = false; // Menandakan apakah mode UPDATE (Pending) atau INPUT 
+let isSuccessSave = false; // Status global apakah log berhasil di simpan atau pending
+let allHistoryData = []; //variabel global menyimpan history mentah dari server
+let activeRowData = []; // Global variable
+let dataToImport = []; // Memory penampung sementara
+let lastValidatedData = []; 
+let assetImages = [];
+let currentImgIdx = 0;
+let temp_Asset_Files = []; 
+const mAX_IMG = 5;
+let Temp_Profile = [null,null]; 
+let loggedInUser = "";
+let userRole = "";
+
+document.addEventListener("DOMContentLoaded", async () => {   
+    // Tunggu SEMUA komponen selesai terpasang di layar
+    await Promise.all([
+        loadComponent('loginOverlay', 'loginOverlay.html'), 
+        loadComponent('leftbar-placeholder', 'leftbar.html'),
+        loadComponent('rightbar-placeholder', 'rightbar.html'),
+        loadComponent('modalMaintenanceLog-placeholder', 'modalMaintenanceLog.html'), 
+        // Gunakan KOMA (,)
+        loadComponent('modalMaint-placeholder', 'modalMaint.html'),
+        loadComponent('modalDetailHist-placeholder', 'modalDetailHist.html'),
+        loadComponent('modalAssetDetail-placeholder', 'modalAssetDetail.html'),
+        loadComponent('modalPhotoSlider-placeholder','modalPhotoSlider.html'), 
+        loadComponent('modalImport-placeholder','modalImport.html'),
+        loadComponent('modalEditUser-placeholder','modalEditUser.html'),
+        loadComponent('modalGlobalSearch-placeholder', 'modalGlobalSearch.html')
+        //syncDataGhoib() // Sinkronisasi awal untuk data penting (jadwal, user list, dll)
+        // Terakhir tidak perlu koma
+    ]);
+
+    console.log("✅ Semua HTML terpasang, sekarang jalankan logika.");
+    
+    // Baru panggil fungsi yang butuh ID dari HTML di atas
+    loadCloudLogo();
+    checkSessionAndLogin();
+});
+
+
+async function panggilGAS(action, payload = {}) {
+  const loginData = JSON.parse(localStorage.getItem("userMaint")) || {};
+  
+  // Bungkus paket dengan Identitas User & SessionID
+  const paketLengkap = {
+    action: action,
+    payload: payload,
+    userData: {
+      username: loginData.name || "Guest",
+      sessionId: loginData.sessionId || "NoSession"
+    }
+  };
+
+  try {
+    const response = await fetch(APPSCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(paketLengkap)
+    });
+    
+    const res = await response.json();
+
+    // Jika Satpam Server mendeteksi Sesi Expired / Login di HP lain
+    if (res.message === "SESI_EXPIRED") {
+      await Swal.fire("Sesi Berakhir", "Akun login di perangkat lain!", "error");
+      logout(); 
+      return null;
+    }
+
+    return res; 
+  } catch (err) {
+    console.error("Gagal kontak server:", err);
+    return { status: "error", message: err.toString() };
+  }
+}
+
+
 //------mapping untuk dropdown
 const DROPDOWN_MAP = {
   'filterStatusLog':    'Status_Maint',
@@ -145,90 +231,6 @@ async function populateAllDropdowns() {
   }
   console.log("✅ Semua dropdown berhasil di-load.");
   return true;
-}
-
-
-// Variabel Global
-const urlGAS = APPSCRIPT_URL;
-let cachedAssetTypes = null; 
-currentCategory = '';  // deteksi kamera QR atau QR
-html5QrCode = null; // Instance Html5Qrcode untuk scan file QR
-currentMaintData = null; // { maint_id, as_id, nama_aset, lokasi, jenis_jadwal }
-tempPhotos = { PB: [], PO: [], PA: [], PC: [] }; // Menyimpan foto sementara sebelum submit
-update_man_status = false; // Menandakan apakah mode UPDATE (Pending) atau INPUT 
-let isSuccessSave = false; // Status global apakah log berhasil di simpan atau pending
-let allHistoryData = []; //variabel global menyimpan history mentah dari server
-let activeRowData = []; // Global variable
-let dataToImport = []; // Memory penampung sementara
-let lastValidatedData = []; 
-let assetImages = [];
-let currentImgIdx = 0;
-let temp_Asset_Files = []; 
-const mAX_IMG = 5;
-let Temp_Profile = [null,null]; 
-let loggedInUser = "";
-let userRole = "";
-
-document.addEventListener("DOMContentLoaded", async () => {   
-    // Tunggu SEMUA komponen selesai terpasang di layar
-    await Promise.all([
-        loadComponent('loginOverlay', 'loginOverlay.html'), 
-        loadComponent('leftbar-placeholder', 'leftbar.html'),
-        loadComponent('rightbar-placeholder', 'rightbar.html'),
-        loadComponent('modalMaintenanceLog-placeholder', 'modalMaintenanceLog.html'), 
-        // Gunakan KOMA (,)
-        loadComponent('modalMaint-placeholder', 'modalMaint.html'),
-        loadComponent('modalDetailHist-placeholder', 'modalDetailHist.html'),
-        loadComponent('modalAssetDetail-placeholder', 'modalAssetDetail.html'),
-        loadComponent('modalPhotoSlider-placeholder','modalPhotoSlider.html'), 
-        loadComponent('modalImport-placeholder','modalImport.html'),
-        loadComponent('modalEditUser-placeholder','modalEditUser.html'),
-        loadComponent('modalGlobalSearch-placeholder', 'modalGlobalSearch.html'),
-        syncDataGhoib() // Sinkronisasi awal untuk data penting (jadwal, user list, dll)
-        // Terakhir tidak perlu koma
-    ]);
-
-    console.log("✅ Semua HTML terpasang, sekarang jalankan logika.");
-    
-    // Baru panggil fungsi yang butuh ID dari HTML di atas
-    loadCloudLogo();
-    checkSessionAndLogin();
-});
-
-
-async function panggilGAS(action, payload = {}) {
-  const loginData = JSON.parse(localStorage.getItem("userMaint")) || {};
-  
-  // Bungkus paket dengan Identitas User & SessionID
-  const paketLengkap = {
-    action: action,
-    payload: payload,
-    userData: {
-      username: loginData.name || "Guest",
-      sessionId: loginData.sessionId || "NoSession"
-    }
-  };
-
-  try {
-    const response = await fetch(APPSCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify(paketLengkap)
-    });
-    
-    const res = await response.json();
-
-    // Jika Satpam Server mendeteksi Sesi Expired / Login di HP lain
-    if (res.message === "SESI_EXPIRED") {
-      await Swal.fire("Sesi Berakhir", "Akun login di perangkat lain!", "error");
-      logout(); 
-      return null;
-    }
-
-    return res; 
-  } catch (err) {
-    console.error("Gagal kontak server:", err);
-    return { status: "error", message: err.toString() };
-  }
 }
 
 /*
