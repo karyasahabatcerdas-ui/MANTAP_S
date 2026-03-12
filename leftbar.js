@@ -100,6 +100,24 @@ function showPage(id) {
   }
 }
 
+
+function updateLockStatus(isLocked) {
+    const img = document.getElementById('user_profile_shared');
+    if (!img) return;
+
+    if (isLocked) {
+        // Efek Terkunci: Foto jadi Hitam Putih & Border Abu-abu
+        img.style.filter = "grayscale(100%) brightness(0.5)";
+        img.style.borderColor = "#475569"; 
+        img.style.boxShadow = "none";
+    } else {
+        // Efek Terbuka: Foto Normal & Hijau Glowing
+        img.style.filter = "none";
+        setSecurityGlow('success'); 
+    }
+}
+
+
 /**
  * [CLIENT: PENGENDALI GLOW PROFIL]
  * Mengubah aura foto profil sesuai status keamanan data
@@ -123,94 +141,4 @@ function setSecurityGlow(status) {
         img.style.boxShadow = "0 0 15px rgba(34, 197, 94, 0.4)";
     }
 }
-
-
-let touchStartX = 0;
-let touchEndX = 0;
-
-// 1. Inisialisasi Area Pemicu
-document.addEventListener("DOMContentLoaded", () => {
-    const zone = document.createElement('div');
-    zone.className = 'swipe-trigger-zone';
-    document.body.appendChild(zone);
-
-    // Event Sentuhan
-    document.addEventListener('touchstart', e => {
-        touchStartX = e.changedTouches[0].screenX;
-    }, false);
-
-    document.addEventListener('touchend', e => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipeLogic();
-    }, false);
-});
-
-// 2. Logika Geser (Swipe)
-function handleSwipeLogic() {
-    const leftbar = document.getElementById('leftbar');
-    const distance = touchEndX - touchStartX;
-    const threshold = 80; // Jarak minimal geser (pixel)
-
-    // SWIPE KANAN (Buka dari pinggir kiri < 50px)
-    if (distance > threshold && touchStartX < 50) {
-        openSidebar();
-    } 
-    // SWIPE KIRI (Tutup saat sidebar sedang terbuka)
-    else if (distance < -threshold && leftbar.classList.contains('active')) {
-        closeSidebar();
-    }
-}
-
-// 3. Fungsi Kontrol Sidebar
-function openSidebar() {
-    const lb = document.getElementById('leftbar');
-    lb.classList.add('active');
-    if (navigator.vibrate) navigator.vibrate(15); // Getar halus (Haptic)
-    createOverlay();
-}
-
-function closeSidebar() {
-    const lb = document.getElementById('leftbar');
-    lb.classList.remove('active');
-    removeOverlay();
-}
-
-function toggleleftbar() {
-    const lb = document.getElementById('leftbar');
-    (lb.classList.contains('active')) ? closeSidebar() : openSidebar();
-}
-
-// 4. Overlay (Agar layar belakang gelap saat menu buka)
-function createOverlay() {
-    if (document.getElementById('side-ov')) return;
-    const ov = document.createElement('div');
-    ov.id = 'side-ov';
-    ov.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.4);backdrop-filter:blur(2px);z-index:9998;";
-    ov.onclick = closeSidebar;
-    document.body.appendChild(ov);
-}
-
-function removeOverlay() {
-    const ov = document.getElementById('side-ov');
-    if (ov) ov.remove();
-}
-
-
-function updateLockStatus(isLocked) {
-    const img = document.getElementById('user_profile_shared');
-    if (!img) return;
-
-    if (isLocked) {
-        // Efek Terkunci: Foto jadi Hitam Putih & Border Abu-abu
-        img.style.filter = "grayscale(100%) brightness(0.5)";
-        img.style.borderColor = "#475569"; 
-        img.style.boxShadow = "none";
-    } else {
-        // Efek Terbuka: Foto Normal & Hijau Glowing
-        img.style.filter = "none";
-        setSecurityGlow('success'); 
-    }
-}
-
-
 

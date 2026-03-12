@@ -506,6 +506,8 @@ async function getMMDDYY() {
   }
 }
 
+
+
 // PROTOKOL PENGHANCUR OTOMATIS (Saat Tab/Browser Ditutup)
 window.addEventListener('beforeunload', () => {
     // Sapu bersih sebelum jendela hilang

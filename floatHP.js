@@ -20,31 +20,73 @@ function handleMobileToggle() {
 // if (window.innerWidth <= 768) handleMobileToggle();
 
 
+
 let touchStartX = 0;
 let touchEndX = 0;
 
-// 1. FUNGSI SWIPE GESTURE
-document.addEventListener('touchstart', e => {
-    touchStartX = e.changedTouches[0].screenX;
-}, false);
+// 1. Inisialisasi Area Pemicu
+document.addEventListener("DOMContentLoaded", () => {
+    const zone = document.createElement('div');
+    zone.className = 'swipe-trigger-zone';
+    document.body.appendChild(zone);
 
-document.addEventListener('touchend', e => {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-}, false);
+    // Event Sentuhan
+    document.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
 
-function handleSwipe() {
-    const swipeDistance = touchEndX - touchStartX;
+    document.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipeLogic();
+    }, false);
+});
+
+// 2. Logika Geser (Swipe)
+function handleSwipeLogic() {
     const leftbar = document.getElementById('leftbar');
-    
-    // Swipe Kanan (Buka Sidebar) - Jarak minimal 100px
-    if (swipeDistance > 100 && touchStartX < 50) { 
-        leftbar.classList.remove('collapsed');
-        console.log("📱 Swipe Right: Sidebar Open");
+    const distance = touchEndX - touchStartX;
+    const threshold = 80; // Jarak minimal geser (pixel)
+
+    // SWIPE KANAN (Buka dari pinggir kiri < 50px)
+    if (distance > threshold && touchStartX < 50) {
+        openSidebar();
+    } 
+    // SWIPE KIRI (Tutup saat sidebar sedang terbuka)
+    else if (distance < -threshold && leftbar.classList.contains('active')) {
+        closeSidebar();
     }
-    // Swipe Kiri (Tutup Sidebar)
-    else if (swipeDistance < -100) {
-        leftbar.classList.add('collapsed');
-        console.log("📱 Swipe Left: Sidebar Collapsed");
-    }
+}
+
+// 3. Fungsi Kontrol Sidebar
+function openSidebar() {
+    const lb = document.getElementById('leftbar');
+    lb.classList.add('active');
+    if (navigator.vibrate) navigator.vibrate(15); // Getar halus (Haptic)
+    createOverlay();
+}
+
+function closeSidebar() {
+    const lb = document.getElementById('leftbar');
+    lb.classList.remove('active');
+    removeOverlay();
+}
+
+function toggleleftbar() {
+    const lb = document.getElementById('leftbar');
+    (lb.classList.contains('active')) ? closeSidebar() : openSidebar();
+}
+
+// 4. Overlay (Agar layar belakang gelap saat menu buka)
+function createOverlay() {
+    if (document.getElementById('side-ov')) return;
+    const ov = document.createElement('div');
+    ov.id = 'side-ov';
+    ov.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.4);backdrop-filter:blur(2px);z-index:9998;";
+    ov.onclick = closeSidebar;
+    document.body.appendChild(ov);
+}
+
+function removeOverlay() {
+    const ov = document.getElementById('side-ov');
+    if (ov) ov.remove();
 }
