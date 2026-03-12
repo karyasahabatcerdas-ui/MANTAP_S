@@ -227,9 +227,9 @@
   cursor: pointer;
   
   /* OVERRIDE: Mematikan warna biru bawaan menu-item */
-  background: transparent !important; 
+  /*background: transparent !important; */
   /*color: var(--text-dim) !important; */
-  color: #eb0f0f60;  /* Merah tapi tanpa glow dulu */
+  color: #eb0f0f60 !important;  /* Merah tapi tanpa glow dulu */
   transition: all 0.3s ease;
   white-space: nowrap;
   gap: 0.938rem;
@@ -240,8 +240,8 @@
   font-size: 1.125rem;
   width: 1.563rem;
   text-align: center;
-  /*color: #ef4444; */ /* Merah tapi tanpa glow dulu */
-  color: var(--text-dim) !important;
+  color: #ef4444; /* Merah tapi tanpa glow dulu */
+   /*color: var(--text-dim) !important;*/
   transition: 0.3s;
 }
 
