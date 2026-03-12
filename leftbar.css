@@ -5,7 +5,7 @@
 /* --- [2. leftbar MAIN CONTAINER] --- */
 .leftbar-container {
   position: relative;
-  background: var(--bg-sidebar);
+  background: var(--bg-main);
   border-radius: 0 !important;
   z-index: 10;
   border-right: 1px solid rgba(56, 189, 248, 0.1);
@@ -32,12 +32,11 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: var(--bg-sidebar);
+  background: var(--bg-main);
   z-index: -1;
   border-radius: 0;
 }
 
-/* --- [3. ANIMATION: LED ROTARY LIGHT] --- */
 .leftbar-container::before {
   content: "";
   position: absolute;
@@ -48,23 +47,25 @@
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    rgba(56, 189, 248, 0.9) 10%,
-    rgba(72, 255, 0, 0.9) 20%,
-    rgba(122, 0, 255, 0.9) 30%,
-    rgba(255, 0, 0, 0.9) 40%,
-    transparent 50%,
-    transparent 100%
+    rgba(56, 189, 248, 1) 15%,  /* Opacity 1 agar padat */
+    rgba(72, 255, 0, 1) 30%,
+    rgba(122, 0, 255, 1) 45%,
+    rgba(255, 0, 0, 1) 60%,
+    transparent 75%            /* Jarak transparan diperkecil */
   );
   background-size: 100% 200%;
-  filter: blur(4px);
-  opacity: 0.8;
-  animation: patroli-cahaya 9s ease-in-out infinite;
+  filter: blur(1px);           /* Blur dikurangi agar cahaya lebih tegas/padat */
+  opacity: 1;                  /* Full solid */
+  /* UBAH: linear agar kecepatan stabil, bukan ease-in-out */
+  animation: patroli-cahaya 3s linear infinite; 
 }
 
 @keyframes patroli-cahaya {
-  0%, 100% { background-position-y: 0%; }
-  50% { background-position-y: 100%; }
+  /* UBAH: Dari posisi -100% ke 100% agar mengalir searah */
+  from { background-position-y: -100%; }
+  to { background-position-y: 100%; }
 }
+
 
 /* Flash effect saat navigasi (diaktifkan via JS) */
 .side-glow-flash::before {
@@ -210,13 +211,14 @@
     width: 160px !important; /* Lebar mantap untuk jari di HP */
     height: 100vh;
     z-index: 1000;
-    background-color: var(--leftbar-bg) !important;
+    /*background-color: var(--bg-main) !important;*/
+    background-color: color-mix(in srgb, var(--bg-main), transparent 50%) !important;
     transition: left 0.4s ease;
     box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-    align-items: left;
+    align-items: left !important;
   }
 
-  /* Munculkan Sidebar saat Active */
+  /* Munculkan leftbar saat Active */
   .leftbar-container.mobile-open {
     left: 0 !important;
     padding-bottom: 200px !important; /* Agar menu logout tidak tertutup jari, makin besar makin ke atas*/
