@@ -1,188 +1,135 @@
 /* ============================================================
-   [LOGIN PAGE: STEALTH PATROL EDITION - 100% SYNC SIDEBAR]
+   [CSS CORE: THEME VARIABLES]
    ============================================================ */
-   
+:root {
+  /* DEFAULT: DEEP BLUE (STEALTH) */
+  --bg-page: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+  --bg-card: #0f172a;
+  --text-main: #38bdf8;
+  --text-tagline: #94a3b8;
+  --input-bg: rgba(15, 23, 42, 0.9);
+  --border-neon: conic-gradient(from var(--angle), #ff0000, #ff00ff, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000);
+  --glow-opacity: 0.6;
+}
+
+[data-theme="light"] {
+  --bg-page: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  --bg-card: #ffffff;
+  --text-main: #0ea5e9;
+  --text-tagline: #64748b;
+  --input-bg: #f8fafc;
+  /* Border Light: Biru Langit Lembut */
+  --border-neon: linear-gradient(var(--angle), #0ea5e9, #38bdf8, #bae6fd);
+  --glow-opacity: 0.2;
+}
+
+[data-theme="dark"] {
+  --bg-page: #000000;
+  --bg-card: #0a0a0a;
+  --text-main: #ffffff;
+  --text-tagline: #525252;
+  --input-bg: #111111;
+  /* Border Dark: Putih Neon Minimalis */
+  --border-neon: conic-gradient(from var(--angle), #333, #fff, #333);
+  --glow-opacity: 0.4;
+}
+
+/* ============================================================
+   [LAYOUT & CONTAINER]
+   ============================================================ */
 .login-page-stealth {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
-  display: block; flex-direction: column; align-items: center; justify-content: center;
-  z-index: 999999; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg-page) !important;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 999999; overflow: hidden; font-family: 'Segoe UI', sans-serif;
+  transition: background 0.5s ease;
 }
 
-/* --- GLASS BOX DENGAN EFEK PELANGI --- */
+/* --- THEME SWITCHER UI --- */
+.theme-switcher-wrapper { position: absolute; top: 25px; left: 25px; z-index: 1000; }
+.theme-main-btn {
+  width: 45px; height: 45px; border-radius: 50%; border: 1px solid var(--text-main);
+  background: var(--bg-card); color: var(--text-main); cursor: pointer;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); transition: 0.3s;
+}
+.theme-menu-pop {
+  display: none; position: absolute; top: 55px; left: 0; 
+  background: var(--bg-card); border: 1px solid var(--text-main);
+  border-radius: 15px; padding: 8px; width: 130px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.theme-opt {
+  padding: 10px; color: var(--text-tagline); font-size: 12px; font-weight: 600;
+  cursor: pointer; border-radius: 8px; display: flex; align-items: center; gap: 10px;
+}
+.theme-opt:hover { background: var(--text-main); color: white; }
+
+/* ============================================================
+   [GLASS BOX & NEON BORDER]
+   ============================================================ */
 .glass-box-neon {
-  position: relative;
-  width: 90%; max-width: 400px;
-  padding: 3px; /* Ruang untuk border pelangi ::before */
-  background: #0f172a; /* Warna pekat agar pelangi tidak nembus ke tengah */
-  border-radius: 25px;
-  z-index: 5;
-  isolation: isolate; /* KUNCI: Memisahkan layer pelangi dengan isi form */
+  position: relative; width: 90%; max-width: 400px; padding: 2px;
+  background: var(--bg-card); border-radius: 25px; z-index: 5; isolation: isolate;
+  transition: all 0.5s ease;
 }
 
-/* Garis Border Pelangi (Layer Basement 1) */
-/* LAYER 1: GARIS PINGGIR (Dibuat Setipis Mungkin & Halus) */
 .glass-box-neon::before {
-  content: "";
-  position: absolute;
-  /* Nilai -1px membuat garis sangat tipis di pertemuan border */
-  top: -1px; left: -1px; right: -1px; bottom: -1px; 
-  /*background: conic-gradient(from var(--angle), #ff0000, #ff00ff, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000);*/
-  background: conic-gradient(from var(--angle), 
-  #ff0000 0deg, /* transparent 15deg, */
-  #ff00ff 0deg, /*transparent 45deg, */
-  #0000ff 60deg, /*transparent 75deg, */
-  #00ffff 90deg, /*transparent 105deg, */
-  #00ff00 120deg, /*transparent 135deg, */
-  #ffff00 180deg, /*transparent 165deg, */
-  #ff0000 220deg , transparent 240deg);
-
-
-  border-radius: 26px;
-  z-index: -1;
-  animation: rotate-rgb 9s linear infinite; /* Kecepatan diperlambat (6s) biar lebih tenang */
-  filter: blur(0px); /* Kasih blur sedikit biar nggak kayak garis potong */
-  opacity: 0.6; /* Kurangi kejelasan garisnya hilang default nampak 0.1*/
+  content: ""; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; 
+  background: var(--border-neon); border-radius: 26px; z-index: -1;
+  animation: rotate-rgb 6s linear infinite; opacity: var(--glow-opacity);
 }
 
-/* LAYER 2: CAHAYA GLOW (Dibuat Sangat Halus / Soft Mist) */
 .glass-box-neon::after {
-  content: "";
-  position: absolute;
-  /* Jarak sebaran cahaya dikurangi agar tidak terlalu melebar (bleeding) */
-  top: -5px; left: -5px; right: -5px; bottom: -5px; 
-  /*background: conic-gradient(from var(--angle), #ff0000, #ff00ff, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000);*/
-  background: conic-gradient(from var(--angle), 
-  #ff0000 0deg, /* transparent 15deg, */
-  #ff00ff 0deg, /*transparent 45deg, */
-  #0000ff 60deg, /*transparent 75deg, */
-  #00ffff 90deg, /*transparent 105deg, */
-  #00ff00 120deg, /*transparent 135deg, */
-  #ffff00 180deg, /*transparent 165deg, */
-  #ff0000 220deg , transparent 240deg);
-
-  border-radius: 30px;
-  z-index: -2;
-  filter: blur(15px); /* Blur dinaikkan (40px) agar cahaya menyebar super halus */
-  opacity: 0.7; /* Opacity diturunkan drastis agar tidak overtake komponen form */
-  animation: rotate-rgb 9s linear infinite;
+  content: ""; position: absolute; top: -8px; left: -8px; right: -8px; bottom: -8px; 
+  background: var(--border-neon); border-radius: 30px; z-index: -2;
+  filter: blur(20px); opacity: calc(var(--glow-opacity) - 0.2);
+  animation: rotate-rgb 6s linear infinite;
 } 
 
-
-/* --- WRAPPER ISI FORM (LANTAI ATAS) --- */
 .form-content-wrapper {
-  position: relative;
-  background: #0f172a; /* Nutupin pelangi di tengah */
-  padding: 40px;
-  border-radius: 23px;
-  z-index: 10;
-  text-align: center;
+  position: relative; background: var(--bg-card); padding: 40px;
+  border-radius: 23px; z-index: 10; text-align: center;
 }
 
-/* --- KOMPONEN DALAM --- */
+/* ============================================================
+   [COMPONENTS STYLE]
+   ============================================================ */
 .text-gradient-neon {
-  font-size: 50px; letter-spacing: 5px; margin: 0 0 5px;
+  font-size: 50px; font-weight: 900; letter-spacing: 5px; margin: 0;
   background: linear-gradient(to right, #38bdf8, #7a00ff);
-  /*-webkit-background-clip: text; */
-  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent; display: inline-block;
 }
-.tagline-neon { font-size: 11px; color: #94a3b8; letter-spacing: 1.5px; margin-bottom: 25px; }
 
-.input-group-neon { position: relative; margin-bottom: 15px; text-align: left; }
-.icon-input-neon { position: absolute; left: 15px; top: 16px; color: #38bdf8; opacity: 0.7; }
+.tagline-neon { font-size: 11px; color: var(--text-tagline); letter-spacing: 1.2px; margin-bottom: 30px; text-transform: uppercase; }
+
+.input-group-neon { position: relative; margin-bottom: 18px; }
+.icon-input-neon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-main); opacity: 0.7; }
 
 .input-login-neon {
   width: 100%; padding: 14px 15px 14px 45px; border-radius: 12px;
-  background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.2);
-  color: #fff; outline: none; transition: 0.3s; box-sizing: border-box;
+  background: var(--input-bg); border: 1px solid var(--text-main);
+  color: var(--text-main); outline: none; transition: 0.3s; box-sizing: border-box;
 }
-.input-login-neon:focus { border-color: #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); }
 
 .btn-login-neon {
-  width: 100%; padding: 15px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.3);
-  background: #0f172a; color: #38bdf8; font-weight: bold; cursor: pointer; transition: 0.3s;
+  width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--text-main);
+  background: transparent; color: var(--text-main); font-weight: bold; cursor: pointer; transition: 0.3s;
 }
-.btn-login-neon:hover { background: #38bdf8; color: #fff; box-shadow: 0 0 20px rgba(56, 189, 248, 0.5); }
+.btn-login-neon:hover { background: var(--text-main); color: #fff; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
 
-.lightning-container { margin-top: 25px; }
-.lightning-path { stroke-dasharray: 250; stroke-dashoffset: 250; animation: lightning-move 1s linear infinite; }
+.lightning-path { stroke: var(--text-main); stroke-dasharray: 250; stroke-dashoffset: 250; animation: lightning-move 2s linear infinite; }
+
+/* ============================================================
+   [ANIMATION ENGINE]
+   ============================================================ */
+@property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes rotate-rgb { from { --angle: 0deg; } to { --angle: 360deg; } }
 @keyframes lightning-move { to { stroke-dashoffset: 0; } }
 
-.copyright-neon { font-size: 10px; color: #475569; margin-top: 20px; letter-spacing: 1px; }
+.logo-wrapper-neon { width: 100%; max-width: 220px; margin: 0 auto 20px; animation: breathing-logo 5s ease-in-out infinite; }
+.floating_logo { width: 100%; filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.3)); }
 
-/* --- ANIMATION ENGINE --- */
-@property --angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-@keyframes rotate-rgb { from { --angle: 0deg; } to { --angle: 360deg; } }
-
-/* --- [1. KONTAINER UTAMA] --- */
-.logo-wrapper-neon {
-  position: relative;
-  width: 300px; height: 250px;
-  margin: 0 auto 30px auto;
-  display: flex; align-items: center; justify-content: center;
-  overflow: visible;
-  /* Animasi Logo Bernapas */
-  animation: breathing-logo 5s ease-in-out infinite;
-}
-
-/* --- [2. PROYEKSI BAYANGAN KE DINDING (BELAKANG)] --- */
-.logo-wrapper-neon::after {
-  content: "";
-  position: absolute;
-  /* Posisi tepat di tengah belakang logo */
-  top: 50%; left: 50%;
-  width: 200px; height: 100px;
-  background: rgba(0, 0, 0, 0.8); /* Hitam pekat sebagai dasar */
-  border-radius: 50%;
-  z-index: -1; /* DI BELAKANG LOGO */
-  
-  /* Geser ke tengah */
-  transform: translate(-50%, -50%);
-  
-  /* Animasi Bayangan Tembok */
-  animation: wall-shadow-pulse 5s ease-in-out infinite;
-}
-
-/* --- [3. LOGO STYLE] --- */
-.floating_logo {
-  z-index: 3 !important;
-  position: relative;
-  width: 70%; height: auto;
-  object-fit: contain;
-  /* Beri sedikit cahaya di pinggiran logo agar tidak mati di depan bayangan */
-  filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.3));
-}
-
-/* --- [4. ANIMASI DEPTH (PROYEKSI DINDING) --- */
-
-/* Logo: Maju (Membesar) & Mundur (Mengecil) */
 @keyframes breathing-logo {
-  0%, 100% { 
-    transform: scale(0.85); /* Mundur mendekati dinding */
-    filter: brightness(0.9);
-  }
-  50% { 
-    transform: scale(1.1); /* Maju menjauhi dinding (ke arah user) */
-    filter: brightness(1.2) drop-shadow(0 0 15px rgba(56, 189, 248, 0.4));
-  }
-}
-
-/* Bayangan: Saat logo MAJU, bayangan MEMBESAR & PUDAR */
-@keyframes wall-shadow-pulse {
-  0%, 100% { 
-    /* Logo deket dinding: Bayangan kecil & tajam */
-    transform: translate(-50%, -50%) scale(0.8); 
-    opacity: 0.8; 
-    filter: blur(5px);
-  }
-  50% { 
-    /* Logo jauh dari dinding: Bayangan besar & ngeblur parah */
-    transform: translate(-50%, -50%) scale(1.5); 
-    opacity: 0.2; 
-    filter: blur(25px);
-  }
+  0%, 100% { transform: scale(0.9); filter: brightness(0.8); }
+  50% { transform: scale(1.05); filter: brightness(1.1) drop-shadow(0 0 15px var(--text-main)); }
 }

@@ -273,3 +273,43 @@ function syncProfileUI(newUrl, isSelf) {
   console.log("✅ UI Sync Executed. Final URL: " + finalUrl);
 }
 
+
+
+
+
+
+
+
+function toggleThemeMenu() {
+    const menu = document.getElementById('themeMenu');
+    if (menu) menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+}
+
+function setTheme(themeName) {
+    const overlay = document.getElementById('loginOverlay');
+    if (!overlay) return;
+
+    overlay.setAttribute('data-theme', themeName);
+    
+    // Simpan ke memori browser
+    localStorage.setItem('user_theme_stealth', themeName);
+
+    // Update Icon Utama
+    const icon = document.getElementById('currentThemeIcon');
+    if (themeName === 'light') icon.className = 'fas fa-sun';
+    else if (themeName === 'dark') icon.className = 'fas fa-moon';
+    else icon.className = 'fas fa-user-secret';
+
+    // Tutup menu
+    const menu = document.getElementById('themeMenu');
+    if (menu) menu.style.display = 'none';
+}
+
+// Jalankan otomatis saat halaman dimuat (Auto-Restore)
+(function() {
+    setTimeout(() => {
+        const saved = localStorage.getItem('user_theme_stealth') || 'deep-blue';
+        setTheme(saved);
+    }, 500); // Tunggu component load
+})();
+

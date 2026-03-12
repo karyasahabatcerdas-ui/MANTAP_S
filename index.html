@@ -40,41 +40,25 @@
     <link rel="stylesheet" href="modalImport.css">
     <link rel="stylesheet" href="modalEditUser.css"> 
     <link rel="stylesheet" href="loginOverlay.css">
-    <style>
-        .iframe-container {
-            display: none; /* Sembunyikan iframe secara default */
-        }
-         /* Pastikan iframe tidak mengganggu interaksi dengan konten utama */
-    </style>
 
 </head>
 <body onload="syncDataGhoib()">
-    <!--
-<iframe id="iframeGAS" class="iframe-container"
-  src="https://script.google.com/macros/s/AKfycbwUtk-JxiQUUO0wyJA72OaWZf_MPiNHkcSZJbkCcpKt5mVfUuTlop8IYQ4c-hE6EFpG/exec"
-  ></iframe>
-
-  -->
-
-<!--Konten utama di sini kita tidak pakai iframe lagi karena komunikasi langsung ke GAS sisi server-->
 
 <script>
   // Cukup ganti ID ini saja setiap kali deploy ulang
-  var APPSCRIPT_ID = "AKfycbwMd9HXwjJ6i8K08DuI1undURgkrSLNS2lLtXM25MlfMXMdbEMgWjH_3tLvrdsutwCM";
-  
+  var APPSCRIPT_ID = "AKfycbwMd9HXwjJ6i8K08DuI1undURgkrSLNS2lLtXM25MlfMXMdbEMgWjH_3tLvrdsutwCM";  
   // URL akan otomatis terbentuk menggunakan ID di atas
   var APPSCRIPT_URL = "https://script.google.com/macros/s/" + APPSCRIPT_ID + "/exec";
-
-  console.log("🔗 GAS URL Ready: " + APPSCRIPT_URL);
+  //console.log("🔗 GAS URL Ready: " + APPSCRIPT_URL);
 </script>
 
+
+<!-- KODE HTML DENGAN PLACE HOLDER -->
 <main id="loginOverlay"></main>
 
 <main id="main-content" class="cmain-content">
     <div id="leftbar-placeholder"></div>
     <div class="inner-content">
-    <!-- <h1>Selamat Datang di Portal Native</h1>
-        <p>Konten ini bukan lagi di dalam Iframe.</p>   --> <!-- dihilangkan -->
         <div id="rightbar-placeholder"></div>
     </div>
 </main>
@@ -93,41 +77,13 @@
 <script src="script_logs.js"></script>
 <script src="script_dataBase.js"></script>
 <script src="script_login.js"></script>
-<script src="script_lama.js"></script> 
 <script src="fungsiGlobal.js"></script>
 <script src="fungsiGASLokal.js"></script>
 <script src="script.js"></script> /* script terbaru */
-<!-- <script src="rightbar.js"></script> --><!-- rightbar.js sudah digabung ke dalam script.js untuk efisiensi -->
 <script src="floatHP.js"></script>
 <script src="logo.js"></script>
 <script>
 // EKSEKUSI SAAT SEMUA SIAP
-/*
-window.onload = function() {
-    // Jika ingin langsung login otomatis saat refresh (untuk dev):
-    login(); 
-    
-    // Atau pasang listener ke form login asli
-    console.log("🖥️ System Ready.");
-};
-*/
-/*
-window.addEventListener('DOMContentLoaded', async (event) => {
-    // 1. Tampilkan loading (opsional)
-    console.log("🚀 Memulai sinkronisasi...");
-    
-    // 2. Sedot Data (Wajib ditunggu)
-    await syncDataGhoib(); 
-    
-    // 3. Isi semua Dropdown (Otomatis dari RAM)
-    populateAllDropdowns();
-    
-    // 4. Update UI lainnya (misal: tampilkan nama user login)
-    if (typeof loadProf === 'function') loadProf(); 
-
-    console.log("💎 System Ready, Señor!");
-});
-*/
 </script>
 </body>
 </html>
