@@ -2,7 +2,7 @@
    MASTER CSS: LEFTBAR - INDUSTRIAL STEALTH
    ========================================================================== */
 
-/* --- [2. SIDEBAR MAIN CONTAINER] --- */
+/* --- [2. leftbar MAIN CONTAINER] --- */
 .leftbar-container {
   position: relative;
   background: var(--bg-sidebar);
@@ -146,7 +146,7 @@
 }
 
 .menu-item:hover {
-  background: rgba(56, 191, 248, 0.644);
+  background: rgba(56, 146, 248, 0.267);
   /*color: var(--text-bright);*/
   border-left: 3px solid var(--neon-blue);
   color: var(--neon-blue); opacity: 0.7;
@@ -194,7 +194,7 @@
 .btn-logout:hover { background: var(--admin-red-hover) !important; }
 
 /* --- [7. COLLAPSED ADJUSTMENTS] --- */
-.collapsed .sidebar-header-title, 
+.collapsed .leftbar-header-title, 
 .collapsed span, 
 .collapsed sup { display: none !important; }
 
@@ -216,7 +216,7 @@
    /* Responsif Mobile Portrait */
   @media (max-width: 768px) {
 
-  /* 2. Ubah Sidebar Menjadi Drawer Samping */
+  /* 2. Ubah leftbar Menjadi Drawer Samping */
   .leftbar-container {
     position: fixed !important;
     left: -260px; /* Sembunyi di luar layar kiri niar kelihatan light glownya makin besar minus makin ilang*/
