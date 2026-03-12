@@ -46,8 +46,9 @@
       document.getElementById('headerUser').innerText = `${u} (${userRole})`;
 
       // Jalankan fungsi awal
-      await syncDataGhoib();
+      //await syncDataGhoib();
       showPage('history');
+      populateAllDropdowns(); // Pastikan dropdown juga terisi setelah login
       
       Swal.fire({ title: "Berhasil!", text: "Sesi aman diaktifkan", icon: "success", timer: 1500, showConfirmButton: false });
 
@@ -380,7 +381,7 @@ function checkSessionAndLogin() {
 
       // 3. Jalankan Sinkronisasi Data (Wuzzz!)
       syncDataGhoib(); 
-      showPage('history'); // Halaman default setelah login
+      //showPage('history'); // Halaman default setelah login
 
     } catch (e) {
       console.error("Sesi Rusak, silakan login ulang.");
@@ -451,19 +452,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadComponent('loginOverlay', 'loginOverlay.html'), 
         loadComponent('leftbar-placeholder', 'leftbar.html'),
         loadComponent('rightbar-placeholder', 'rightbar.html'),
-        loadComponent('modalMaintenanceLog-placeholder', 'modalMaintenanceLog.html'), // Gunakan KOMA (,)
+        loadComponent('modalMaintenanceLog-placeholder', 'modalMaintenanceLog.html'), 
+        // Gunakan KOMA (,)
         loadComponent('modalMaint-placeholder', 'modalMaint.html'),
         loadComponent('modalDetailHist-placeholder', 'modalDetailHist.html'),
         loadComponent('modalAssetDetail-placeholder', 'modalAssetDetail.html'),
         loadComponent('modalPhotoSlider-placeholder','modalPhotoSlider.html'), 
         loadComponent('modalImport-placeholder','modalImport.html'),
         loadComponent('modalEditUser-placeholder','modalEditUser.html'),
-        loadComponent('modalGlobalSearch-placeholder', 'modalGlobalSearch.html') // Terakhir tidak perlu koma
+        loadComponent('modalGlobalSearch-placeholder', 'modalGlobalSearch.html') 
+        // Terakhir tidak perlu koma
     ]);
 
     console.log("✅ Semua HTML terpasang, sekarang jalankan logika.");
     
     // Baru panggil fungsi yang butuh ID dari HTML di atas
     loadCloudLogo(); 
-    checkSessionAndLogin(); 
+    checkSessionAndLogin();
 });

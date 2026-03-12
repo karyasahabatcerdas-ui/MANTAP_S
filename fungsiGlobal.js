@@ -34,6 +34,34 @@ const DROPDOWN_MAP = {
   'm_status':           'Status_Maint'
 };
 
+
+function populateAllDropdowns() {
+  for (let id in DROPDOWN_MAP) {
+    const el = document.getElementById(id);
+    if (!el) continue; // Lewati kalau ID tidak ada di halaman ini
+
+    const sheetName = DROPDOWN_MAP[id];
+    const data = getRef(sheetName); // Ambil dari RAM
+
+    if (data && data.length > 0) {
+      let options = `<option value="">-- Pilih ${sheetName.replace('_', ' ')} --</option>`;
+      
+      // Lompati Header (Index 0)
+      data.slice(1).forEach(row => {
+        const val = row[0]; // Isian ID (Sistem)
+        const lab = row[1] || row[0]; // Isian Text (Tampilan), kover kalau B kosong
+        
+        if (val !== undefined && val !== "") {
+          options += `<option value="${val}">${lab}</option>`;
+        }
+      });
+      
+      el.innerHTML = options;
+      //.log(`✅ ID: ${id} terisi dari ${sheetName}`);
+    }
+  }
+}
+
 // Variabel Global
 const urlGAS = APPSCRIPT_URL;
 let cachedAssetTypes = null; 
@@ -154,32 +182,7 @@ async function kirimKeGAS(action, sheetName, id, dataRow = []) {
 */
 
 
-function populateAllDropdowns() {
-  for (let id in DROPDOWN_MAP) {
-    const el = document.getElementById(id);
-    if (!el) continue; // Lewati kalau ID tidak ada di halaman ini
 
-    const sheetName = DROPDOWN_MAP[id];
-    const data = getRef(sheetName); // Ambil dari RAM
-
-    if (data && data.length > 0) {
-      let options = `<option value="">-- Pilih ${sheetName.replace('_', ' ')} --</option>`;
-      
-      // Lompati Header (Index 0)
-      data.slice(1).forEach(row => {
-        const val = row[0]; // Isian ID (Sistem)
-        const lab = row[1] || row[0]; // Isian Text (Tampilan), kover kalau B kosong
-        
-        if (val !== undefined && val !== "") {
-          options += `<option value="${val}">${lab}</option>`;
-        }
-      });
-      
-      el.innerHTML = options;
-      //.log(`✅ ID: ${id} terisi dari ${sheetName}`);
-    }
-  }
-}
 
 /*
 // --- 5. OTOMATISASI UI ---
@@ -209,10 +212,6 @@ function populateAllDropdowns() {
 /**
  * FUNGSI BERIKUT PERLU PEMANFAATAN LEBIH LUAS
  */
-
-
-
-
 
 /**
  * MEGA SEARCH RAM: Sikat 1-5 Keyword di 22 Sheet
