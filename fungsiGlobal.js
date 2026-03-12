@@ -514,3 +514,10 @@ async function getMMDDYY() {
     return dd + mm + yy;
   }
 }
+
+// PROTOKOL PENGHANCUR OTOMATIS (Saat Tab/Browser Ditutup)
+window.addEventListener('beforeunload', () => {
+    // Sapu bersih sebelum jendela hilang
+    window.APP_STORE_BLOB = null;
+    window._LOCKED_BLOB = null;
+});
