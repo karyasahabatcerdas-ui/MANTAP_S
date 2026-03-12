@@ -105,7 +105,7 @@ async function syncDataGhoib() {
   //const GITHUB_JSON_URL = "https://raw.githubusercontent.com" + new Date().getTime();
 
   //https://raw.githubusercontent.com[USER]/[REPO]/[BRANCH]/[NAMA_FILE]
-const GITHUB_JSON_URL = "https://raw.githubusercontent.com/karyasahabatcerdas-ui/MANTAP_S/main/mainframe_data.json" + new Date().getTime();
+const GITHUB_JSON_URL = "https://raw.githubusercontent.com/karyasahabatcerdas-ui/MANTAP_S/main/mainframe_data.json?t=" + new Date().getTime();
 
   try {
     const response = await fetch(GITHUB_JSON_URL, { cache: 'no-cache' });
