@@ -60,6 +60,7 @@ function handleSwipeLogic() {
 // 3. Fungsi Kontrol Sidebar
 function openSidebar() {
     const lb = document.getElementById('leftbar');
+    lb.classList.remove('collapsed'); // BUANG INI agar sidebar melebar
     lb.classList.add('active');
     if (navigator.vibrate) navigator.vibrate(15); // Getar halus (Haptic)
     createOverlay();
@@ -81,7 +82,7 @@ function createOverlay() {
     if (document.getElementById('side-ov')) return;
     const ov = document.createElement('div');
     ov.id = 'side-ov';
-    ov.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.4);backdrop-filter:blur(2px);z-index:9998;";
+    ov.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.4);backdrop-filter:blur(2px);z-index:2800;";
     ov.onclick = closeSidebar;
     document.body.appendChild(ov);
 }
