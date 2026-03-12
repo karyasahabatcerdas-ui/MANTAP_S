@@ -33,12 +33,16 @@
       localStorage.setItem("userMaint", JSON.stringify({ 
         name: u, 
         role: serverData.role, 
-        sessionId: serverData.sessionId // TOKEN SAKTI KITA
+        sessionId: serverData.sessionId, // TOKEN SAKTI KITA
+        unlockCode: serverData.unlockCode // <--- BARIS INI WAJIB ADA!
       }));
 
       // Update Variabel Global
       loggedInUser = u;
       userRole = serverData.role;
+
+        // Lanjutkan proses buka gembok
+        bukaGembokSakti(serverData.unlockCode);
 
       // UI Switch
       document.getElementById('loginOverlay').style.display = 'none';
