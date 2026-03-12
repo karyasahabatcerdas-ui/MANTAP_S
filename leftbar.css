@@ -199,6 +199,11 @@
 /* Sembunyikan Floating Profile Toggle secara default di PC */
 .mobile-only-toggle { display: none; }
 
+.admin-section{
+  display: none;
+
+}
+
 
    /* Responsif Mobile Portrait */
   @media (max-width: 768px) {
