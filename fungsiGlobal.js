@@ -27,24 +27,36 @@ window._LOCKED_BLOB = "";
  //
 // B. Fungsi Buka Gembok (Sudah Pakai XOR)
 function bukaGembokSakti(unlockCode) {
+  // Cek apakah data sudah mendarat dari GitHub
   if (!window._LOCKED_BLOB) return false;
+
   try {
-    const raw = atob(window._LOCKED_BLOB);
-    let decoded = "";
-    for (let i = 0; i < raw.length; i++) {
-      const charCode = raw.charCodeAt(i) ^ unlockCode.charCodeAt(i % unlockCode.length);
-      decoded += String.fromCharCode(charCode);
+    // 1. Ambil isi 'blob' saja (karena window._LOCKED_BLOB adalah object hasil fetch)
+    const contentToDecode = (typeof window._LOCKED_BLOB === 'object') ? window._LOCKED_BLOB.blob : window._LOCKED_BLOB;
+    
+    // 2. Bongkar Base64
+    const rawGhoib = atob(contentToDecode);
+    
+    // 3. Proses XOR (Menterjemahkan)
+    let hasilTeks = "";
+    for (let i = 0; i < rawGhoib.length; i++) {
+      const charCode = rawGhoib.charCodeAt(i) ^ unlockCode.charCodeAt(i % unlockCode.length);
+      hasilTeks += String.fromCharCode(charCode);
     }
-    // Simpan ke RAM helper dalam format Base64
-    window.APP_STORE_BLOB = btoa(decoded); 
-    console.log("🔓 Gembok Terbuka! Sesi Sinkron.");
-    populateAllDropdowns();
+    
+    // 4. Update window._INTERNAL_BLOB atau window.APP_STORE_BLOB agar Helper bisa baca
+    // Kita simpan sebagai Base64 JSON Murni (Tanpa Gembok XOR lagi)
+    window.APP_STORE_BLOB = btoa(hasilTeks); 
+    
+    console.log("🔓 Gembok Terbuka! Data 22 Sheet Siap.");
     return true;
   } catch (e) {
-    console.warn("❌ Gembok Mismatch! Butuh Re-Auth...");
+    console.error("❌ Gagal buka gembok:", e);
     return false;
   }
 }
+
+
 
 // 2. Mesin Pembongkar (Internal)
 const bongkarRAM = () => {

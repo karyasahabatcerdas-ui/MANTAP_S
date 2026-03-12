@@ -41,8 +41,8 @@
       loggedInUser = u;
       userRole = serverData.role;
 
-        // Lanjutkan proses buka gembok
-        bukaGembokSakti(serverData.unlockCode);
+      // --- PERBAIKAN: Pastikan Buka Gembok Berhasil ---
+      const isUnlocked = bukaGembokSakti(serverData.unlockCode);
 
       // UI Switch
       document.getElementById('loginOverlay').style.display = 'none';
