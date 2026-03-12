@@ -3,20 +3,61 @@
    ========================================================================== */
 
 /* Style Default Leftbar (Besar) */
+
+/* --- CSS: MOBILE SWIPE STEALTH --- */
+.leftbar-container {
+  position: fixed; /* Wajib: Agar melayang di atas konten */
+  top: 0;
+  left: -260px; /* Sembunyi total di kiri (sesuaikan lebar sidebar) */
+  width: 260px;
+  height: 100vh;
+  background: var(--bg-card);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 9999; /* Di atas segalanya */
+  display: flex;
+  flex-direction: column;
+}
+
+/* KETIKA AKTIF (SESUDAH SWIPE) */
+.leftbar-container.active {
+  transform: translateX(260px); /* Geser masuk ke layar */
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* INDIKATOR GLOW TEPI (Garis Tipis di Pinggir Layar) */
+.leftbar-container::after {
+  content: "";
+  position: absolute;
+  top: 0; right: 0;
+  width: 3px; height: 100%;
+  background: linear-gradient(to bottom, transparent, #38bdf8, transparent);
+  box-shadow: 0 0 10px #38bdf8;
+  opacity: 0.5;
+}
+
+/* AREA PEMICU SWIPE (Area Ghoib 30px di Kiri Layar) */
+.swipe-trigger-zone {
+  position: fixed;
+  top: 0; left: 0;
+  width: 30px; height: 100vh;
+  z-index: 9998;
+  background: transparent;
+}
+/*
 .leftbar-container {
   width: var(--leftbar-width); /* Lebar awal */
-  height: 100vh;
+/*  height: 100vh;
   background: var(--bg-card);
   border-right: 1px solid var(--border-dim);
   display: flex; /* KUNCI: Sembunyikan Leftbar saat login */
-  flex-direction: column;
+ /* flex-direction: column;
   flex-shrink: 0; /* Jangan biarkan dia gepeng */
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+ /* transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow-x: hidden;
   z-index: 1000;
   box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
-}
+*//**}*/
 
 .leftbar-container.collapsed {
   width: var(--leftbar-collapsed-width);

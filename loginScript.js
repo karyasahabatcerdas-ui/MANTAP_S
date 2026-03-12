@@ -55,9 +55,23 @@
       await populateAllDropdowns(); // Pastikan dropdown juga terisi setelah login
       
       Swal.fire({ title: "Berhasil!", text: "Sesi aman diaktifkan", icon: "success", timer: 1500, showConfirmButton: false });
+      updateLockStatus(false);
 
     } else {
-      throw new Error(res.data.message || "Gagal Login");
+      //throw new Error(res.data.message || "Gagal Login");
+      // GANTI: throw new Error(res.data.message || "Gagal Login");
+
+        // MENJADI:
+        return Swal.fire({
+        title: "Akses Ditolak!",
+        text: res.data.message || "Username atau Password salah, Señor!",
+        icon: "error",
+        background: "#0f172a", // Deep Blue
+        color: "#fff",
+        confirmButtonColor: "#7a00ff", // Ungu Neon
+        width: '80%'
+        });
+      
     }
 
   } catch (err) {
@@ -111,6 +125,7 @@ async function logout() {
   document.getElementById('pass').value = "";
   loggedInUser = "";
   userRole = "";
+  updateLockStatus(true);
 
   // 5. BERSIHKAN DATA SENSITIF DARI TABEL
   const tableIds = ['userListBody', 'histBody', 'jadwalBody', 'kelolaBody', 'logTableBody'];

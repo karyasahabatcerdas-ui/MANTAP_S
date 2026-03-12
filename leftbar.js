@@ -89,9 +89,11 @@ function showPage(id) {
       'aset': () => typeof loadAssetTypes === 'function' && loadAssetTypes(),
       'lihat_aset': () => typeof loadAssetTypesView === 'function' && loadAssetTypesView(),
       'maintenance': () => typeof showMaintenancePage === 'function' && showMaintenancePage()
+      
     };
 
     if (actions[id]) actions[id]();
+    if (typeof closeSidebar === 'function') closeSidebar();
 
   } catch (err) {
     console.error(`⚠️ Terjadi kesalahan saat memuat data [${id}]:`, err);
@@ -122,43 +124,93 @@ function setSecurityGlow(status) {
     }
 }
 
-function handleSwipe() {
-    const swipeDistance = touchEndX - touchStartX;
+
+let touchStartX = 0;
+let touchEndX = 0;
+
+// 1. Inisialisasi Area Pemicu
+document.addEventListener("DOMContentLoaded", () => {
+    const zone = document.createElement('div');
+    zone.className = 'swipe-trigger-zone';
+    document.body.appendChild(zone);
+
+    // Event Sentuhan
+    document.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
+
+    document.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipeLogic();
+    }, false);
+});
+
+// 2. Logika Geser (Swipe)
+function handleSwipeLogic() {
     const leftbar = document.getElementById('leftbar');
-    
-    // SWIPE KANAN (BUKA)
-    if (swipeDistance > 100 && touchStartX < 50) { 
-        leftbar.classList.add('active'); // Kita pakai .active sesuai CSS melayang
-        
-        // 1. EFEK GETAR (Haptic Feedback) - HP akan bergetar 15ms
-        if (navigator.vibrate) navigator.vibrate(15); 
-        
-        // 2. PASANG OVERLAY (Agar konten belakang gelap)
-        tambahOverlay();
-        console.log("📱 Native Feel: Sidebar Open");
-    }
-    
-    // SWIPE KIRI (TUTUP)
-    else if (swipeDistance < -80 && leftbar.classList.contains('active')) {
-        leftbar.classList.remove('active');
-        hapusOverlay();
+    const distance = touchEndX - touchStartX;
+    const threshold = 80; // Jarak minimal geser (pixel)
+
+    // SWIPE KANAN (Buka dari pinggir kiri < 50px)
+    if (distance > threshold && touchStartX < 50) {
+        openSidebar();
+    } 
+    // SWIPE KIRI (Tutup saat sidebar sedang terbuka)
+    else if (distance < -threshold && leftbar.classList.contains('active')) {
+        closeSidebar();
     }
 }
 
-// Fungsi Pembantu Overlay
-function tambahOverlay() {
-    if (document.getElementById('side-overlay')) return;
+// 3. Fungsi Kontrol Sidebar
+function openSidebar() {
+    const lb = document.getElementById('leftbar');
+    lb.classList.add('active');
+    if (navigator.vibrate) navigator.vibrate(15); // Getar halus (Haptic)
+    createOverlay();
+}
+
+function closeSidebar() {
+    const lb = document.getElementById('leftbar');
+    lb.classList.remove('active');
+    removeOverlay();
+}
+
+function toggleleftbar() {
+    const lb = document.getElementById('leftbar');
+    (lb.classList.contains('active')) ? closeSidebar() : openSidebar();
+}
+
+// 4. Overlay (Agar layar belakang gelap saat menu buka)
+function createOverlay() {
+    if (document.getElementById('side-ov')) return;
     const ov = document.createElement('div');
-    ov.id = 'side-overlay';
-    ov.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:999;backdrop-filter:blur(2px);";
-    ov.onclick = () => { // Klik di mana saja buat tutup
-        document.getElementById('leftbar').classList.remove('active');
-        hapusOverlay();
-    };
+    ov.id = 'side-ov';
+    ov.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.4);backdrop-filter:blur(2px);z-index:9998;";
+    ov.onclick = closeSidebar;
     document.body.appendChild(ov);
 }
 
-function hapusOverlay() {
-    const ov = document.getElementById('side-overlay');
+function removeOverlay() {
+    const ov = document.getElementById('side-ov');
     if (ov) ov.remove();
 }
+
+
+function updateLockStatus(isLocked) {
+    const img = document.getElementById('user_profile_shared');
+    if (!img) return;
+
+    if (isLocked) {
+        // Efek Terkunci: Foto jadi Hitam Putih & Border Abu-abu
+        img.style.filter = "grayscale(100%) brightness(0.5)";
+        img.style.borderColor = "#475569"; 
+        img.style.boxShadow = "none";
+    } else {
+        // Efek Terbuka: Foto Normal & Hijau Glowing
+        img.style.filter = "none";
+        setSecurityGlow('success'); 
+    }
+}
+
+
+
