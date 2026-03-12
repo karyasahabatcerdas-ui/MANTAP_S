@@ -1,13 +1,33 @@
+// Variabel Global
+const urlGAS = APPSCRIPT_URL;
+let cachedAssetTypes = null; 
+currentCategory = '';  // deteksi kamera QR atau QR
+html5QrCode = null; // Instance Html5Qrcode untuk scan file QR
+tempPhotos = { PB: [], PO: [], PA: [], PC: [] }; // foto sementara
+update_man_status = false; // Menandakan apakah mode UPDATE (Pending) atau INPUT 
+let isSuccessSave = false; // Status global apakah log berhasil di simpan atau pending
+let currentImgIdx = 0;
+let temp_Asset_Files = []; 
+const mAX_IMG = 5;
+let Temp_Profile = [null,null]; 
+let loggedInUser = "";
+let userRole = "";
+
+currentMaintData = null; // { maint_id, as_id, nama_aset, lokasi, jenis_jadwal }
+let allHistoryData = []; //variabel global history mentah
+let activeRowData = []; // Global variable
+let dataToImport = []; // Memory penampung sementara
+let lastValidatedData = []; 
+let assetImages = [];
+
 const GAS_URL = APPSCRIPT_URL; // Gunakan URL yang dibentuk dari APPSCRIPT_ID di index.html
 
-// Inisialisasi RAM (Kosongkan dulu, nanti diisi oleh syncDataGhoib)
-/*
-window.APP_STORE = {
-  assets: {} // Semua 22 sheet akan mendarat di sini
-};
-*/
-
+// 1. Variabel Utama (Hanya simpan bungkus Base64)
+window.APP_STORE_BLOB = ""; 
+// Variable Global
+window._LOCKED_BLOB = "";
 //window.APP_STORE_BLOB = null; // Tempat penyimpanan Blob terenkripsi dari server (Base64 string)
+
 
   // 1. DEFINISIKAN URL LENGKAP (Pastikan ada tanda / dan ?t= di akhir)
   //const GITHUB_URL = `${GITHUB_BASE}?t=${new Date().getTime()}`;
@@ -15,12 +35,59 @@ window.APP_STORE = {
 
 
 // ===============================[AWAL HELPER PENERJEMAH RAM]=========================
-// 1. Variabel Utama (Hanya simpan bungkus Base64)
-window.APP_STORE_BLOB = ""; 
 
-// Variable Global
-window._LOCKED_BLOB = ""; 
+async function loadComponent(elementId, filePath) {
+    try {
+        const response = await fetch(filePath);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const html = await response.text();
+        const container = document.getElementById(elementId);
+        
+        if (container) {
+            container.innerHTML = html;
+            
+            // --- BAGIAN PENTING: Eksekusi Script ---
+            const scripts = container.querySelectorAll("script");
+            scripts.forEach(oldScript => {
+                const newScript = document.createElement("script");
+                // Copy atribut (src, type, dll)
+                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                // Copy isi script (inline script)
+                newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                // Pasang kembali ke DOM agar dijalankan browser
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+            });
+        }
+    } catch (error) {
+        console.error('Gagal memuat komponen:', filePath, error);
+    }
+}
 
+document.addEventListener("DOMContentLoaded", async () => {   
+    // Tunggu SEMUA komponen selesai terpasang di layar
+    await Promise.all([
+        loadComponent('loginOverlay', 'loginOverlay.html'), 
+        loadComponent('leftbar-placeholder', 'leftbar.html'),
+        loadComponent('rightbar-placeholder', 'rightbar.html'),
+        loadComponent('modalMaintenanceLog-placeholder', 'modalMaintenanceLog.html'), 
+        // Gunakan KOMA (,)
+        loadComponent('modalMaint-placeholder', 'modalMaint.html'),
+        loadComponent('modalDetailHist-placeholder', 'modalDetailHist.html'),
+        loadComponent('modalAssetDetail-placeholder', 'modalAssetDetail.html'),
+        loadComponent('modalPhotoSlider-placeholder','modalPhotoSlider.html'), 
+        loadComponent('modalImport-placeholder','modalImport.html'),
+        loadComponent('modalEditUser-placeholder','modalEditUser.html'),
+        loadComponent('modalGlobalSearch-placeholder', 'modalGlobalSearch.html'),
+        syncDataGhoib() // Sinkronisasi awal untuk data penting (jadwal, user list, dll)
+        // Terakhir tidak perlu koma
+    ]);
+
+    console.log("✅ Semua HTML terpasang, sekarang jalankan logika.");    
+    // Baru panggil fungsi yang butuh ID dari HTML di atas
+    loadCloudLogo();
+    checkSessionAndLogin();
+});
 
 // FUNGSI BUKA GEMBOK (Dipanggil setelah login sukses)
  // [CLIENT: MESIN BUKA GEMBOK XOR]
@@ -169,82 +236,6 @@ function updateSyncStatus(status) {
     }
 }
 
-// Variabel Global
-const urlGAS = APPSCRIPT_URL;
-let cachedAssetTypes = null; 
-currentCategory = '';  // deteksi kamera QR atau QR
-html5QrCode = null; // Instance Html5Qrcode untuk scan file QR
-tempPhotos = { PB: [], PO: [], PA: [], PC: [] }; // foto sementara
-update_man_status = false; // Menandakan apakah mode UPDATE (Pending) atau INPUT 
-let isSuccessSave = false; // Status global apakah log berhasil di simpan atau pending
-let currentImgIdx = 0;
-let temp_Asset_Files = []; 
-const mAX_IMG = 5;
-let Temp_Profile = [null,null]; 
-let loggedInUser = "";
-let userRole = "";
-
-currentMaintData = null; // { maint_id, as_id, nama_aset, lokasi, jenis_jadwal }
-let allHistoryData = []; //variabel global history mentah
-let activeRowData = []; // Global variable
-let dataToImport = []; // Memory penampung sementara
-let lastValidatedData = []; 
-let assetImages = [];
-
-document.addEventListener("DOMContentLoaded", async () => {   
-    // Tunggu SEMUA komponen selesai terpasang di layar
-    await Promise.all([
-        loadComponent('loginOverlay', 'loginOverlay.html'), 
-        loadComponent('leftbar-placeholder', 'leftbar.html'),
-        loadComponent('rightbar-placeholder', 'rightbar.html'),
-        loadComponent('modalMaintenanceLog-placeholder', 'modalMaintenanceLog.html'), 
-        // Gunakan KOMA (,)
-        loadComponent('modalMaint-placeholder', 'modalMaint.html'),
-        loadComponent('modalDetailHist-placeholder', 'modalDetailHist.html'),
-        loadComponent('modalAssetDetail-placeholder', 'modalAssetDetail.html'),
-        loadComponent('modalPhotoSlider-placeholder','modalPhotoSlider.html'), 
-        loadComponent('modalImport-placeholder','modalImport.html'),
-        loadComponent('modalEditUser-placeholder','modalEditUser.html'),
-        loadComponent('modalGlobalSearch-placeholder', 'modalGlobalSearch.html'),
-        syncDataGhoib() // Sinkronisasi awal untuk data penting (jadwal, user list, dll)
-        // Terakhir tidak perlu koma
-    ]);
-
-    console.log("✅ Semua HTML terpasang, sekarang jalankan logika.");
-    
-    // Baru panggil fungsi yang butuh ID dari HTML di atas
-    loadCloudLogo();
-    checkSessionAndLogin();
-});
-
-
-async function loadComponent(elementId, filePath) {
-    try {
-        const response = await fetch(filePath);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        const html = await response.text();
-        const container = document.getElementById(elementId);
-        
-        if (container) {
-            container.innerHTML = html;
-            
-            // --- BAGIAN PENTING: Eksekusi Script ---
-            const scripts = container.querySelectorAll("script");
-            scripts.forEach(oldScript => {
-                const newScript = document.createElement("script");
-                // Copy atribut (src, type, dll)
-                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                // Copy isi script (inline script)
-                newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                // Pasang kembali ke DOM agar dijalankan browser
-                oldScript.parentNode.replaceChild(newScript, oldScript);
-            });
-        }
-    } catch (error) {
-        console.error('Gagal memuat komponen:', filePath, error);
-    }
-}
 
 async function panggilGAS(action, payload = {}) {
   const loginData = JSON.parse(localStorage.getItem("userMaint")) || {};

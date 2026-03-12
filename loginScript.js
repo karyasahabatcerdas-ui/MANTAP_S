@@ -51,7 +51,7 @@
 
       // Jalankan fungsi awal
       //await syncDataGhoib();
-      showPage('history');
+      //showPage('history');
       await populateAllDropdowns(); // Pastikan dropdown juga terisi setelah login
       
       Swal.fire({ title: "Berhasil!", text: "Sesi aman diaktifkan", icon: "success", timer: 1500, showConfirmButton: false });
