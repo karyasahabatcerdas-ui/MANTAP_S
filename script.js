@@ -20,7 +20,7 @@ async function syncDataGhoib() {
 
   const { name, sessionId } = loginData;
   // FORMATNYA: https://raw.githubusercontent.com[USER]/[REPO]/[BRANCH]/[NAMA_FILE]
-const GITHUB_JSON_URL = "https://raw.githubusercontent.comkaryasahabatcerdas-ui/MANTAP_S/main/mainframe_data.json";
+const GITHUB_JSON_URL = "https://raw.githubusercontent.com/karyasahabatcerdas-ui/MANTAP_S/main/mainframe_data.json";
 
 
   try {
