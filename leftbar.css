@@ -282,6 +282,15 @@
   padding: 0.938rem 0;
 }
 
+
+
+
+
+
+
+
+
+
 /* --- MOBILE RESPONSIVE --- */
 @media (max-width: 600px) {
   .leftbar-container { width: 11.25rem; }
@@ -325,3 +334,41 @@
   cursor: pointer;
   transform: scale(1.05); /* Sedikit membesar saat disentuh */
 }
+
+
+
+
+
+
+  /* Munculkan Sidebar saat Active */
+  .leftbar-container .mobile-open {
+    left: 0 !important;
+    padding-bottom: 200px !important; /* Agar menu logout tidak tertutup jari, makin besar makin ke atas*/
+  }
+
+
+    /* --- UKURAN JEMPOL IMUT (55px) --- */
+  .profile-img-mobile {
+    width: 55px;  /* BALIK KE UKURAN PAS TADI */
+    height: 55px;
+    border-radius: 50%;
+    border: 3px solid rgba(56, 189, 248, 0.3);
+    background: var(--bg-sidebar);
+    object-fit: cover;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+  }
+
+    /* Responsif Mobile Portrait */
+    @media (max-width: 600px) {
+      #sidebar {
+        width: 200px;
+      }
+
+      #sidebar.collapsed {
+        width: 50px;
+      }
+
+      .container {
+        padding: 10px;
+      }
+    }
