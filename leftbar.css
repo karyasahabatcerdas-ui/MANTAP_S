@@ -187,7 +187,7 @@
 
 .collapsed .profile-img-container { width: 35px !important; height: 35px !important; }
 
-.collapsed .menu-item, 
+/*.collapsed .menu-item, */
 .collapsed .btn-ui-toggle, 
 .collapsed .btn-logout {
   justify-content: center; padding: 15px 0;
@@ -220,7 +220,19 @@
     background-color: var(--bg-main) !important; 
     opacity: 0.85; /* Alternatif jika color-mix gagal */ 
   }
-
+  
+    /* 2. Item Menu (Anak) */
+  .leftbar-container .menu-item {
+    display: flex !important;         /* Gunakan flex agar ikon & teks bisa diatur */
+    flex-direction: row !important;    /* Ikon dan Teks sejajar ke samping */
+    width: 100% !important;           /* Area sentuh FULL ke kanan */
+    justify-content: flex-start !important; /* PAKSA SEMUA KE KIRI */
+    align-items: center !important;    /* Tengah secara vertikal */
+    padding: 12px 20px !important;    /* Beri jarak dari pinggir kiri */
+    box-sizing: border-box;           /* Penting agar padding tidak merusak 100% */
+    text-align: left !important;      /* Fallback untuk teks */
+  }
+  
   /* Munculkan leftbar saat Active */
   .leftbar-container.mobile-open {
     left: 0 !important;
