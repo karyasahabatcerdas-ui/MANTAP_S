@@ -32,8 +32,30 @@ Object.defineProperty(window, 'APP_STORE', {
   configurable: true
 });
 
-// --- 4. HELPER DENGAN MESIN TERJEMAHAN (atob) ---
 
+// 1. Siapkan satu variabel RAM matang (Sudah diterjemahkan)
+window.DATA_READY = { assets: {} };
+
+// 2. Fungsi untuk membongkar Blob (Hanya dipanggil saat syncDataGhoib sukses)
+function updateDataReady() {
+  if (!window._INTERNAL_BLOB) return;
+  try {
+    // Bongkar sekali saja di sini
+    window.DATA_READY = JSON.parse(atob(window._INTERNAL_BLOB));
+    console.log("🔓 RAM Terjemahan Siap Digunakan.");
+  } catch (e) {
+    console.error("Gagal terjemahkan Blob:", e);
+  }
+}
+
+// 3. Helper sekarang tinggal ambil dari DATA_READY (Cepat & Ringan)
+const getAsset = (name) => (window.DATA_READY.assets || {})[name] || [];
+const getRef   = (name) => (window.DATA_READY.assets || {})[name] || [];
+const getMaint = (name) => (window.DATA_READY.assets || {})[name] || [];
+const getApp   = (name) => (window.DATA_READY.assets || {})[name] || [];
+
+// --- 4. HELPER DENGAN MESIN TERJEMAHAN (atob) ---
+/*
 const bongkarRAM = () => {
   if (!window.APP_STORE_BLOB) return {};
   try {
@@ -50,7 +72,7 @@ const getAsset = (name) => (bongkarRAM().assets || {})[name] || [];
 const getRef   = (name) => (bongkarRAM().reference || bongkarRAM().assets || {})[name] || [];
 const getMaint = (name) => (bongkarRAM().maintenance || bongkarRAM().assets || {})[name] || [];
 const getApp   = (name) => (bongkarRAM().app || bongkarRAM().assets || {})[name] || [];
-
+*/
 
 
 
@@ -221,11 +243,13 @@ async function syncDataGhoib() {
     if (res && res.blob) {
       // Masukkan ke variabel internal kita
       window._INTERNAL_BLOB = res.blob; 
-      console.log("🚀 RAM Updated (Mode Terbungkus/Secure)");
+      updateDataReady();
+      console.log("🚀 RAM Updated (Mode Terbungkus/Secure dan ready)");
 
       // Re-render tabel seperti biasa
-      if (typeof loadJad === 'function') loadJad();
-      if (typeof loadAssetData === 'function') loadAssetData();
+      populateAllDropdowns(); // Pastikan dropdown juga terisi setelah sinkronisasi
+      //if (typeof loadJad === 'function') loadJad();
+      //if (typeof loadAssetData === 'function') loadAssetData();
     }
   } catch (err) {
     console.error("Gagal sinkron:", err);
