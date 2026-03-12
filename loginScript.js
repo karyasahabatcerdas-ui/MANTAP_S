@@ -118,146 +118,6 @@ async function logout() {
   console.log("🧹 Logout Sukses: Sesi dibersihkan.");
 }
 
-
-/**=========================================================
- * Mengisi SEMUA Dropdown ID Jadwal via Fetch (GitHub Mode)
- * ============================================================
- */
-/*
-async function initAllJadwalDropdowns() {
-  const ids = ["filterJadwalLog", "jenis_id_jadwal", "maint_id_jadwal"];
-  
-  // Ambil URL GAS dari elemen atau variabel global
-  const urlGAS = APPSCRIPT_URL;
-
-  // 1. Loading State
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.innerHTML = '<option value="" disabled selected>⏳ Syncing...</option>';
-  });
-
-  try {
-    // 2. Eksekusi Fetch ke doGET
-    const response = await fetch(`${urlGAS}?action=getJadwalList`);
-    const list = await response.json();
-
-    // 3. Mapping Teks Default
-    const defaults = {
-      "filterJadwalLog": "Semua Jadwal",
-      "jenis_id_jadwal": "Pilih Jenis",
-      "maint_id_jadwal": "Pilih Jadwal"
-    };
-
-    let optionsHtml = "";
-    if (list && list.length > 0) {
-      optionsHtml = list.map(item => 
-        `<option value="${item.id}">${item.id} - ${item.nama}</option>` ).join('');
-    }
-
-    // 4. Update Dropdowns
-    ids.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        const defaultText = defaults[id] || "Pilih Opsi";
-        el.innerHTML = `<option value="">-- ${defaultText} --</option>` + optionsHtml;
-      }
-    });
-
-    console.log("🚀 Jadwal Synchronized via GitHub Fetch!");
-
-  } catch (err) {
-    console.error("❌ Gagal Fetch Jadwal:", err);
-    ids.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.innerHTML = '<option value="">⚠️ Server Error</option>';
-    });
-  }
-}
-
-*/
-/*
-async function initAssetDropdowns() {
-  const urlGAS = APPSCRIPT_URL;
-
-  // --- FUNGSI HELPER: Menunggu elemen muncul di DOM ---
-  const waitForElement = (id) => {
-    return new Promise(resolve => {
-      const el = document.getElementById(id);
-      if (el) return resolve(el); // Jika sudah ada, langsung bungkus
-
-      const observer = new MutationObserver(() => {
-        const target = document.getElementById(id);
-        if (target) {
-          observer.disconnect();
-          resolve(target);
-        }
-      });
-      observer.observe(document.body, { childList: true, subtree: true });
-    });
-  };
-
-  try {
-    console.log("⏳ Menunggu elemen DOM tersedia...");
-    
-    // 1. Tunggu semua elemen ID muncul secara paralel
-    const [elTgl, elMaint, elAsset,elStatusJad,elStateMaint] = await Promise.all([
-      waitForElement('sortJadwal'),
-      waitForElement('filterStatusLog'),
-      waitForElement('as_status'),
-      waitForElement('filterStateJadwal'),
-      waitForElement('m_state') 
-    ]);
-
-    const elements = {
-      filterTgl: elTgl,
-      statusMaint: elMaint,
-      statusAsset: elAsset,
-      filterState : elStatusJad,
-      mState : elStateMaint
-    };
-
-    // 2. Set Loading Status
-    Object.values(elements).forEach(el => {
-      el.innerHTML = '<option value="">⏳ Loading...</option>';
-    });
-
-    // 3. Satu kali Fetch untuk semua data
-    console.log("📡 Mengambil data dari GAS...");
-    const response = await fetch(`${urlGAS}?action=getAssetDropdowns`);
-    const data = await response.json();
-
-    // 4. Fungsi pembantu untuk merender opsi
-    const renderOptions = (el, list, defaultText) => {
-      // Karena kita pakai waitForElement, el di sini pasti ada
-      console.log(`Populasi: ${el.id} (${list ? list.length : 0} data)`);
-
-      let html = `<option value="">-- ${defaultText} --</option>`;
-      if (list && list.length > 0) {
-        html += list.map(item => `<option value="${item.id}">${item.nama}</option>`).join('');
-      }
-      el.innerHTML = html;
-    };
-
-    // 5. Tebarkan data ke masing-masing dropdown
-    renderOptions(elements.filterTgl, data.filterTgl, "Pilih Tanggal");
-    renderOptions(elements.statusMaint, data.statusMaint, "Status Maintenance");
-    renderOptions(elements.statusAsset, data.statusAsset, "Status Aset");
-    renderOptions(elements.filterState, data.statusMaint, "Status Jadwal");
-    renderOptions(elements.mState,data.statusMaint, "Pilih Status");
-
-    console.log("✅ Asset Dropdowns Synchronized!");
-
-  } catch (err) {
-    console.error("❌ Gagal Fetch Dropdown Asset:", err);
-    // Jika terjadi error fetch, beri tanda di UI yang tersedia
-    ['sortJadwal', 'filterStatusLog', 'as_status'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.innerHTML = '<option value="">⚠️ Error Load</option>';
-    });
-  }
-}
-
-*/
 /* ----- script lama------------------*/
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
@@ -271,18 +131,6 @@ async function initAssetDropdowns() {
     });
   }
 
-  // Fungsi untuk memuat komponen HTML
-  /**
-async function loadComponent(elementId, filePath) {
-    try {
-        const response = await fetch(filePath);
-        const html = await response.text();
-        document.getElementById(elementId).innerHTML = html;
-    } catch (error) {
-        console.error('Gagal memuat komponen:', filePath, error);
-    }
-}
-*/
 
 async function loadComponent(elementId, filePath) {
     try {
@@ -311,27 +159,6 @@ async function loadComponent(elementId, filePath) {
         console.error('Gagal memuat komponen:', filePath, error);
     }
 }
-
-
-// Jalankan fungsi saat halaman dibuka
-/**
-document.addEventListener("DOMContentLoaded", () => {   
-    loadComponent('loginOverlay', 'loginOverlay.html'); 
-    loadComponent('leftbar-placeholder', 'leftbar.html');
-    loadComponent('rightbar-placeholder', 'rightbar.html');
-    loadComponent('modalMaintenanceLog-placeholder', 'modalMaintenanceLog.html');    
-    loadComponent('modalMaint-placeholder', 'modalMaint.html');
-    loadComponent('modalDetailHist-placeholder', 'modalDetailHist.html');
-    loadComponent('modalAssetDetail-placeholder', 'modalAssetDetail.html');
-    loadComponent('modalPhotoSlider-placeholder','modalPhotoSlider.html'); 
-    loadComponent('modalImport-placeholder','modalImport.html');
-    loadComponent('modalEditUser-placeholder','modalEditUser.html');
-    loadComponent('modalGlobalSearch-placeholder', 'modalGlobalSearch.html');
-});
-*/
-
-
-
 
 /**
  * [FUNGSI AI: UNIVERSAL VOICE NOTIFICATION]

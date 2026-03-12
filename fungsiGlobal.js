@@ -1,5 +1,15 @@
 const GAS_URL = APPSCRIPT_URL; // Gunakan URL yang dibentuk dari APPSCRIPT_ID di index.html
 
+// Inisialisasi RAM (Kosongkan dulu, nanti diisi oleh syncDataGhoib)
+window.APP_STORE = {
+  assets: {} // Semua 22 sheet akan mendarat di sini
+};
+
+  // 1. DEFINISIKAN URL LENGKAP (Pastikan ada tanda / dan ?t= di akhir)
+  const GITHUB_BASE = "https://raw.githubusercontent.com/karyasahabatcerdas-ui/MANTAP_S/main/mainframe_data.json";
+
+
+
 window.APP_STORE = {
   app: {},
   assets: {},
@@ -154,45 +164,48 @@ async function panggilGAS(action, payload = {}) {
   }
 }
 
-
-
-// --- 2. FUNGSI SEDOT DATA (READ) dengan ---
-//Fungsi ini akan mengecek Etag atau Last-Modified dari GitHub. 
-//Jika file di GitHub tidak berubah, ia tidak akan membuang kuota internet untuk download ulang.
+// --- 2. FUNGSI SEDOT DATA (READ) ---
 async function syncDataGhoib() {
   const loginData = JSON.parse(localStorage.getItem("userMaint"));
   if (!loginData) return;
 
-  // URL yang sudah kamu koreksi tadi (dengan tanda / setelah .com)
-  //const GITHUB_JSON_URL = "https://raw.githubusercontent.com" + new Date().getTime();
-
-  //https://raw.githubusercontent.com[USER]/[REPO]/[BRANCH]/[NAMA_FILE]
-const GITHUB_JSON_URL = "https://raw.githubusercontent.com/karyasahabatcerdas-ui/MANTAP_S/main/mainframe_data.json?t=" + new Date().getTime();
+  // 1. DEFINISIKAN URL LENGKAP (Pastikan ada tanda / dan ?t= di akhir)
+  //const GITHUB_BASE = "https://raw.githubusercontent.com/karyasahabatcerdas-ui/MANTAP_S/main/mainframe_data.json";
+  const GITHUB_JSON_URL = `${GITHUB_BASE}?t=${new Date().getTime()}`;
 
   try {
     const response = await fetch(GITHUB_JSON_URL, { cache: 'no-cache' });
-    if (!response.ok) throw new Error("File GitHub belum tersedia.");
+    if (!response.ok) throw new Error("File GitHub belum tersedia atau URL salah.");
     
     const remoteData = await response.json();
 
-    // Logika Diferensiasi (Hanya update jika data di GitHub berbeda dengan RAM)
-    if (window.APP_STORE && JSON.stringify(window.APP_STORE.assets) === JSON.stringify(remoteData.assets)) {
+    // 2. LOGIKA DIFERENSIASI (DIRTY CHECK)
+    // Kita cek remoteData.assets karena helper kita (getAsset, getRef) mencari di dalam folder .assets
+    if (window.APP_STORE && window.APP_STORE.assets && 
+        JSON.stringify(window.APP_STORE.assets) === JSON.stringify(remoteData.assets)) {
       console.log("✅ Data sudah paling update. Skip.");
       return; 
     }
 
+    // 3. UPDATE RAM LOKAL
+    // Pastikan seluruh objek (termasuk .assets di dalamnya) masuk ke RAM
     window.APP_STORE = remoteData; 
     console.log("🚀 RAM Updated dari GitHub.");
 
-    // Re-render tabel yang aktif
+    // 4. RE-RENDER TABEL (Hanya yang sedang aktif)
     if (typeof loadJad === 'function') loadJad();
     if (typeof loadAssetData === 'function') loadAssetData();
+    if (typeof loadUserList === 'function') loadUserList();
 
   } catch (err) {
     console.error("Gagal sinkron data GitHub:", err);
-    // FALLBACK: Jika GitHub gagal, bisa panggil panggilGAS("getInitialData") di sini
+    
+    // FALLBACK: Jika GitHub gagal, panggil GAS langsung (Hanya jika perlu)
+    // const res = await panggilGAS("getInitialData");
+    // if (res && res.status === "success") window.APP_STORE = res.data;
   }
 }
+
 
 
 /*
