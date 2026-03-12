@@ -27,43 +27,44 @@ window._LOCKED_BLOB = "";
  //
 // B. Fungsi Buka Gembok (Sudah Pakai XOR)
 function bukaGembokSakti(unlockCode) {
-  if (!window._LOCKED_BLOB) return false;
-  
+  // 1. Ambil data mentah (Pastikan isinya string XOR dari GitHub)
+  const gembokRaw = window._LOCKED_BLOB; 
+  if (!gembokRaw) return false;
+
   try {
-    // LAPIS 1: Ambil string XOR dari properti .blob GitHub
-    const gembokBase64 = window._LOCKED_BLOB.blob; 
-    const gembokRaw = atob(gembokBase64);
-    
-    // LAPIS 2: Jalankan Mesin XOR
+    // 2. MESIN XOR: Terjemahkan Coretan Ghaib ke Teks Terbaca
     let hasilXOR = "";
     for (let i = 0; i < gembokRaw.length; i++) {
       const charCode = gembokRaw.charCodeAt(i) ^ unlockCode.charCodeAt(i % unlockCode.length);
       hasilXOR += String.fromCharCode(charCode);
     }
-    
-    // LAPIS 3: Cek hasil XOR. 
-    // Jika hasilnya masih {"status":"success","blob":"eyJ..."}, kita harus bongkar LAGI
+
+    // 3. PARSE TAHAP 1: Hasil XOR biasanya: {"status":"success","blob":"eyJ..."}
     const tahap1 = JSON.parse(hasilXOR);
     let dataFinal;
 
     if (tahap1.blob) {
-       // Ini adalah "Daging" datanya (Base64 dari getUnifiedDataStore)
-       const dagingRaw = atob(tahap1.blob);
-       dataFinal = JSON.parse(dagingRaw);
+       // 4. BONGKAR BLOB DALAM: Ini adalah "Daging" datanya
+       const decodedDaging = atob(tahap1.blob);
+       dataFinal = JSON.parse(decodedDaging);
     } else {
        dataFinal = tahap1;
     }
 
-    // SIMPAN KE RAM (window.APP_STORE_BLOB harus berisi JSON murni yang di-Base64)
+    // 5. SIMPAN KE RAM (Gunakan window.APP_STORE_BLOB sebagai standar helper)
     window.APP_STORE_BLOB = btoa(JSON.stringify(dataFinal));
     
     console.log("🔓 KONFIRMASI: Gembok Terbuka & Lapis Data Dibongkar!");
     return true;
+
   } catch (e) {
     console.error("❌ Gagal bongkar lapis data:", e);
+    // Jika gagal, tampilkan sedikit potongan data untuk debug
+    console.log("Cek Data Awal:", gembokRaw.substring(0, 20));
     return false;
   }
 }
+
 
 
 
