@@ -102,7 +102,10 @@ async function syncDataGhoib() {
   if (!loginData) return;
 
   // URL yang sudah kamu koreksi tadi (dengan tanda / setelah .com)
-  const GITHUB_JSON_URL = "https://raw.githubusercontent.com" + new Date().getTime();
+  //const GITHUB_JSON_URL = "https://raw.githubusercontent.com" + new Date().getTime();
+
+  //https://raw.githubusercontent.com[USER]/[REPO]/[BRANCH]/[NAMA_FILE]
+const GITHUB_JSON_URL = "https://raw.githubusercontent.com/karyasahabatcerdas-ui/MANTAP_S/main/mainframe_data.json" + new Date().getTime();
 
   try {
     const response = await fetch(GITHUB_JSON_URL, { cache: 'no-cache' });
