@@ -173,7 +173,7 @@ async function checkSessionAndLogin() {
       }
 
       // 3. Jalankan Sinkronisasi Data (Wuzzz!)
-      await syncDataGhoib(); 
+      //await syncDataGhoib(); 
       //await showPage('history'); // Halaman default setelah login
 
     } catch (e) {

@@ -10,6 +10,7 @@ window.APP_STORE = {
 //window.APP_STORE_BLOB = null; // Tempat penyimpanan Blob terenkripsi dari server (Base64 string)
 
   // 1. DEFINISIKAN URL LENGKAP (Pastikan ada tanda / dan ?t= di akhir)
+  //const GITHUB_URL = `${GITHUB_BASE}?t=${new Date().getTime()}`;
   const GITHUB_BASE = "https://raw.githubusercontent.com/karyasahabatcerdas-ui/MANTAP_S/main/mainframe_data.json";
 
 
@@ -59,10 +60,6 @@ function bukaGembokSakti(unlockCode) {
     return false;
   }
 }
-
-
-
-
 
 
 // 2. Mesin Pembongkar (Internal)
@@ -171,58 +168,6 @@ function updateSyncStatus(status) {
         dot.style.background = (status === 'success') ? "#22c55e" : "#ef4444";
     }
 }
-/*
-async function syncDataGhoib() {
-  //const GITHUB_BASE = "https://raw.githubusercontent.com";
-  const GITHUB_URL = `${GITHUB_BASE}?t=${new Date().getTime()}`;
-
-  try {
-    const response = await fetch(GITHUB_URL, { cache: 'no-cache' });
-    const res = await response.json(); // Mengambil { status: "success", blob: "..." }
-
-    if (res && res.blob) {
-      // Dirty Check
-      if (window.APP_STORE_BLOB === res.blob) {
-        console.log("✅ Blob RAM sudah paling update. Skip.");
-        return;
-      }
-
-      // SIMPAN SEBAGAI BLOB
-      window.APP_STORE_BLOB = res.blob; 
-      console.log("🚀 RAM Updated (Mode Terbungkus/Secure)");
-
-      // Re-render
-      await populateAllDropdowns(); // Pastikan dropdown juga terisi setelah sinkronisasi
-      if (typeof loadJad === 'function') loadJad();
-      if (typeof loadAssetData === 'function') loadAssetData();
-    }
-  } catch (err) {
-    console.error("Gagal sinkron Blob:", err);
-  }
-}
-*/
-//================================[AKHIR PAKET PENERJEMAH]=========================
-
-
-/**
-window.APP_STORE = {
-  app: {},
-  assets: {},
-  reference: {},
-  maintenance: {},
-  key: null,
-  lastSync: null
-};
-
-// --- 4. HELPER (PENGAMBIL DATA RAM) ---
-const getAsset = (name) => window.APP_STORE.assets[name] || [];
-const getRef   = (name) => window.APP_STORE.reference[name] || [];
-const getMaint = (name) => window.APP_STORE.maintenance[name] || [];
-const getApp = (name) => window.APP_STORE.app[name] || [];
-
-*/
-
-
 
 // Variabel Global
 const urlGAS = APPSCRIPT_URL;
@@ -458,29 +403,6 @@ function megaSearch(targetSheet, ...keywords) {
   };
 }
 
-/**
- * MINI SEARCH: Mencari keyword di dalam array tertentu yang diberikan (Umpan)
- * @param {Array} dataArray - Array sumber yang mau disisir (Umpan)
- * @param {...string} keywords - Masukkan 1 sampai 3 atau lebih kata kunci
- * FUNGSI INI CASE SENSITIVE DAN MENGGUNAKAN LOGIKA AND (SEMUA KEYWORD HARUS ADA DI BARIS YANG SAMA)
-        // Data Umpan (Misal hasil dari getAsset atau lainnya)
-        const umpanAset = [
-        ["ID01", "LG", "Lantai 1", "Baik"],
-        ["ID02", "Daikin", "Lantai 2", "Rusak"],
-        ["ID03", "LG", "Lantai 2", "Service"]
-        ];
-
-        // Cari LG yang ada di Lantai 2 saja
-        const hasil = miniSearch(umpanAset, "LG", "Lantai 2");
-
-        if (hasil.status === "success") {
-        console.log(`✅ Mantap! Ketemu ${hasil.count} baris cocok.`);
-        // Lanjut eksekusi fungsi lain pakai hasil.data
-        } else {
-        console.log("❌ Zonk, tidak ada yang cocok.");
-        } 
- * 
- */
 function miniSearch(dataArray, ...keywords) {
   // 1. Bersihkan keyword (buang yang kosong, ubah ke lowercase)
   const activeKeys = keywords
