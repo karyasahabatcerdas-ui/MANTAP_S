@@ -292,12 +292,13 @@
 
 
 /* --- MOBILE RESPONSIVE --- */
+/*
 @media (max-width: 600px) {
   .leftbar-container { width: 11.25rem; }
   .leftbar-container.collapsed { width: var(--leftbar-collapsed-width); }
   .inner-content { padding: 0.938rem !important; }
 }
-
+*/
 /* --- CONTAINER PROFIL (HEADER) --- */
 .profile-wrapper {
   display: flex;
@@ -340,35 +341,18 @@
 
 
 
-  /* Munculkan Sidebar saat Active */
-  .leftbar-container .mobile-open {
-    left: 0 !important;
-    padding-bottom: 200px !important; /* Agar menu logout tidak tertutup jari, makin besar makin ke atas*/
-  }
 
-
-    /* --- UKURAN JEMPOL IMUT (55px) --- */
-  .profile-img-mobile {
-    width: 55px;  /* BALIK KE UKURAN PAS TADI */
-    height: 55px;
-    border-radius: 50%;
-    border: 3px solid rgba(56, 189, 248, 0.3);
-    background: var(--bg-sidebar);
-    object-fit: cover;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.6);
-  }
 
     /* Responsif Mobile Portrait */
     @media (max-width: 600px) {
-      #sidebar {
+      .leftbar-container {
         width: 200px;
       }
 
-      #sidebar.collapsed {
-        width: 50px;
-      }
+    /* Munculkan Sidebar saat Active */
+    .leftbar-container .mobile-open {
+      left: 0 !important;
+      padding-bottom: 200px !important; /* Agar menu logout tidak tertutup jari, makin besar makin ke atas*/
+    }
 
-      .container {
-        padding: 10px;
-      }
     }
