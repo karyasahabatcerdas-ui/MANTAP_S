@@ -4,20 +4,21 @@
 
 /* Style Default Leftbar (Besar) */
 /* --- CONTAINER UTAMA LEFTBAR --- */
+/*
 .leftbar-container {
   position: fixed; /* Melayang di atas konten */
-  top: 0;
-  left: -260px; /* Sembunyi total di kiri layar */
-  width: 260px;
+ /* top: 0;
+  left: -260px; *//* Sembunyi total di kiri layar */
+ /* width: 260px;
   height: 100vh;
-  background: #0f172a; /* Warna Deep Blue kamu */
-  z-index: 100000; /* WAJIB: Di atas segalanya agar swipe lancar */
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #0f172a;*/ /* Warna Deep Blue kamu */
+  /*z-index: 2800; *//* WAJIB: Di atas segalanya agar swipe lancar */
+ /* transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   box-shadow: none;
   border-right: 1px solid rgba(56, 189, 248, 0.1);
-}
+} */
 
 /* KETIKA SIDEBAR AKTIF (MUNCUL) */
 .leftbar-container.active {
@@ -45,21 +46,21 @@
   z-index: 9998;
   background: transparent;
 }
-/*
+
 .leftbar-container {
   width: var(--leftbar-width); /* Lebar awal */
-/*  height: 100vh;
+  height: 100vh;
   background: var(--bg-card);
   border-right: 1px solid var(--border-dim);
   display: flex; /* KUNCI: Sembunyikan Leftbar saat login */
- /* flex-direction: column;
+  flex-direction: column;
   flex-shrink: 0; /* Jangan biarkan dia gepeng */
- /* transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow-x: hidden;
   z-index: 1000;
   box-shadow: 5px 0 15px rgba(0, 0, 0, 0.3);
-*//**}*/
+}
 
 .leftbar-container.collapsed {
   width: var(--leftbar-collapsed-width);
@@ -227,8 +228,8 @@
   
   /* OVERRIDE: Mematikan warna biru bawaan menu-item */
   background: transparent !important; 
-  color: var(--text-dim) !important;
-  
+  /*color: var(--text-dim) !important; */
+  color: #eb0f0f60;  /* Merah tapi tanpa glow dulu */
   transition: all 0.3s ease;
   white-space: nowrap;
   gap: 0.938rem;
@@ -239,7 +240,8 @@
   font-size: 1.125rem;
   width: 1.563rem;
   text-align: center;
-  color: #ef4444; /* Merah tapi tanpa glow dulu */
+  /*color: #ef4444; */ /* Merah tapi tanpa glow dulu */
+  color: var(--text-dim) !important;
   transition: 0.3s;
 }
 
@@ -247,14 +249,14 @@
 .btn-logout:hover {
   /* Saat disentuh, baru kita beri background merah */
   background: var(--neon-red) !important; 
-  color: #ffffff !important;
+  color: #eb0f0fec !important;
   font-weight: 800;
   box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
 }
 
 /* Icon jadi putih bersih saat hover */
 .btn-logout:hover i {
-  color: #ffffff !important;
+  color: #eb0f0fec !important;
 }
 
 /* Menghilangkan efek biru hover bawaan jika class menu-item masih menempel */
@@ -322,41 +324,4 @@
   box-shadow: 0 0 20px var(--neon-blue);
   cursor: pointer;
   transform: scale(1.05); /* Sedikit membesar saat disentuh */
-}
-
-
-/* --- RESPONSIVE DESKTOP (Layar > 1024px) --- */
-@media (min-width: 1024px) {
-  .leftbar-container {
-    position: relative; /* Balik jadi statis, bukan melayang */
-    left: 0 !important;   /* Paksa muncul di kiri */
-    transform: none !important; /* Matikan efek geser */
-    min-width: 260px;    /* Lebar tetap */
-    visibility: visible;
-    box-shadow: none;
-  }
-
-  /* Sembunyikan garis glow tepi di desktop agar lebih bersih */
-  .leftbar-container::after {
-    display: none;
-  }
-
-  /* Matikan area ghaib swipe di desktop agar tidak ganggu mouse */
-  .swipe-trigger-zone {
-    display: none;
-  }
-}
-
-/* --- MOBILE & TABLET (Layar < 1024px) --- */
-@media (max-width: 1023px) {
-  .leftbar-container {
-    position: fixed;
-    left: -260px;
-    z-index: 99999;
-  }
-  
-  /* Saat aktif di HP baru muncul */
-  .leftbar-container.active {
-    transform: translateX(260px);
-  }
 }
