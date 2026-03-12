@@ -90,6 +90,14 @@ async function logout() {
 
   // 2. BERSIHKAN LOCAL STORAGE (PENTING AGAR TIDAK AUTO-LOGIN)
   localStorage.removeItem("userMaint");
+  //localStorage.removeItem("user_theme_stealth"); // Opsional jika ingin reset tema
+
+  // 2. HANCURKAN DATA DI RAM (PENTING!)
+  window.APP_STORE_BLOB = null;
+  window._LOCKED_BLOB = null;
+  window.DATA_READY = null; // Jika ada sisa cache
+  
+  console.log("🧨 RAM Purged: Semua data ghoib telah dihancurkan.");
 
   // 3. RESET UI (Gunakan display: flex untuk overlay agar ke tengah)
   const overlay = document.getElementById('loginOverlay');
@@ -118,6 +126,8 @@ async function logout() {
     if (el) el.src = guestAvatar;
   });
 
+  // 3. TENDANG KE HALAMAN LOGIN
+  location.reload(); // Hard reset untuk memastikan memori benar-benar bersih
   console.log("🧹 Logout Sukses: Sesi dibersihkan.");
 }
 
