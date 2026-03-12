@@ -11,69 +11,66 @@ window.APP_STORE_BLOB = null; // Tempat penyimpanan Blob terenkripsi dari server
   const GITHUB_BASE = "https://raw.githubusercontent.com/karyasahabatcerdas-ui/MANTAP_S/main/mainframe_data.json";
 
 
+// ===============================[AWAL HELPER PENERJEMAH RAM]=========================
+// 1. Variabel Utama (Hanya simpan bungkus Base64)
+window.APP_STORE_BLOB = ""; 
 
-  // Variable asli yang menyimpan Blob (Tersembunyi/Terbungkus)
-window._INTERNAL_BLOB = ""; 
-
-// Mendefinisikan ulang window.APP_STORE agar "Pintar"
-//Dengan kode ini, setiap kali ada fungsi yang memanggil 
-// window.APP_STORE.assets, mesin ini akan otomatis membongkar Blob secara real-time.
-Object.defineProperty(window, 'APP_STORE', {
-  get: function() {
-    if (!window._INTERNAL_BLOB) return { assets: {}, app: {}, reference: {} };
-    try {
-      // Bongkar Base64 (atob) dan ubah jadi Objek (JSON.parse)
-      return JSON.parse(atob(window._INTERNAL_BLOB));
-    } catch (e) {
-      console.error("Gagal bongkar sandi RAM:", e);
-      return { assets: {}, app: {}, reference: {} };
-    }
-  },
-  configurable: true
-});
-
-
-// 1. Siapkan satu variabel RAM matang (Sudah diterjemahkan)
-window.DATA_READY = { assets: {} };
-
-// 2. Fungsi untuk membongkar Blob (Hanya dipanggil saat syncDataGhoib sukses)
-function updateDataReady() {
-  if (!window._INTERNAL_BLOB) return;
-  try {
-    // Bongkar sekali saja di sini
-    window.DATA_READY = JSON.parse(atob(window._INTERNAL_BLOB));
-    console.log("🔓 RAM Terjemahan Siap Digunakan.");
-  } catch (e) {
-    console.error("Gagal terjemahkan Blob:", e);
-  }
-}
-
-// 3. Helper sekarang tinggal ambil dari DATA_READY (Cepat & Ringan)
-const getAsset = (name) => (window.DATA_READY.assets || {})[name] || [];
-const getRef   = (name) => (window.DATA_READY.assets || {})[name] || [];
-const getMaint = (name) => (window.DATA_READY.assets || {})[name] || [];
-const getApp   = (name) => (window.DATA_READY.assets || {})[name] || [];
-
-// --- 4. HELPER DENGAN MESIN TERJEMAHAN (atob) ---
-/*
+// 2. Mesin Pembongkar (Internal)
 const bongkarRAM = () => {
-  if (!window.APP_STORE_BLOB) return {};
+  if (!window.APP_STORE_BLOB) return { assets: {}, app: {}, reference: {} };
   try {
-    // Terjemahkan Base64 ke JSON Objek secara Real-time
-    return JSON.parse(atob(window.APP_STORE_BLOB));
+    // Bongkar Base64 (atob) dan ubah jadi Objek (JSON.parse)
+    // Kita panggil data 'blob' dari dalam JSON hasil fetch GitHub
+    const dataMentah = atob(window.APP_STORE_BLOB);
+    return JSON.parse(dataMentah);
   } catch (e) {
     console.error("Gagal bongkar sandi RAM:", e);
-    return {};
+    return { assets: {}, app: {}, reference: {} };
   }
 };
 
-// Helper sekarang mengambil data dari hasil bongkaran
+// 3. Agar window.APP_STORE.assets tetap bisa dipanggil kode lama
+Object.defineProperty(window, 'APP_STORE', {
+  get: function() { return bongkarRAM(); },
+  configurable: true
+});
+
+// 4. Helper (Tetap panggil bongkarRAM agar On-Demand)
 const getAsset = (name) => (bongkarRAM().assets || {})[name] || [];
 const getRef   = (name) => (bongkarRAM().reference || bongkarRAM().assets || {})[name] || [];
 const getMaint = (name) => (bongkarRAM().maintenance || bongkarRAM().assets || {})[name] || [];
 const getApp   = (name) => (bongkarRAM().app || bongkarRAM().assets || {})[name] || [];
-*/
 
+// 5. Fungsi Sedot Data (Perbaikan URL & Variabel)
+async function syncDataGhoib() {
+  const GITHUB_BASE = "https://raw.githubusercontent.com";
+  const GITHUB_URL = `${GITHUB_BASE}?t=${new Date().getTime()}`;
+
+  try {
+    const response = await fetch(GITHUB_URL, { cache: 'no-cache' });
+    const res = await response.json(); // Mengambil { status: "success", blob: "..." }
+
+    if (res && res.blob) {
+      // Dirty Check
+      if (window.APP_STORE_BLOB === res.blob) {
+        console.log("✅ Blob RAM sudah paling update. Skip.");
+        return;
+      }
+
+      // SIMPAN SEBAGAI BLOB
+      window.APP_STORE_BLOB = res.blob; 
+      console.log("🚀 RAM Updated (Mode Terbungkus/Secure)");
+
+      // Re-render
+      if (typeof loadJad === 'function') loadJad();
+      if (typeof loadAssetData === 'function') loadAssetData();
+    }
+  } catch (err) {
+    console.error("Gagal sinkron Blob:", err);
+  }
+}
+
+//================================[AKHIR PAKET PENERJEMAH]=========================
 
 
 /**
@@ -233,6 +230,7 @@ async function panggilGAS(action, payload = {}) {
   }
 }
 
+/*
 async function syncDataGhoib() {
   const GITHUB_URL =`${GITHUB_BASE}?t=${new Date().getTime()}`; 
 
@@ -255,38 +253,10 @@ async function syncDataGhoib() {
     console.error("Gagal sinkron:", err);
   }
 }
-
+*/
 
 // --- 2. FUNGSI SEDOT DATA (READ) ---
-/*
-async function syncDataGhoib() {
-  const GITHUB_JSON_URL = "https://raw.githubusercontent.com" + new Date().getTime();
 
-  try {
-    const response = await fetch(GITHUB_JSON_URL, { cache: 'no-cache' });
-    const res = await response.json(); // Hasil: { status: "success", blob: "..." }
-
-    if (res && res.blob) {
-      // Bandingkan Blob lama vs Blob baru untuk Dirty Check
-      if (window.APP_STORE_BLOB === res.blob) {
-        console.log("✅ Blob RAM sudah paling update. Skip.");
-        return;
-      }
-
-      // SIMPAN SEBAGAI BLOB (TETAP TERBUNGKUS)
-      window.APP_STORE_BLOB = res.blob; 
-      console.log("🚀 RAM Updated: Data Blob mendarat di memori.");
-
-      // Trigger re-render (Tabel akan menerjemahkan sendiri saat butuh)
-      if (typeof loadJad === 'function') loadJad();
-      if (typeof loadAssetData === 'function') loadAssetData();
-    }
-  } catch (err) {
-    console.error("Gagal sinkron Blob:", err);
-  }
-}
-
-*/
 /*
 // --- 2. FUNGSI SEDOT DATA (READ) ---
 async function syncDataGhoib() {
