@@ -74,7 +74,7 @@ const getApp   = (name) => (bongkarRAM().app || bongkarRAM().assets || {})[name]
 
 // 5. Fungsi Sedot Data (Perbaikan URL & Variabel yang terenkripsi )
 async function syncDataGhoib() {
-  const URL = GITHUB_JSON_URL + "?t=" + new Date().getTime();
+  const URL =  `${GITHUB_BASE}?t=${new Date().getTime()}`;
   try {
     const res = await fetch(URL).then(r => r.json());
     window._LOCKED_BLOB = res.blob; // Masih terkunci!
