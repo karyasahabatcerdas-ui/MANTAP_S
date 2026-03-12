@@ -27,34 +27,44 @@ window._LOCKED_BLOB = "";
  //
 // B. Fungsi Buka Gembok (Sudah Pakai XOR)
 function bukaGembokSakti(unlockCode) {
-  // Cek apakah data sudah mendarat dari GitHub
   if (!window._LOCKED_BLOB) return false;
-
+  
   try {
-    // 1. Ambil isi 'blob' saja (karena window._LOCKED_BLOB adalah object hasil fetch)
-    const contentToDecode = (typeof window._LOCKED_BLOB === 'object') ? window._LOCKED_BLOB.blob : window._LOCKED_BLOB;
+    // LAPIS 1: Ambil string XOR dari properti .blob GitHub
+    const gembokBase64 = window._LOCKED_BLOB.blob; 
+    const gembokRaw = atob(gembokBase64);
     
-    // 2. Bongkar Base64
-    const rawGhoib = atob(contentToDecode);
-    
-    // 3. Proses XOR (Menterjemahkan)
-    let hasilTeks = "";
-    for (let i = 0; i < rawGhoib.length; i++) {
-      const charCode = rawGhoib.charCodeAt(i) ^ unlockCode.charCodeAt(i % unlockCode.length);
-      hasilTeks += String.fromCharCode(charCode);
+    // LAPIS 2: Jalankan Mesin XOR
+    let hasilXOR = "";
+    for (let i = 0; i < gembokRaw.length; i++) {
+      const charCode = gembokRaw.charCodeAt(i) ^ unlockCode.charCodeAt(i % unlockCode.length);
+      hasilXOR += String.fromCharCode(charCode);
     }
     
-    // 4. Update window._INTERNAL_BLOB atau window.APP_STORE_BLOB agar Helper bisa baca
-    // Kita simpan sebagai Base64 JSON Murni (Tanpa Gembok XOR lagi)
-    window.APP_STORE_BLOB = btoa(hasilTeks); 
+    // LAPIS 3: Cek hasil XOR. 
+    // Jika hasilnya masih {"status":"success","blob":"eyJ..."}, kita harus bongkar LAGI
+    const tahap1 = JSON.parse(hasilXOR);
+    let dataFinal;
+
+    if (tahap1.blob) {
+       // Ini adalah "Daging" datanya (Base64 dari getUnifiedDataStore)
+       const dagingRaw = atob(tahap1.blob);
+       dataFinal = JSON.parse(dagingRaw);
+    } else {
+       dataFinal = tahap1;
+    }
+
+    // SIMPAN KE RAM (window.APP_STORE_BLOB harus berisi JSON murni yang di-Base64)
+    window.APP_STORE_BLOB = btoa(JSON.stringify(dataFinal));
     
-    console.log("🔓 Gembok Terbuka! Data 22 Sheet Siap.");
+    console.log("🔓 KONFIRMASI: Gembok Terbuka & Lapis Data Dibongkar!");
     return true;
   } catch (e) {
-    console.error("❌ Gagal buka gembok:", e);
+    console.error("❌ Gagal bongkar lapis data:", e);
     return false;
   }
 }
+
 
 
 
