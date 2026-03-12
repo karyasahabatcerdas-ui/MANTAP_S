@@ -43,7 +43,7 @@ const getApp   = (name) => (bongkarRAM().app || bongkarRAM().assets || {})[name]
 
 // 5. Fungsi Sedot Data (Perbaikan URL & Variabel)
 async function syncDataGhoib() {
-  const GITHUB_BASE = "https://raw.githubusercontent.com";
+  //const GITHUB_BASE = "https://raw.githubusercontent.com";
   const GITHUB_URL = `${GITHUB_BASE}?t=${new Date().getTime()}`;
 
   try {
@@ -62,6 +62,7 @@ async function syncDataGhoib() {
       console.log("🚀 RAM Updated (Mode Terbungkus/Secure)");
 
       // Re-render
+      await populateAllDropdowns(); // Pastikan dropdown juga terisi setelah sinkronisasi
       if (typeof loadJad === 'function') loadJad();
       if (typeof loadAssetData === 'function') loadAssetData();
     }
