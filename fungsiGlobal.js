@@ -35,21 +35,30 @@ const DROPDOWN_MAP = {
 };
 
 
-function populateAllDropdowns() {
+async function populateAllDropdowns() {
+  console.log("🛠️ Mengisi semua dropdown dari RAM...");
+  
+  // Pastikan window.APP_STORE tidak kosong sebelum jalan
+  if (!window.APP_STORE) {
+    console.warn("⚠️ APP_STORE belum siap, menunda pengisian dropdown...");
+    return false;
+  }
+
   for (let id in DROPDOWN_MAP) {
     const el = document.getElementById(id);
-    if (!el) continue; // Lewati kalau ID tidak ada di halaman ini
+    if (!el) continue; 
 
     const sheetName = DROPDOWN_MAP[id];
-    const data = getRef(sheetName); // Ambil dari RAM
+    // Ambil data dari gudang RAM kita
+    const data = window.APP_STORE.assets[sheetName] || []; 
 
-    if (data && data.length > 0) {
-      let options = `<option value="">-- Pilih ${sheetName.replace('_', ' ')} --</option>`;
+    if (data && data.length > 1) {
+      let options = `<option value="">-- Pilih ${sheetName.replace(/_/g, ' ')} --</option>`;
       
       // Lompati Header (Index 0)
       data.slice(1).forEach(row => {
-        const val = row[0]; // Isian ID (Sistem)
-        const lab = row[1] || row[0]; // Isian Text (Tampilan), kover kalau B kosong
+        const val = row[0]; 
+        const lab = row[1] || row[0]; 
         
         if (val !== undefined && val !== "") {
           options += `<option value="${val}">${lab}</option>`;
@@ -57,10 +66,12 @@ function populateAllDropdowns() {
       });
       
       el.innerHTML = options;
-      //.log(`✅ ID: ${id} terisi dari ${sheetName}`);
     }
   }
+  console.log("✅ Semua dropdown berhasil di-load.");
+  return true;
 }
+
 
 // Variabel Global
 const urlGAS = APPSCRIPT_URL;

@@ -48,7 +48,7 @@
       // Jalankan fungsi awal
       //await syncDataGhoib();
       showPage('history');
-      populateAllDropdowns(); // Pastikan dropdown juga terisi setelah login
+      await populateAllDropdowns(); // Pastikan dropdown juga terisi setelah login
       
       Swal.fire({ title: "Berhasil!", text: "Sesi aman diaktifkan", icon: "success", timer: 1500, showConfirmButton: false });
 
@@ -352,7 +352,7 @@ function speakSenor(pesan) {
   }
 }
 
-function checkSessionAndLogin() {
+async function checkSessionAndLogin() {
   const savedUser = localStorage.getItem("userMaint");
 
   if (savedUser) {
@@ -380,8 +380,8 @@ function checkSessionAndLogin() {
       }
 
       // 3. Jalankan Sinkronisasi Data (Wuzzz!)
-      syncDataGhoib(); 
-      //showPage('history'); // Halaman default setelah login
+      await syncDataGhoib(); 
+      //await showPage('history'); // Halaman default setelah login
 
     } catch (e) {
       console.error("Sesi Rusak, silakan login ulang.");
@@ -460,13 +460,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadComponent('modalPhotoSlider-placeholder','modalPhotoSlider.html'), 
         loadComponent('modalImport-placeholder','modalImport.html'),
         loadComponent('modalEditUser-placeholder','modalEditUser.html'),
-        loadComponent('modalGlobalSearch-placeholder', 'modalGlobalSearch.html') 
+        loadComponent('modalGlobalSearch-placeholder', 'modalGlobalSearch.html'),
+        syncDataGhoib() // Sinkronisasi awal untuk data penting (jadwal, user list, dll)
         // Terakhir tidak perlu koma
     ]);
 
     console.log("✅ Semua HTML terpasang, sekarang jalankan logika.");
     
     // Baru panggil fungsi yang butuh ID dari HTML di atas
-    loadCloudLogo(); 
+    loadCloudLogo();
     checkSessionAndLogin();
 });
