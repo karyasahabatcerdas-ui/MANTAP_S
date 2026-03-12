@@ -97,3 +97,68 @@ function showPage(id) {
     console.error(`⚠️ Terjadi kesalahan saat memuat data [${id}]:`, err);
   }
 }
+
+/**
+ * [CLIENT: PENGENDALI GLOW PROFIL]
+ * Mengubah aura foto profil sesuai status keamanan data
+ * [HELPER: PENGENDALI AURA FOTO PROFIL]
+ * Mengubah warna pendaran border foto sesuai status keamanan
+ */
+function setSecurityGlow(status) {
+    const img = document.getElementById('user_profile_shared');
+    if (!img) return;
+
+    // Reset Class
+    img.classList.remove('sync-warning', 'sync-error');
+
+    if (status === 'processing') {
+        img.classList.add('sync-warning'); // Kuning Kedip
+    } else if (status === 'error') {
+        img.classList.add('sync-error');   // Merah Diam
+    } else {
+        // Hijau (Default dari CSS)
+        img.style.borderColor = "#22c55e";
+        img.style.boxShadow = "0 0 15px rgba(34, 197, 94, 0.4)";
+    }
+}
+
+function handleSwipe() {
+    const swipeDistance = touchEndX - touchStartX;
+    const leftbar = document.getElementById('leftbar');
+    
+    // SWIPE KANAN (BUKA)
+    if (swipeDistance > 100 && touchStartX < 50) { 
+        leftbar.classList.add('active'); // Kita pakai .active sesuai CSS melayang
+        
+        // 1. EFEK GETAR (Haptic Feedback) - HP akan bergetar 15ms
+        if (navigator.vibrate) navigator.vibrate(15); 
+        
+        // 2. PASANG OVERLAY (Agar konten belakang gelap)
+        tambahOverlay();
+        console.log("📱 Native Feel: Sidebar Open");
+    }
+    
+    // SWIPE KIRI (TUTUP)
+    else if (swipeDistance < -80 && leftbar.classList.contains('active')) {
+        leftbar.classList.remove('active');
+        hapusOverlay();
+    }
+}
+
+// Fungsi Pembantu Overlay
+function tambahOverlay() {
+    if (document.getElementById('side-overlay')) return;
+    const ov = document.createElement('div');
+    ov.id = 'side-overlay';
+    ov.style = "position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:999;backdrop-filter:blur(2px);";
+    ov.onclick = () => { // Klik di mana saja buat tutup
+        document.getElementById('leftbar').classList.remove('active');
+        hapusOverlay();
+    };
+    document.body.appendChild(ov);
+}
+
+function hapusOverlay() {
+    const ov = document.getElementById('side-overlay');
+    if (ov) ov.remove();
+}

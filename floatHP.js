@@ -20,32 +20,31 @@ function handleMobileToggle() {
 // if (window.innerWidth <= 768) handleMobileToggle();
 
 
-// --- DETEKSI SWIPE (Kiri ke Kanan) ---
-let touchstartX = 0;
-let touchendX = 0;
+let touchStartX = 0;
+let touchEndX = 0;
 
+// 1. FUNGSI SWIPE GESTURE
 document.addEventListener('touchstart', e => {
-  touchstartX = e.changedTouches[0].screenX;
-});
+    touchStartX = e.changedTouches[0].screenX;
+}, false);
 
 document.addEventListener('touchend', e => {
-  touchendX = e.changedTouches[0].screenX;
-  handleSwipe();
-});
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+}, false);
 
-// Update fungsi Swipe agar tombol ikut menyala/mati
 function handleSwipe() {
-  const sidebar = document.getElementById('sidebar');
-  const toggleBtn = document.getElementById('mobile-toggle-wrapper');
-  const diffX = touchendX - touchstartX;
-
-  if (Math.abs(diffX) > 100) { // Threshold minimal geseran 100px
-    if (diffX > 0) { // Swipe Kanan (Buka)
-      sidebar.classList.add('mobile-open');
-      toggleBtn.classList.add('mobile-toggle-active');
-    } else { // Swipe Kiri (Tutup)
-      sidebar.classList.remove('mobile-open');
-      toggleBtn.classList.remove('mobile-toggle-active');
+    const swipeDistance = touchEndX - touchStartX;
+    const leftbar = document.getElementById('leftbar');
+    
+    // Swipe Kanan (Buka Sidebar) - Jarak minimal 100px
+    if (swipeDistance > 100 && touchStartX < 50) { 
+        leftbar.classList.remove('collapsed');
+        console.log("📱 Swipe Right: Sidebar Open");
     }
-  }
+    // Swipe Kiri (Tutup Sidebar)
+    else if (swipeDistance < -100) {
+        leftbar.classList.add('collapsed');
+        console.log("📱 Swipe Left: Sidebar Collapsed");
+    }
 }

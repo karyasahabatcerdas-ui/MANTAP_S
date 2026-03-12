@@ -17,6 +17,35 @@ window.APP_STORE = {
 // 1. Variabel Utama (Hanya simpan bungkus Base64)
 window.APP_STORE_BLOB = ""; 
 
+// Variable Global
+window._LOCKED_BLOB = ""; 
+
+
+// FUNGSI BUKA GEMBOK (Dipanggil setelah login sukses)
+ // [CLIENT: MESIN BUKA GEMBOK XOR]
+ //Membuka paket ghoib dari GitHub menggunakan kunci dari Server
+ //
+// B. Fungsi Buka Gembok (Sudah Pakai XOR)
+function bukaGembokSakti(unlockCode) {
+  if (!window._LOCKED_BLOB) return false;
+  try {
+    const raw = atob(window._LOCKED_BLOB);
+    let decoded = "";
+    for (let i = 0; i < raw.length; i++) {
+      const charCode = raw.charCodeAt(i) ^ unlockCode.charCodeAt(i % unlockCode.length);
+      decoded += String.fromCharCode(charCode);
+    }
+    // Simpan ke RAM helper dalam format Base64
+    window.APP_STORE_BLOB = btoa(decoded); 
+    console.log("🔓 Gembok Terbuka! Sesi Sinkron.");
+    populateAllDropdowns();
+    return true;
+  } catch (e) {
+    console.warn("❌ Gembok Mismatch! Butuh Re-Auth...");
+    return false;
+  }
+}
+
 // 2. Mesin Pembongkar (Internal)
 const bongkarRAM = () => {
   if (!window.APP_STORE_BLOB) return { assets: {}, app: {}, reference: {} };
@@ -43,7 +72,87 @@ const getRef   = (name) => (bongkarRAM().reference || bongkarRAM().assets || {})
 const getMaint = (name) => (bongkarRAM().maintenance || bongkarRAM().assets || {})[name] || [];
 const getApp   = (name) => (bongkarRAM().app || bongkarRAM().assets || {})[name] || [];
 
-// 5. Fungsi Sedot Data (Perbaikan URL & Variabel)
+// 5. Fungsi Sedot Data (Perbaikan URL & Variabel yang terenkripsi )
+async function syncDataGhoib() {
+  const URL = GITHUB_JSON_URL + "?t=" + new Date().getTime();
+  try {
+    const res = await fetch(URL).then(r => r.json());
+    window._LOCKED_BLOB = res.blob; // Masih terkunci!
+    console.log("📦 Paket Ghoib mendarat (Masih Terkunci)");
+  } catch (e) { console.error(e); }
+}
+
+/**
+ * [CLIENT: MESIN RE-AUTH CERDAS - TIME WINDOW + INDIKATOR AURA PROFIL]
+ * Hanya aktif memantau kunci saat transisi gembok harian
+ * Berjalan setiap 10 menit untuk memastikan kunci tetap sinkron
+ * Hanya aktif memantau kunci saat transisi gembok harian (23:00 - 01:00)
+ */
+setInterval(async () => {
+    const now = new Date();
+    const hours = now.getHours();
+
+    // 1. Tentukan Jendela Kritis
+    const isCriticalWindow = (hours === 23 || hours === 0);
+    
+    // Jika di luar jam kritis, pastikan lampu tetap hijau (Aman)
+    if (!isCriticalWindow) {
+        setSecurityGlow('success'); 
+        return; 
+    }
+
+    const loginData = JSON.parse(localStorage.getItem("userMaint"));
+    if (!loginData || !window._LOCKED_BLOB) return;
+
+    console.log("🕒 [Critical Window] Memeriksa sinkronisasi kunci harian...");
+    
+    // 2. Cek apakah gembok masih bisa dibuka
+    const isStillValid = bukaGembokSakti(loginData.unlockCode);
+
+    if (!isStillValid) {
+        console.warn("🔑 Gembok GitHub sudah ganti. Memulai Silent Re-Auth...");
+        
+        // NYALAKAN LAMPU KUNING (Sedang Proses)
+        setSecurityGlow('processing');
+
+        const res = await panggilGAS("silentReAuth");
+
+        if (res && res.status === "success") {
+            // Update kunci baru ke memori HP
+            loginData.unlockCode = res.newUnlockCode;
+            localStorage.setItem("userMaint", JSON.stringify(loginData));
+            
+            // Buka gembok dengan kunci baru
+            bukaGembokSakti(res.newUnlockCode);
+            
+            // LAMPU HIJAU (Berhasil Sync)
+            setSecurityGlow('success');
+            console.log("✅ Re-Auth Berhasil. Sesi Diperbarui.");
+        } else {
+            // LAMPU MERAH (Gagal/Sesi Expired)
+            setSecurityGlow('error');
+            console.error("❌ Re-Auth Gagal.");
+        }
+    } else {
+        // Jika masih valid, tetap hijau
+        setSecurityGlow('success');
+    }
+}, 600000); // Cek setiap 10 menit
+
+
+// 2. UPDATE STATUS INDIKATOR (Panggil dari setInterval Re-Auth kamu)
+function updateSyncStatus(status) {
+    const dot = document.getElementById('sync-glow-dot');
+    if (!dot) return;
+
+    if (status === 'processing') {
+        dot.classList.add('processing');
+    } else {
+        dot.classList.remove('processing');
+        dot.style.background = (status === 'success') ? "#22c55e" : "#ef4444";
+    }
+}
+/*
 async function syncDataGhoib() {
   //const GITHUB_BASE = "https://raw.githubusercontent.com";
   const GITHUB_URL = `${GITHUB_BASE}?t=${new Date().getTime()}`;
@@ -72,7 +181,7 @@ async function syncDataGhoib() {
     console.error("Gagal sinkron Blob:", err);
   }
 }
-
+*/
 //================================[AKHIR PAKET PENERJEMAH]=========================
 
 
@@ -132,8 +241,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadComponent('modalPhotoSlider-placeholder','modalPhotoSlider.html'), 
         loadComponent('modalImport-placeholder','modalImport.html'),
         loadComponent('modalEditUser-placeholder','modalEditUser.html'),
-        loadComponent('modalGlobalSearch-placeholder', 'modalGlobalSearch.html')
-        //syncDataGhoib() // Sinkronisasi awal untuk data penting (jadwal, user list, dll)
+        loadComponent('modalGlobalSearch-placeholder', 'modalGlobalSearch.html'),
+        syncDataGhoib() // Sinkronisasi awal untuk data penting (jadwal, user list, dll)
         // Terakhir tidak perlu koma
     ]);
 
@@ -144,6 +253,34 @@ document.addEventListener("DOMContentLoaded", async () => {
     checkSessionAndLogin();
 });
 
+
+async function loadComponent(elementId, filePath) {
+    try {
+        const response = await fetch(filePath);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const html = await response.text();
+        const container = document.getElementById(elementId);
+        
+        if (container) {
+            container.innerHTML = html;
+            
+            // --- BAGIAN PENTING: Eksekusi Script ---
+            const scripts = container.querySelectorAll("script");
+            scripts.forEach(oldScript => {
+                const newScript = document.createElement("script");
+                // Copy atribut (src, type, dll)
+                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                // Copy isi script (inline script)
+                newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                // Pasang kembali ke DOM agar dijalankan browser
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+            });
+        }
+    } catch (error) {
+        console.error('Gagal memuat komponen:', filePath, error);
+    }
+}
 
 async function panggilGAS(action, payload = {}) {
   const loginData = JSON.parse(localStorage.getItem("userMaint")) || {};
@@ -166,9 +303,20 @@ async function panggilGAS(action, payload = {}) {
     
     const res = await response.json();
 
-    // Jika Satpam Server mendeteksi Sesi Expired / Login di HP lain
+    // 1. CEK SINYAL MAINTENANCE
+    if (res.status === "maintenance") {
+      Swal.fire({
+        title: "🚧 Transisi Keamanan",
+        text: "Server sedang memperbarui gembok harian (00:00). Silakan coba lagi dalam 2 menit.",
+        icon: "info",
+        background: "#0f172a", color: "#fff"
+      });
+      return null;
+    }
+
+    // 2. CEK SESI EXPIRED
     if (res.message === "SESI_EXPIRED") {
-      await Swal.fire("Sesi Berakhir", "Akun login di perangkat lain!", "error");
+      Swal.fire("Sesi Berakhir", "Akun login di perangkat lain!", "error");
       logout(); 
       return null;
     }
@@ -337,6 +485,26 @@ function miniSearch(dataArray, ...keywords) {
     count: results.length,
     data: results
   };
+}
+
+
+/**
+ * [FUNGSI AI: UNIVERSAL VOICE NOTIFICATION]
+ * Bisa dipanggil dari mana saja. Contoh: speakSeñor("Data berhasil disimpan");
+ */
+function speakSenor(pesan) {
+  if ('speechSynthesis' in window) {
+    // Batalkan suara yang sedang berjalan agar tidak tumpang tindih
+    speechSynthesis.cancel();
+
+    const msg = new SpeechSynthesisUtterance();
+    msg.text = pesan;
+    msg.lang = 'id-ID'; // Bahasa Indonesia
+    msg.rate = 0.9;     // default 1.1 Sedikit lebih cepat agar terdengar profesional
+    msg.pitch = 0.9;  // defaul 1.0
+    
+    speechSynthesis.speak(msg);
+  }
 }
 
 

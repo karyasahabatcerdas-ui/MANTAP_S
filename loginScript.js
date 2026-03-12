@@ -68,7 +68,6 @@
 }
 
 
-
 /**
  * [FUNGSI: LOGOUT & PEMBERSIHAN TOTAL]
  * Menambahkan pencatatan aktivitas ke Log Book di server.
@@ -131,53 +130,6 @@ async function logout() {
     });
   }
 
-
-async function loadComponent(elementId, filePath) {
-    try {
-        const response = await fetch(filePath);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        const html = await response.text();
-        const container = document.getElementById(elementId);
-        
-        if (container) {
-            container.innerHTML = html;
-            
-            // --- BAGIAN PENTING: Eksekusi Script ---
-            const scripts = container.querySelectorAll("script");
-            scripts.forEach(oldScript => {
-                const newScript = document.createElement("script");
-                // Copy atribut (src, type, dll)
-                Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                // Copy isi script (inline script)
-                newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                // Pasang kembali ke DOM agar dijalankan browser
-                oldScript.parentNode.replaceChild(newScript, oldScript);
-            });
-        }
-    } catch (error) {
-        console.error('Gagal memuat komponen:', filePath, error);
-    }
-}
-
-/**
- * [FUNGSI AI: UNIVERSAL VOICE NOTIFICATION]
- * Bisa dipanggil dari mana saja. Contoh: speakSeñor("Data berhasil disimpan");
- */
-function speakSenor(pesan) {
-  if ('speechSynthesis' in window) {
-    // Batalkan suara yang sedang berjalan agar tidak tumpang tindih
-    speechSynthesis.cancel();
-
-    const msg = new SpeechSynthesisUtterance();
-    msg.text = pesan;
-    msg.lang = 'id-ID'; // Bahasa Indonesia
-    msg.rate = 0.9;     // default 1.1 Sedikit lebih cepat agar terdengar profesional
-    msg.pitch = 0.9;  // defaul 1.0
-    
-    speechSynthesis.speak(msg);
-  }
-}
 
 async function checkSessionAndLogin() {
   const savedUser = localStorage.getItem("userMaint");
@@ -298,6 +250,7 @@ function setTheme(themeName) {
     const menu = document.getElementById('themeMenu');
     if (menu) menu.style.display = 'none';
 }
+
 
 // Jalankan otomatis saat halaman dimuat (Auto-Restore)
 (function() {
