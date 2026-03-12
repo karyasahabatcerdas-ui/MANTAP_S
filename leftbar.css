@@ -87,7 +87,7 @@
 
 /* --- [4. HEADER & PROFILE SETTINGS] --- */
 .leftbar-header-title {
-  color: var(--text-standby);
+  color: var(--neon-blue);
   font-weight: 500;
   padding: 20px;
   background: rgba(30, 41, 59, 0.5);
@@ -146,9 +146,10 @@
 }
 
 .menu-item:hover {
-  background: var(--bg-hover);
-  color: var(--text-bright);
+  background: rgba(56, 191, 248, 0.644);
+  /*color: var(--text-bright);*/
   border-left: 3px solid var(--neon-blue);
+  color: var(--neon-blue); opacity: 0.7;
 }
 
 .menu-item.active {
