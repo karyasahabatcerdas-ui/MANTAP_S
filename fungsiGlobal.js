@@ -1,5 +1,3 @@
-// --- 1. KONFIGURASI & GUDANG DATA ---
-//const GAS_URL = "https://script.google.com/macros/s/AKfycbwwJVU-AHjjg3Lhj_zDIVtDCfTWV114zbQMve87e6b6Rh_FQRzuwyVoiGZzd__slPbb/exec";
 const GAS_URL = APPSCRIPT_URL; // Gunakan URL yang dibentuk dari APPSCRIPT_ID di index.html
 
 window.APP_STORE = {
@@ -94,6 +92,31 @@ let Temp_Profile = [null,null];
 let loggedInUser = "";
 let userRole = "";
 
+document.addEventListener("DOMContentLoaded", async () => {   
+    // Tunggu SEMUA komponen selesai terpasang di layar
+    await Promise.all([
+        loadComponent('loginOverlay', 'loginOverlay.html'), 
+        loadComponent('leftbar-placeholder', 'leftbar.html'),
+        loadComponent('rightbar-placeholder', 'rightbar.html'),
+        loadComponent('modalMaintenanceLog-placeholder', 'modalMaintenanceLog.html'), 
+        // Gunakan KOMA (,)
+        loadComponent('modalMaint-placeholder', 'modalMaint.html'),
+        loadComponent('modalDetailHist-placeholder', 'modalDetailHist.html'),
+        loadComponent('modalAssetDetail-placeholder', 'modalAssetDetail.html'),
+        loadComponent('modalPhotoSlider-placeholder','modalPhotoSlider.html'), 
+        loadComponent('modalImport-placeholder','modalImport.html'),
+        loadComponent('modalEditUser-placeholder','modalEditUser.html'),
+        loadComponent('modalGlobalSearch-placeholder', 'modalGlobalSearch.html'),
+        syncDataGhoib() // Sinkronisasi awal untuk data penting (jadwal, user list, dll)
+        // Terakhir tidak perlu koma
+    ]);
+
+    console.log("✅ Semua HTML terpasang, sekarang jalankan logika.");
+    
+    // Baru panggil fungsi yang butuh ID dari HTML di atas
+    loadCloudLogo();
+    checkSessionAndLogin();
+});
 
 
 async function panggilGAS(action, payload = {}) {

@@ -446,28 +446,3 @@ function syncProfileUI(newUrl, isSelf) {
   console.log("✅ UI Sync Executed. Final URL: " + finalUrl);
 }
 
-document.addEventListener("DOMContentLoaded", async () => {   
-    // Tunggu SEMUA komponen selesai terpasang di layar
-    await Promise.all([
-        loadComponent('loginOverlay', 'loginOverlay.html'), 
-        loadComponent('leftbar-placeholder', 'leftbar.html'),
-        loadComponent('rightbar-placeholder', 'rightbar.html'),
-        loadComponent('modalMaintenanceLog-placeholder', 'modalMaintenanceLog.html'), 
-        // Gunakan KOMA (,)
-        loadComponent('modalMaint-placeholder', 'modalMaint.html'),
-        loadComponent('modalDetailHist-placeholder', 'modalDetailHist.html'),
-        loadComponent('modalAssetDetail-placeholder', 'modalAssetDetail.html'),
-        loadComponent('modalPhotoSlider-placeholder','modalPhotoSlider.html'), 
-        loadComponent('modalImport-placeholder','modalImport.html'),
-        loadComponent('modalEditUser-placeholder','modalEditUser.html'),
-        loadComponent('modalGlobalSearch-placeholder', 'modalGlobalSearch.html'),
-        syncDataGhoib() // Sinkronisasi awal untuk data penting (jadwal, user list, dll)
-        // Terakhir tidak perlu koma
-    ]);
-
-    console.log("✅ Semua HTML terpasang, sekarang jalankan logika.");
-    
-    // Baru panggil fungsi yang butuh ID dari HTML di atas
-    loadCloudLogo();
-    checkSessionAndLogin();
-});
