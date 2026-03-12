@@ -4856,29 +4856,28 @@ async function loadProf() {
   }
 }
 
+
+
 async function saveProf() {
   const displayPhoto = document.getElementById('set_display_photo');
-  //const iframe = document.getElementById('iframeGAS');
-  const urlGAS = APPSCRIPT_URL;
-  
-  if (!urlGAS) return alert("URL Server tidak ditemukan!");
+  const btn = document.getElementById('btnsaveprofile');
+  const imgSidebar = document.getElementById('user_profile_shared');
 
-  // 1. Susun Payload Utama
+  // 1. Susun Payload Utama (Intinya saja)
   let payload = {
     adminAktif: typeof loggedInUser !== 'undefined' ? loggedInUser : document.getElementById('set_user').value,
-    row: "", 
-    username: document.getElementById('set_user').value,
-    phone:    document.getElementById('set_phone').value,
-    email:    document.getElementById('set_email').value,
-    pass:     document.getElementById('set_pass').value,
-    photoData: null,
-    photoUrl:  displayPhoto.src.includes("blob:") ? "" : displayPhoto.src.split('?')[0]
+    username:   document.getElementById('set_user').value,
+    phone:      document.getElementById('set_phone').value,
+    email:      document.getElementById('set_email').value,
+    pass:       document.getElementById('set_pass').value,
+    photoData:  null,
+    photoUrl:   displayPhoto.src.includes("blob:") ? "" : displayPhoto.src.split('?')[0]
   };
 
-  // 2. Proses Foto jika ada di laci Temp_Profile
-  if (Temp_Profile && Temp_Profile[0]) {
+  // 2. Proses Foto jika ada di temp
+  if (window.Temp_Profile && window.Temp_Profile[0]) {
     try {
-      const file = Temp_Profile[0];
+      const file = window.Temp_Profile[0];
       const fileInfo = await getBase64(file); 
       payload.photoData = fileInfo.base64; 
       payload.mimeType  = fileInfo.mimeType;
@@ -4888,68 +4887,58 @@ async function saveProf() {
     }
   }
 
-  // 3. UI FEEDBACK (Loading State)
-  const preview = document.getElementById('set_display_photo'); 
-  const imgSidebar = document.getElementById('user_profile_shared');
-  const btn = document.getElementById('btnsaveprofile');
-  
-  if (preview) preview.style.opacity = "0.3";
+  // 3. UI FEEDBACK (Loading)
+  if (displayPhoto) displayPhoto.style.opacity = "0.3";
   if (imgSidebar) imgSidebar.style.opacity = "0.3";
   if (btn) {
     btn.disabled = true;
     btn.innerHTML = "<i class='fas fa-spinner fa-spin'></i> Menyimpan...";
   }
 
-  // 4. KIRIM KE SERVER VIA POST
+  // 4. KIRIM KE SERVER VIA panggilGAS (Interceptor Sakti)
   try {
-    const response = await fetch(urlGAS, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "universalUpdateUser",
-        payload: payload
-      })
-    });
+    // panggilGAS otomatis menambahkan p.userData {username, sessionId}
+    const res = await panggilGAS("universalUpdateUser", payload);
 
-    const res = await response.json(); // Pastikan server kirim { status: 'success', message: '...' }
+    if (res && res.status === "success") {
+      await Swal.fire({
+        title: "¡Misión Cumplida!",
+        text: res.data || "Profil berhasil diperbarui",
+        icon: "success",
+        confirmButtonText: "OK, Señor!",
+        width: '80%'
+      });
 
-    // SUCCESS HANDLER
-    Swal.fire({
-      title: "¡Misión Cumplida!",
-      text: res.message || "Profil berhasil diperbarui",
-      icon: "success",
-      confirmButtonText: "OK, Señor!",
-      width: '80%'
-    });
-
-    // UPDATE RAM LOKAL: Sangat penting agar sidebar & profil langsung update
+      // UPDATE RAM & UI
       await syncDataGhoib();
+      window.Temp_Profile = [null, null]; 
+      
+      if (typeof loadProfile === 'function') loadProfile(); 
+      if (typeof loadProf === 'function') loadProf(); 
 
-    Temp_Profile = [null, null]; 
-    if (typeof loadProfile === 'function') loadProfile(); 
-    
-    loadProf(); // Refresh data profil
+    } else {
+      throw new Error(res ? res.message : "Gagal menyimpan");
+    }
 
   } catch (err) {
-    // FAILURE HANDLER
     console.error("Error Save Profile:", err);
     Swal.fire({
       title: "Gagal",
-      text: "Koneksi server bermasalah atau: " + err.message,
+      text: err.message,
       icon: "error",
-      confirmButtonText: "Coba Lagi",
       width: '80%'
     });
     if (btn) btn.innerHTML = "<i class='fa fa-floppy-o'></i> COBA LAGI";
   } finally {
-    // Reset UI State
-    if (preview) preview.style.opacity = "1";
+    if (displayPhoto) displayPhoto.style.opacity = "1";
     if (imgSidebar) imgSidebar.style.opacity = "1";
-    if (btn && btn.innerHTML !== "COBA LAGI") {
+    if (btn) {
       btn.disabled = false;
       btn.innerHTML = "<i class='fa fa-floppy-o'></i> SIMPAN PERUBAHAN";
     }
   }
 }
+
 
 
 // --- 2. HELPER FUNCTION (Letakkan di sini agar bisa diakses semua fungsi) ---

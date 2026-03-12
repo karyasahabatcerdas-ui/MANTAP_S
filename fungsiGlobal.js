@@ -92,3 +92,40 @@ function miniSearch(dataArray, ...keywords) {
     data: results
   };
 }
+
+
+// MESIN PUSAT UNTUK KIRIM DATA KE SERVER
+async function panggilGAS(action, payload = {}) {
+    const loginData = JSON.parse(localStorage.getItem("userMaint")) || {};
+    
+    // OTOMATIS: Tempelkan identitas user di setiap paket
+    const paketLengkap = {
+        action: action,
+        payload: payload,
+        userData: {
+            username: loginData.name || "Guest",
+            sessionId: loginData.sessionId || "NoSession"
+        }
+    };
+
+    try {
+        const response = await fetch(APPSCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(paketLengkap)
+        });
+        
+        const res = await response.json();
+
+        // VALIDASI OTOMATIS: Jika Satpam Server menolak Sesi
+        if (res.message === "SESI_EXPIRED") {
+            Swal.fire("Sesi Berakhir", "Akun login di perangkat lain!", "error");
+            logout(); // Langsung tendang ke halaman login
+            return null;
+        }
+
+        return res; // Kembalikan hasil sukses ke fungsi yang manggil
+    } catch (err) {
+        console.error("Gagal kontak server:", err);
+        return { status: "error", message: err.toString() };
+    }
+}
