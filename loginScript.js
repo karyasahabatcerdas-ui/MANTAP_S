@@ -29,7 +29,7 @@ let userRole = "";
   const btn = document.getElementById('btnLogin');
   
   if (!u || !p) {
-    Swal.fire({ title: "Ops!", text: "Isi Username & Password", icon: "error", width: '80%' });
+    Swal.fire({ title: "Ops!", text: "User & Pass wajib diisi", icon: "warning" });
     return;
   }
 
@@ -39,6 +39,7 @@ let userRole = "";
   }
 
   try {
+    // Kita panggil langsung via fetch karena ini 'pintu masuk' pertama
     const response = await fetch(APPSCRIPT_URL, {
       method: 'POST',
       body: JSON.stringify({
@@ -49,53 +50,47 @@ let userRole = "";
 
     const res = await response.json();
 
-    if (btn) {
-      btn.disabled = false;
-      btn.innerText = "Login";
-    }
-
     if (res.status === "success" && res.data.success) {
-      const dataUser = res.data;
+      // --- LOGIKA PENYIMPANAN SESI ---
+      const serverData = res.data; // Berisi role & sessionId dari GS
+      
+      // Simpan objek lengkap ke localStorage
+      localStorage.setItem("userMaint", JSON.stringify({ 
+        name: u, 
+        role: serverData.role, 
+        sessionId: serverData.sessionId // TOKEN SAKTI KITA
+      }));
+
+      // Update Variabel Global
       loggedInUser = u;
-      userRole = dataUser.role.toLowerCase().trim();
-
-      // --- SIMPAN SESI (PENTING!) ---
-      localStorage.setItem("userMaint", JSON.stringify({ name: u, role: userRole }));
-
-      // --- LOGIKA UI LEVEL ---
-      const adminArea = document.getElementById('adminMenuArea');
-      if (adminArea) {
-        adminArea.style.display = (userRole === 'admin') ? 'block' : 'none';
-      }
-
-      // --- SYNC FOTO (Ambil dari dataUser jika ada, atau fetch ulang) ---
-      // Kita asumsikan fungsi getLatestPhotoUrl juga dipindah ke doPost nanti
-      const fixAvatar = `https://ui-avatars.com{encodeURIComponent(u)}&background=2980b9&color=fff`;
-      syncProfileUI(fixAvatar, true);
+      userRole = serverData.role;
 
       // UI Switch
       document.getElementById('loginOverlay').style.display = 'none';
-      document.getElementById('main-content').style.display = 'flex'; // Munculkan konten utama
+      document.getElementById('main-content').style.display = 'flex';
       document.getElementById('headerUser').innerText = `${u} (${userRole})`;
-      
-      Swal.fire({ title: "Berhasil!", text: "Selamat Datang, " + u, icon: "success", timer: 1500, showConfirmButton: false });
-      
+
+      // Jalankan fungsi awal
+      await syncDataGhoib();
       showPage('history');
-      syncDataGhoib(); // Sedot data setelah login sukses
+      
+      Swal.fire({ title: "Berhasil!", text: "Sesi aman diaktifkan", icon: "success", timer: 1500, showConfirmButton: false });
 
     } else {
-      throw new Error(res.message || res.data.message || "Gagal Login!");
+      throw new Error(res.data.message || "Gagal Login");
     }
 
   } catch (err) {
+    console.error("Login Error:", err);
+    Swal.fire({ title: "Akses Ditolak", text: err.message, icon: "error" });
+  } finally {
     if (btn) {
       btn.disabled = false;
       btn.innerText = "Login";
     }
-    console.error("Login Error:", err);
-    Swal.fire({ title: "Gagal Login", text: err.message, icon: "warning", width: '80%' });
   }
 }
+
 
 
 /**
