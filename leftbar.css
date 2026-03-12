@@ -17,7 +17,7 @@
   padding: 0 !important;
   margin: 0;
   transition: width var(--transition-speed) ease;
-  width: 200px; /* Lebar default saat terbuka */
+  width: 180px; /* Lebar default saat terbuka */
 }
 
 
@@ -213,7 +213,7 @@
     position: fixed !important;
     left: -138px; /* Sembunyi di luar layar kiri niar kelihatan light glownya makin besar minus makin ilang*/
     top: 0;
-    width: 130px !important; /* Lebar mantap untuk jari di HP */
+    width: 125px !important; /* Lebar mantap untuk jari di HP */
     height: 100vh;
     z-index: 1000;
     /*background-color: var(--bg-main) !important;*/
@@ -265,7 +265,7 @@
   .btn-ui-toggle { display: none !important; }
 
   .leftbar-header-title{
-    font-size: 0.8rem;
+    font-size: 0.85rem;
 
   }
 
