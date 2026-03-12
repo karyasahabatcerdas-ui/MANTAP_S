@@ -274,12 +274,6 @@ function syncProfileUI(newUrl, isSelf) {
 }
 
 
-
-
-
-
-
-
 function toggleThemeMenu() {
     const menu = document.getElementById('themeMenu');
     if (menu) menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';

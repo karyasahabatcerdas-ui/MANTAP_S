@@ -101,21 +101,22 @@ const urlGAS = APPSCRIPT_URL;
 let cachedAssetTypes = null; 
 currentCategory = '';  // deteksi kamera QR atau QR
 html5QrCode = null; // Instance Html5Qrcode untuk scan file QR
-currentMaintData = null; // { maint_id, as_id, nama_aset, lokasi, jenis_jadwal }
-tempPhotos = { PB: [], PO: [], PA: [], PC: [] }; // Menyimpan foto sementara sebelum submit
+tempPhotos = { PB: [], PO: [], PA: [], PC: [] }; // foto sementara
 update_man_status = false; // Menandakan apakah mode UPDATE (Pending) atau INPUT 
 let isSuccessSave = false; // Status global apakah log berhasil di simpan atau pending
-let allHistoryData = []; //variabel global menyimpan history mentah dari server
-let activeRowData = []; // Global variable
-let dataToImport = []; // Memory penampung sementara
-let lastValidatedData = []; 
-let assetImages = [];
 let currentImgIdx = 0;
 let temp_Asset_Files = []; 
 const mAX_IMG = 5;
 let Temp_Profile = [null,null]; 
 let loggedInUser = "";
 let userRole = "";
+
+currentMaintData = null; // { maint_id, as_id, nama_aset, lokasi, jenis_jadwal }
+let allHistoryData = []; //variabel global history mentah
+let activeRowData = []; // Global variable
+let dataToImport = []; // Memory penampung sementara
+let lastValidatedData = []; 
+let assetImages = [];
 
 document.addEventListener("DOMContentLoaded", async () => {   
     // Tunggu SEMUA komponen selesai terpasang di layar
@@ -238,125 +239,6 @@ async function populateAllDropdowns() {
   return true;
 }
 
-/*
-async function syncDataGhoib() {
-  const GITHUB_URL =`${GITHUB_BASE}?t=${new Date().getTime()}`; 
-
-  try {
-    const response = await fetch(GITHUB_URL, { cache: 'no-cache' });
-    const res = await response.json(); 
-
-    if (res && res.blob) {
-      // Masukkan ke variabel internal kita
-      window._INTERNAL_BLOB = res.blob; 
-      updateDataReady();
-      console.log("🚀 RAM Updated (Mode Terbungkus/Secure dan ready)");
-
-      // Re-render tabel seperti biasa
-      populateAllDropdowns(); // Pastikan dropdown juga terisi setelah sinkronisasi
-      //if (typeof loadJad === 'function') loadJad();
-      //if (typeof loadAssetData === 'function') loadAssetData();
-    }
-  } catch (err) {
-    console.error("Gagal sinkron:", err);
-  }
-}
-*/
-
-// --- 2. FUNGSI SEDOT DATA (READ) ---
-
-/*
-// --- 2. FUNGSI SEDOT DATA (READ) ---
-async function syncDataGhoib() {
-  const loginData = JSON.parse(localStorage.getItem("userMaint"));
-  if (!loginData) return;
-
-  // 1. DEFINISIKAN URL LENGKAP (Pastikan ada tanda / dan ?t= di akhir)
-  //const GITHUB_BASE = "https://raw.githubusercontent.com/karyasahabatcerdas-ui/MANTAP_S/main/mainframe_data.json";
-  const GITHUB_JSON_URL = `${GITHUB_BASE}?t=${new Date().getTime()}`;
-
-  try {
-    const response = await fetch(GITHUB_JSON_URL, { cache: 'no-cache' });
-    if (!response.ok) throw new Error("File GitHub belum tersedia atau URL salah.");
-    
-    const remoteData = await response.json();
-
-    // 2. LOGIKA DIFERENSIASI (DIRTY CHECK)
-    // Kita cek remoteData.assets karena helper kita (getAsset, getRef) mencari di dalam folder .assets
-    if (window.APP_STORE && window.APP_STORE.assets && 
-        JSON.stringify(window.APP_STORE.assets) === JSON.stringify(remoteData.assets)) {
-      console.log("✅ Data sudah paling update. Skip.");
-      return; 
-    }
-
-    // 3. UPDATE RAM LOKAL
-    // Pastikan seluruh objek (termasuk .assets di dalamnya) masuk ke RAM
-    window.APP_STORE = remoteData; 
-    console.log("🚀 RAM Updated dari GitHub.");
-
-    // 4. RE-RENDER TABEL (Hanya yang sedang aktif)
-    if (typeof loadJad === 'function') loadJad();
-    if (typeof loadAssetData === 'function') loadAssetData();
-    if (typeof loadUserList === 'function') loadUserList();
-
-  } catch (err) {
-    console.error("Gagal sinkron data GitHub:", err);
-    
-    // FALLBACK: Jika GitHub gagal, panggil GAS langsung (Hanya jika perlu)
-    // const res = await panggilGAS("getInitialData");
-    // if (res && res.status === "success") window.APP_STORE = res.data;
-  }
-}
-*/
-
-
-/*
-// --- 3. FUNGSI KIRIM DATA (WRITE) ---
-async function kirimKeGAS(action, sheetName, id, dataRow = []) {
-  const payload = { action, sheetName, id, data: dataRow };
-
-  try {
-    const response = await fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify(payload) 
-    });
-    
-    const hasil = await response.json();
-    //console.log("🚀 Respon GAS:", hasil);
-    return hasil;
-  } catch (err) {
-    Swal.fire("Gagal Simpan", err.toString(), "error");
-  }
-}
-*/
-
-
-
-
-/*
-// --- 5. OTOMATISASI UI ---
-function populateAllDropdowns() {
-  const mapRef = {
-    'maint_id_jadwal': 'ID_Jadwal',
-    'assetTypeSelect': 'Type_Asset',
-    'statusMaintSelect': 'Status_Maint',
-    'statusAssetSelect': 'Status_Asset'
-  };
-
-  for (let id in mapRef) {
-    const el = document.getElementById(id);
-    if (!el) continue;
-    
-    const data = getRef(mapRef[id]);
-    let options = `<option value="">-- Pilih ${mapRef[id]} --</option>`;
-    
-    data.slice(1).forEach(row => {
-      options += `<option value="${row[0]}">${row[0]}</option>`;
-    });
-    el.innerHTML = options;
-  }
-}
-  */
 
 /**
  * FUNGSI BERIKUT PERLU PEMANFAATAN LEBIH LUAS
