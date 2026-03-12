@@ -211,35 +211,15 @@
   /* 2. Ubah leftbar Menjadi Drawer Samping */
   .leftbar-container {
     position: fixed !important;
-    left: -138px; /* Sembunyi di luar layar kiri niar kelihatan light glownya makin besar minus makin ilang*/
+    left: -118px; /* Sembunyi di luar layar kiri niar kelihatan light glownya makin besar minus makin ilang*/
     top: 0;
     width: 125px !important; /* Lebar mantap untuk jari di HP */
     height: 100vh;
     z-index: 1000;
-    /*background-color: var(--bg-main) !important;*/
     /* Gunakan fallback jika color-mix tidak jalan di HP lama */
     background-color: var(--bg-main) !important; 
-    opacity: 0.9; /* Alternatif jika color-mix gagal */
-
-    transition: left 0.4s ease;
-    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-    /* --- PERBAIKAN DI SINI --- */
-    display: flex;
-    flex-direction: column; /* Menyusun menu ke bawah */
-    /*align-items: flex-start !important;*/ /* Dorong semua item ke sisi kiri kontainer */
-    align-items: stretch !important; /* PENTING: Mengatur anak agar memenuhi lebar */
-    padding-left: 25px; /* Beri sedikit jarak dari pinggir layar agar tidak menempel */
- 
+    opacity: 0.85; /* Alternatif jika color-mix gagal */ 
   }
-
-    /* Pastikan item menu di dalamnya juga ikut rata kiri */
-.leftbar-container .menu-item {
-    display: flex !important; /* Pastikan dia flex */
-    width: 100% !important;   /* Paksa lebar penuh */
-    box-sizing: border-box;   /* Agar padding tidak merusak lebar 100% */
-    padding: 12px 20px;       /* Beri ruang sentuh yang enak buat jempol */
-    margin: 0;                /* Hilangkan margin jika ada */
-}
 
   /* Munculkan leftbar saat Active */
   .leftbar-container.mobile-open {
@@ -254,11 +234,12 @@
   .leftbar-container.collapsed h3 { display: block !important; }
   
   /* Paksa Foto Profil Atas Kembali Besar agar Tidak Kekecilan */
+  /*
   .leftbar-container.collapsed .profile-img-container {
     width: 80px !important;
     height: 80px !important;
     margin: 15px auto !important;
-  }
+  }*/
 
   /* 4. Sembunyikan Tombol Panah Atas (<<<) di HP */
   /* Kita tidak butuh ini di HP karena sudah ada Floating Profile di bawah. */
