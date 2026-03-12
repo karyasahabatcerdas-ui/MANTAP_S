@@ -1,11 +1,13 @@
 const GAS_URL = APPSCRIPT_URL; // Gunakan URL yang dibentuk dari APPSCRIPT_ID di index.html
 
 // Inisialisasi RAM (Kosongkan dulu, nanti diisi oleh syncDataGhoib)
+/*
 window.APP_STORE = {
   assets: {} // Semua 22 sheet akan mendarat di sini
 };
+*/
 
-window.APP_STORE_BLOB = null; // Tempat penyimpanan Blob terenkripsi dari server (Base64 string)
+//window.APP_STORE_BLOB = null; // Tempat penyimpanan Blob terenkripsi dari server (Base64 string)
 
   // 1. DEFINISIKAN URL LENGKAP (Pastikan ada tanda / dan ?t= di akhir)
   const GITHUB_BASE = "https://raw.githubusercontent.com/karyasahabatcerdas-ui/MANTAP_S/main/mainframe_data.json";
@@ -214,7 +216,7 @@ async function populateAllDropdowns() {
 
     const sheetName = DROPDOWN_MAP[id];
     // Ambil data dari gudang RAM kita
-    const data = window.APP_STORE.assets[sheetName] || []; 
+    const data = window.APP_STORE.reference[sheetName] || []; 
 
     if (data && data.length > 1) {
       let options = `<option value="">-- Pilih ${sheetName.replace(/_/g, ' ')} --</option>`;
