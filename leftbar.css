@@ -206,16 +206,31 @@
   /* 2. Ubah leftbar Menjadi Drawer Samping */
   .leftbar-container {
     position: fixed !important;
-    left: -260px; /* Sembunyi di luar layar kiri niar kelihatan light glownya makin besar minus makin ilang*/
+    left: -160px; /* Sembunyi di luar layar kiri niar kelihatan light glownya makin besar minus makin ilang*/
     top: 0;
     width: 160px !important; /* Lebar mantap untuk jari di HP */
     height: 100vh;
     z-index: 1000;
     /*background-color: var(--bg-main) !important;*/
-    background-color: color-mix(in srgb, var(--bg-main), transparent 50%) !important;
+    /* Gunakan fallback jika color-mix tidak jalan di HP lama */
+    background-color: var(--bg-main) !important; 
+    opacity: 0.9; /* Alternatif jika color-mix gagal */
+
     transition: left 0.4s ease;
     box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-    align-items: left !important;
+    /* --- PERBAIKAN DI SINI --- */
+    display: flex;
+    flex-direction: column; /* Menyusun menu ke bawah */
+    align-items: flex-start !important; /* Dorong semua item ke sisi kiri kontainer */
+    padding-left: 15px; /* Beri sedikit jarak dari pinggir layar agar tidak menempel */
+ 
+  }
+
+    /* Pastikan item menu di dalamnya juga ikut rata kiri */
+  .leftbar-container .menu-item {
+    width: 100%; /* Agar area klik selebar drawer */
+    justify-content: flex-start !important; /* Ikon dan teks rapat kiri */
+    text-align: left !important;
   }
 
   /* Munculkan leftbar saat Active */

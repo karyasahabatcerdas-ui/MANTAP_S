@@ -53,6 +53,7 @@
       //await syncDataGhoib();
       showPage('history');
       await populateAllDropdowns(); // Pastikan dropdown juga terisi setelah login
+      loadProf();
       
       Swal.fire({ title: "Berhasil!", text: "Sesi aman diaktifkan", icon: "success", timer: 1500, showConfirmButton: false });
       updateLockStatus(false);
@@ -184,13 +185,13 @@ async function checkSessionAndLogin() {
 
       const adminArea = document.getElementById('adminMenuArea');
       if (adminArea) {
-        adminArea.style.display = (userRole === 'admin') ? 'block' : 'none';
+        adminArea.style.display = (userRole === 'admin') ? 'inline-block' : 'none';
       }
 
       // 3. Jalankan Sinkronisasi Data (Wuzzz!)
       //await syncDataGhoib(); 
       await showPage('history'); // Halaman default setelah login
-      loadProf();
+      //loadProf();
 
     } catch (e) {
       console.error("Sesi Rusak, silakan login ulang.");
