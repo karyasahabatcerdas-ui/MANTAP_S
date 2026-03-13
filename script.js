@@ -947,15 +947,6 @@ function openGalleryForQR() {
     }
 }
 
-// --- B. LOGIKA KAMERA / GALERI UNTUK FOTO DOKUMENTASI ---
-function capturePhoto(category) {
-    currentCategory = category;
-    // Di Mobile, 'click' pada input file akan otomatis membuka opsi:
-    // "Ambil Foto" (Kamera Langsung) atau "Pilih File" (Galeri)
-    document.getElementById('logPhotoInput').click();
-}
-
-
 /**================================================================================================================================
  *  FUNGSI CAPTURE PHOTO DENGAN KAMERA & GALERI (DOKUMENTASI MAINTENANCE)
  * ================================================================================================================================
