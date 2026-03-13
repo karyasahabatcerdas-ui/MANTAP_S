@@ -1786,7 +1786,9 @@ async function saveLog(status) {
                 // Reset & Close
                 isSuccessSave = true; 
                 if (typeof closeMaintenanceMode === 'function') closeMaintenanceMode(); 
-                
+                console.table("savelog payload :",payloadData );
+                console.log("savelog payload :",payloadData.payload );
+                console.log("savelog payload :",payloadData.photoData );
                 // Segera tarik data terbaru dari GitHub karena server sudah push ke sana
                 await syncDataGhoib(); 
                 
